@@ -24,6 +24,8 @@ abstract class ExportExcel
 	 */
 	const DCC_FILENAME = 'Daily_Credit_Record_';
 
+	const DCCU_FILENAME = 'Daily_Up_Brush_';
+
 	/**
 	 * 寵兒
 	 */

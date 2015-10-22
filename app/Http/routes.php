@@ -15,6 +15,10 @@ Route::get('/', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);
 
+// 文章發布
+Route::resource('articles', 'ArticlesController');
+
+
 // 介紹
 Route::group(['namespace' => 'Intro', 'prefix' => 'intro'], function() {
 	Route::get('/report', ['uses' => 'IntroController@report', 'as' => 'intro_report']);
@@ -27,6 +31,10 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 	// (這邊由於是第一個撰寫的發送程序，那時規範還沒成立，路徑命名規則請勿參照此程序)
 	Route::get('/credit_card/mail', ['uses' => 'CreditCardController@mail', 'as' => 'report_credit_card_mail', 'middleware' => 'report']);
 	Route::get('/credit_card/', ['uses' => 'CreditCardController@index', 'as' => 'report_credit_card']);
+
+	// 訂單補刷
+	Route::get('/upbrush/process', ['uses' => 'CreditCardUpBrushController@process', 'as' => 'report_upbrush_mail', 'middleware' => 'report']);
+	Route::get('/upbrush/', ['uses' => 'CreditCardUpBrushController@index', 'as' => 'report_upbrush']);
 
 	// 門市營業額分析日報表
 	Route::group(['prefix' => 'retail_sales'], function () {
@@ -88,3 +96,4 @@ Route::group(['namespace' => 'Fix', 'prefix' => 'fix'], function() {
 	Route::get('/zipcode', ['uses' => 'ZipCodeController@index', 'as' => 'fix_zipcode']);
 	Route::get('/birth', ['uses' => 'ZipCodeController@birth', 'as' => 'fix_birth']);
 });
+
