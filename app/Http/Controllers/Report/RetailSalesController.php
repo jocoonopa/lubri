@@ -501,7 +501,7 @@ class RetailSalesController extends Controller
 
     protected function setDateObj(\DateTime $obj)
     {
-        $obj->modify('-2 Days');
+        $obj->modify('-1 Days');
         $this->dateObj = $obj;
 
         return $this;
