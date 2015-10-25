@@ -347,7 +347,7 @@ class HoneyBabyController extends Controller
      */
     protected function strictCompare($str1, $str2, $placeholder = [''])
     {
-        return !empty($str1) && str_replace($this->queryReplaceWordsArray, $placeholder, $str1) === str_replace($this->queryReplaceWordsArray, $placeholder, $str2);
+        return !empty(str_replace($this->queryReplaceWordsArray, $placeholder, $str1)) && str_replace($this->queryReplaceWordsArray, $placeholder, $str1) === str_replace($this->queryReplaceWordsArray, $placeholder, $str2);
     }
 
     protected function getNameQuery(array $names)

@@ -38,8 +38,8 @@ class CreditCardUpBrushController extends Controller
             
         Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $filePath) {
             $m
-                ->to('judysu@chinghwa.com.tw', '怡華')
-                ->cc('tonyvanhsu@chinghwa.com.tw', '士弘')
+                // ->to('judysu@chinghwa.com.tw', '怡華')
+                // ->cc('tonyvanhsu@chinghwa.com.tw', '士弘')
                 ->cc('jocoonopa@chinghwa.com.tw', '小閎')
                 ->subject($subject)
                 ->attach($filePath);
@@ -61,7 +61,7 @@ class CreditCardUpBrushController extends Controller
     protected function genCreditCardDealHead()
     {
         return array(
-            '訂單單號', '單據代號', '單據名稱', '訂單日期', 
+            '訂單單號', '單據代號', '單據名稱', '更改日期', 
             '出貨日期', '應付金額', '訂單金額',
             '會員代號', '會員姓名', '連絡電話', '公司電話', '手機號碼',
             '業務代號', '業務姓名', '部門代號', '部門名稱', '信用卡卡號', 
