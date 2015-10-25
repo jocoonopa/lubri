@@ -20,11 +20,11 @@ abstract class ExportExcel
 	const M64_TITLE = '64期刊';
 
 	/**
-	 * DCC = Daily Credit Card
+	 * Daily Report bundle
 	 */
 	const DCC_FILENAME = 'Daily_Credit_Record_';
-
 	const DCCU_FILENAME = 'Daily_Up_Brush_';
+	const DSR_FILENAME = 'Daily_Sale_Record_';
 
 	/**
 	 * 寵兒

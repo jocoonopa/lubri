@@ -73,6 +73,13 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 		Route::get('/', ['uses' => 'CTILayoutController@index', 'as' => 'ctilayout_index']);
 		Route::get('/download', ['uses' => 'CTILayoutController@download', 'as' => 'ctilayout_download']);
 	});
+
+	// 每日業績
+	// DailySaleRecordController
+	Route::group(['prefix' => 'daily_sale_record'], function () {
+		Route::get('/', ['uses' => 'DailySaleRecordController@index', 'as' => 'daily_sale_record_index']);
+		Route::get('/process', ['uses' => 'DailySaleRecordController@process', 'as' => 'daily_sale_record_download']);
+	});
 });
 
 // 會員比對類的處理都在這裡

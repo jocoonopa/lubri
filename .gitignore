@@ -3,7 +3,7 @@
 .env.php
 .env
 vendor/
-storage/excel/export
+storage/excel/exports
 storage/excel/import
 storage/logs
 

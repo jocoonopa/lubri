@@ -13,35 +13,50 @@ abstract class Controller extends BaseController
     use DispatchesJobs, ValidatesRequests;
 
     protected $queryReplaceWordsArray = array('-', '(', ')', '　', '\'');
-    protected $cnx;
+    protected $erpCnx;
+    protected $posCnx;
+    protected $ctiCnx;
 
     const ASCII_NUMBER_A = 64;
     const ALPHABET_NUMBERS = 26;
 
     protected function connectToErp()
     {
-        if ($this->cnx) {
-            return $this->cnx;
+        if ($this->erpCnx) {
+            return $this->erpCnx;
         }
 
-        if (!($this->cnx = odbc_connect(env('ODBC_ERP_DSN'), env('ODBC_ERP_USER'), env('ODBC_ERP_PWD'), SQL_CUR_USE_ODBC))) {
+        if (!($this->erpCnx = odbc_connect(env('ODBC_ERP_DSN'), env('ODBC_ERP_USER'), env('ODBC_ERP_PWD'), SQL_CUR_USE_ODBC))) {
             throw new \Exception('odbc error');
         }
 
-        return $this->cnx;
+        return $this->erpCnx;
     }
 
     protected function connectToPos()
     {
-        if ($this->cnx) {
-            return $this->cnx;
+        if ($this->posCnx) {
+            return $this->posCnx;
         }
 
-        if (!($this->cnx = odbc_connect(env('ODBC_POS_DSN'), env('ODBC_POS_USER'), env('ODBC_POS_PWD'), SQL_CUR_USE_ODBC))) {
+        if (!($this->posCnx = odbc_connect(env('ODBC_POS_DSN'), env('ODBC_POS_USER'), env('ODBC_POS_PWD'), SQL_CUR_USE_ODBC))) {
             throw new \Exception('odbc error');
         }
 
-        return $this->cnx;
+        return $this->posCnx;
+    }
+
+    protected function connectToCti()
+    {
+        if ($this->ctiCnx) {
+            return $this->ctiCnx;
+        }
+
+        if (!($this->ctiCnx = odbc_connect(env('ODBC_CTI_DSN'), env('ODBC_CTI_USER'), env('ODBC_CTI_PWD'), SQL_CUR_USE_ODBC))) {
+            throw new \Exception('odbc error');
+        }
+
+        return $this->ctiCnx;
     }
 
     protected function c8($str)
@@ -176,20 +191,41 @@ abstract class Controller extends BaseController
 
     protected function c8res(&$row)
     {
+        $tmp = [];
+
         foreach ($row as $key => $value) {
-            $row[$key] = $this->c8($value);
+            $tmp[$this->c8($key)] = $this->c8($value);
         }
+
+        $row = $tmp;
 
         return $this;
     }
 
     protected function cb5res(&$row)
     {
+        $tmp = [];
+
         foreach ($row as $key => $value) {
-            $row[$key] = $this->cb5($value);
+            $row[$this->cb5($key)] = $this->cb5($value);
         }
 
+        $row = $tmp;
+
         return $this;
+    }
+
+    protected function arraySelect(array $arr, array $targets, $column)
+    {
+        $indexList = [];
+
+        foreach ($arr as $key => $ele) {
+            if (in_array($ele[$column], $targets)) {
+                $indexList[] = $key;
+            }
+        }
+
+        return $indexList;
     }
 
     protected function genBasicSheet(&$excel, $sheetName, $columnFormatArray, $borderRange, $query, $headArray)
