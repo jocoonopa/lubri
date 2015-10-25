@@ -17,8 +17,12 @@ class DailySaleRecordController extends Controller
     const POS_NONEXIST_GROUP    = '未知門市';
     const ERP_OUTTUNNEL         = 'outTunnel';
 
+    protected $date;
+
     public function index()
     {
+        $this->setDate();
+        
         $des = '<h4>ERP</h4><pre>' . $this->getERPQuery() . '</pre>';
         $des.= '<h4>POS</h4><pre>' . $this->getPOSQuery() . '</pre>';
         $des.= '<h4>CTI</h4><pre>' . $this->getCTIQuery() . '</pre>';
