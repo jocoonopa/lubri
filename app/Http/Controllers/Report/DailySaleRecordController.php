@@ -369,7 +369,7 @@ class DailySaleRecordController extends Controller
     {       
         $key = array_search(trim($code), array_column($ctiData, self::CTI_JOIN_COLUMN));
 
-        return (isset($key)) ? $ctiData[$key] : null;
+        return (false !== $key) ? $ctiData[$key] : null;
     }
 
     protected function fetchPosData()
