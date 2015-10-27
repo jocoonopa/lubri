@@ -86,6 +86,14 @@
 					<td></td>
 					<td><a href="tel: (02)2659-6977">2659-6977</a></td>
 				</tr>
+				<tr>
+					<td><kbd>瑛聲</kbd></td>
+					<td>Peggy</td>
+					<td></td>
+					<td>
+						<a href="tel: 8773-5000#6003">8773-5000#6003</a>
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		</div>	

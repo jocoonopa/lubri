@@ -5,7 +5,7 @@
 	<div class="row">
 		<div class="col-xm-12">
 			<div class="progress progress-striped active">
-	  			<div class="progress-bar progress-bar-success" style="width: 43%">43%</div>
+	  			<div class="progress-bar progress-bar-success" style="width: 50%">50%</div>
 			</div>
 		</div>
 		<div class="col-xm-12">
@@ -14,9 +14,14 @@
 					<kbd>門市日報表</kbd> <span class="label label-success">自動</span>		
 					<p>吳俐穎、李惠淑、莊淑玲、徐士弘、S008高雄SOGO門市、S009美麗華門市、S013新光站前、S014新光台中、S017大統百貨、S028台南西門新光百貨、S049新光A8、S051漢神小巨蛋</p>
 				</li>
-				<li class="list-group-item"><kbd>獎金報表</kbd><p>謝世賢、徐士弘 、莊淑玲</li>
+				<li class="list-group-item"><kbd>每日業績</kbd> <span class="label label-success">自動</span><p>徐士弘 、莊淑玲</p></li>
+				<li class="list-group-item"><kbd>獎金報表</kbd><p>謝世賢、徐士弘 、莊淑玲</p></li>
 				<li class="list-group-item">
 					<kbd>訂購成交-信用卡刷卡簡訊名單</kbd> <span class="label label-success">自動</span>
+					<p>蘇怡華、徐士弘</p>
+				</li>
+				<li class="list-group-item">
+					<kbd>信用卡刷卡補刷名單</kbd> <span class="label label-success">自動</span>
 					<p>蘇怡華、徐士弘</p>
 				</li>
 				<li class="list-group-item">
