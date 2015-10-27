@@ -37,4 +37,5 @@ WHERE
     AND o.keyindate < '$date'
     AND SUBSTRING(o.OrderNo,2,8) < '$date'
     AND pl.sDate = '$date'
+    AND p.AuthorizeCode LIKE 'E%'
 ORDER BY pl.SerNo DESC

@@ -103,7 +103,7 @@ Route::group(['namespace' => 'Broad', 'prefix' => 'broad'], function() {
 Route::group(['namespace' => 'Fix', 'prefix' => 'fix'], function() {
 	Route::get('/zipcode', ['uses' => 'ZipCodeController@index', 'as' => 'fix_zipcode']);
 	Route::get('/birth', ['uses' => 'ZipCodeController@birth', 'as' => 'fix_birth']);
-
 	Route::get('/equipment/ping', ['uses' => 'EquipmentController@ping', 'as' => 'fix_equipment_ping']);
+	Route::get('/distflag', ['uses' => 'DistFlagController@index', 'as' => 'fix_distflag']);
 });
 

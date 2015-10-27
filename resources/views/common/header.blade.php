@@ -14,6 +14,7 @@
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">報表排程 <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="themes">
             <li><a href="{{ route('report_credit_card') }}">訂單刷卡成交</a></li>
+            <li><a href="{{ route('report_upbrush') }}">補刷訂單</a></li>
             <li><a href="{{ route('retail_sales_index') }}">門市營業額分析日報表</a></li>
             <li><a href="{{ route('daily_sale_record_index') }}">每日業績</a></li>
             <li class="divider"></li>
@@ -50,6 +51,7 @@
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/jocoonopa/lubri" target="_blank">GitHub</a></li>
         <li><a href="http://tonyvonhsu.tw/phpbb/index.php" target="_blank">BY 景華資訊處</a></li>
       </ul>
 
