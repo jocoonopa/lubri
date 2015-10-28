@@ -7,14 +7,34 @@ use Mail;
 
 class EquipmentController extends Controller
 {
-    const CHECK_TARGET = 'TTL';
+    const CHECK_TARGET  = 'TTL';
     const EMAIL_SUBJECT = '設備發現問題!';
-    const LIMIT_DEPTH = 5;
+    const LIMIT_DEPTH   = 5;
+    const TTL_INDEX     = 2;
 
+    /**
+     * Check equipment process
+     * 
+     * @return mixed
+     */
     public function ping()
     {
-        $errList = [];
         $checkList = $this->getCheckList();
+
+        $errList = $this->checkProcess($checkList);
+
+        return (!empty($errList)) ? $this->mail($errList) : null;
+    }
+
+    /**
+     * Check equipment process
+     * 
+     * @param  array $checkList  
+     * @return array $errList
+     */
+    protected function checkProcess(array $checkList)
+    {
+        $errList = [];
 
         foreach ($checkList as $key => $ip) {
             if (false === $this->isWorked($ip)) {
@@ -22,34 +42,40 @@ class EquipmentController extends Controller
             }
         }
 
-        if (empty($errList)) {
-            return null;
-        }
-
-        return Mail::send('emails.errorInform', ['title' => self::EMAIL_SUBJECT, 'errList' => $errList], function ($m) {
-            $m
-                ->cc('tonyvanhsu@chinghwa.com.tw', '6820徐士弘')
-                ->to('jeremy@chinghwa.com.tw', '6232游加恩')
-                ->to('jocoonopa@chinghwa.com.tw', '6231小閎')
-                ->subject(self::EMAIL_SUBJECT)
-            ;
-        });
+        return $errList;
     }
 
+    /**
+     * Check whether equipment isWorked 
+     * 
+     * @param  string  $ip   
+     * @param  integer $depth [recursive depths]
+     * @return boolean       
+     */
     protected function isWorked($ip, $depth = 0)
     {
         $output = null;
+        $status = null;
 
         exec("ping {$ip} -n 1", $output, $status);
 
+        if (!array_key_exists(self::TTL_INDEX, $output)) {
+            return false;
+        }
+
         // 用 TTL 的有無當判定
-        if (false !== strpos($output[2], self::CHECK_TARGET)) {
+        if (false !== strpos($output[self::TTL_INDEX], self::CHECK_TARGET)) {
             return true;
         }
 
         return ($depth <= self::LIMIT_DEPTH) ? $this->isWorked($ip, ++ $depth) : false;   
     }
 
+    /**
+     * getCheckList
+     * 
+     * @return array
+     */
     protected function getCheckList()
     {
         return [
@@ -70,8 +96,25 @@ class EquipmentController extends Controller
             'MailServer' => '192.168.10.2',
             'GateWay1' => '192.168.100.254',
             'GateWay2' => '192.168.172.254',
-            'ADDNS' => '192.168.11.31',
+            'ADDNS' => '192.168.11.31'
             //'門禁系統' => '192.168.100.97'
         ];
+    }
+
+    /**
+     * Email to employee
+     * 
+     * @return mixed
+     */
+    protected function mail(array $errList) 
+    {
+        return Mail::send('emails.errorInform', ['title' => self::EMAIL_SUBJECT, 'errList' => $errList], function ($m) {
+            $m
+                ->cc('tonyvanhsu@chinghwa.com.tw', '6820徐士弘')
+                ->to('jeremy@chinghwa.com.tw', '6232游加恩')
+                ->to('jocoonopa@chinghwa.com.tw', '6231小閎')
+                ->subject(self::EMAIL_SUBJECT)
+            ;
+        });
     }
 }
