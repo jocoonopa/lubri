@@ -1,5 +1,5 @@
 SELECT 
-    o.OrderNo,
+    DISTINCT o.OrderNo,
     d.Code,
     d.Name,
     pl.sDate AS OrderDate,
@@ -21,21 +21,28 @@ SELECT
     p.StagesTime, 
     p.AuthorizeCode, 
     p.PayValue 
-FROM CCS_OrderIndex o
-
-LEFT JOIN PIS_Document d ON o.DocumentSerNo=d.SerNo
-LEFT JOIN CCS_OrderPays p ON o.SerNo=p.IndexSerNo
-LEFT JOIN POS_PayWay w ON p.PayWaySerNo=w.SerNo
-LEFT JOIN POS_Member m ON o.MemberSerNo=m.SerNo
-LEFT JOIN HRS_Employee e ON o.SalesEmpSerNo=e.SerNo
-LEFT JOIN FAS_Corp c ON e.CorpSerNo=c.SerNo
-LEFT JOIN CCS_OrderPaysLog pl ON pl.IndexSerNo=o.SerNo
-LEFT JOIN HRS_Employee e2 ON pl.KeyInSerNo=e2.SerNo
-
+FROM 
+    CCS_OrderIndex o
+    LEFT JOIN PIS_Document d ON o.DocumentSerNo=d.SerNo
+    LEFT JOIN CCS_OrderPays p ON o.SerNo=p.IndexSerNo
+    LEFT JOIN POS_PayWay w ON p.PayWaySerNo=w.SerNo
+    LEFT JOIN POS_Member m ON o.MemberSerNo=m.SerNo
+    LEFT JOIN HRS_Employee e ON o.SalesEmpSerNo=e.SerNo
+    LEFT JOIN FAS_Corp c ON e.CorpSerNo=c.SerNo
+    LEFT JOIN CCS_OrderPaysLog pl ON pl.IndexSerNo=o.SerNo
+    LEFT JOIN HRS_Employee e2 ON pl.KeyInSerNo=e2.SerNo
 WHERE 
-    e2.code IN ('$code')
-    AND o.keyindate < '$date'
+    o.keyindate < '$date'
     AND SUBSTRING(o.OrderNo,2,8) < '$date'
-    AND pl.sDate = '$date'
     AND p.AuthorizeCode LIKE 'E%'
-ORDER BY pl.SerNo DESC
+    AND pl.SerNo IN (
+        SELECT 
+            DISTINCT CCS_OrderPaysLog.SerNo
+        FROM 
+            CCS_OrderPaysLog With(NoLock)  
+            INNER JOIN  HRS_Employee With(NoLock) ON CCS_OrderPaysLog.KeyInSerNo = HRS_Employee.SerNo 
+        WHERE
+            HRS_Employee.Code IN ('$code') 
+            AND CCS_OrderPaysLog.sDate = '$date'
+    )
+ORDER BY o.OrderNo DESC
