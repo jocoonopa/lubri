@@ -42,7 +42,7 @@ class CreditCardUpBrushController extends Controller
                 ->cc('tonyvanhsu@chinghwa.com.tw', '士弘')
                 ->cc('jocoonopa@chinghwa.com.tw', '小閎')
                 ->subject($subject)
-                ->attach($filePath);
+                ->attach($filePath)
             ;
         });
 
