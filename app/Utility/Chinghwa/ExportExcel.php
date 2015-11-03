@@ -8,9 +8,21 @@ abstract class ExportExcel
 	const CREATOR = 'mis@chinghwa.com.tw';
 	const COMPANY = 'chinghwa';
 
+	/**
+	 * 金額格式
+	 */
+	const NUMBER_FORMAT = '#,##0_);(#,##0)';
+
+    /**
+     * 字串格式
+     */
+    const STRING_FORMAT = '@';
+
 	const FONT_DEFAULT = '細明體';
 
 	const BOLDER_DEFAULT = 'thin';
+
+	const SHEET_DEFAULT_NAME = '表格';
 
 	/**
 	 * M64 = 64期刊

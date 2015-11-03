@@ -2,6 +2,7 @@ SELECT
     DISTINCT o.OrderNo,
     d.Code,
     d.Name,
+    o.OrderDate oDate,
     pl.sDate AS OrderDate,
     o.KeyInDate, 
     o.MustPayTotal, 
@@ -20,7 +21,7 @@ SELECT
     w.Name AS wName, 
     p.StagesTime, 
     p.AuthorizeCode, 
-    p.PayValue 
+    p.PayValue
 FROM 
     CCS_OrderIndex o
     LEFT JOIN PIS_Document d ON o.DocumentSerNo=d.SerNo
