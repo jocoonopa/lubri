@@ -107,7 +107,7 @@ class ConceController extends Controller
         $date = new \DateTime;
         $date->modify('-1 month');
 
-        return ExportExcel::EMPP_FILENAME . '_' . $date->format('Ym');
+        return ExportExcel::CONCE_FILENAME . '_' . $date->format('Ym');
     }
 
     protected function getFilePath()

@@ -51,7 +51,7 @@ class PromoGradeController extends Controller
         return str_replace(
             ['$dateBegin', '$dateEnd'],
             [$date->modify('first day of last month')->format('Ymd'), $date->modify('last day of this month')->format('Ymd')],
-            file_get_contents(__DIR__ . '/../../../../storage/sql/EmpPurchase.sql')
+            file_get_contents(__DIR__ . '/../../../../storage/sql/PromoGrade.sql')
         );
     }
 

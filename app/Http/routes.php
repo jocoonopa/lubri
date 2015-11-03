@@ -18,6 +18,10 @@ Route::get('/', ['as' => 'index', function () {
 // 文章發布
 Route::resource('articles', 'ArticlesController');
 
+Route::controllers([
+	'auth' => 'Auth\AuthController',
+	'password' => 'Auth\PasswordController'
+]);
 
 // 介紹
 Route::group(['namespace' => 'Intro', 'prefix' => 'intro'], function() {
