@@ -7,3 +7,4 @@ storage/excel/exports
 storage/excel/import
 storage/logs
 public/web.config
+.phpintel/
