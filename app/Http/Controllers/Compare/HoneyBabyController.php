@@ -15,6 +15,10 @@ class HoneyBabyController extends Controller
     protected $memberCode;
     protected $date;
     protected $stamp;
+    protected $appendInsertClosureMemberProfile;
+    protected $appendInsertClosureMemberDistFlag;
+    protected $appendUpdateClosureMemberProfile;
+    protected $appendUpdateClosureMemberDistFlag;
 
     public function index(Request $request)
     {
@@ -44,7 +48,7 @@ class HoneyBabyController extends Controller
             ->genFlapUpdateFile()
         ; 
         
-        $data = $this->loadSourceFile($this->moveUploadFile());
+        $this->genFlapFiles($this->moveUploadFile());
 
         $endTime = microtime(true);
 
@@ -126,59 +130,54 @@ class HoneyBabyController extends Controller
         return $this->getImportRealPath();
     }
 
-    /**
-     * 讀取指定路徑之檔案
-     *
-     * 這邊原本是不打算三層包覆式的寫法，但一直發生 chunk loop 後現有檔案修改沒有被儲存的問題，
-     * 導致最後修改出來的檔案只有最後一段chunk 的資料，因此百般無奈下只好改為三層callback 的寫法。
-     * 我不想用原本 PHPExcel 物件來做，太難用了。
-     * 
-     * @param  string $realPath
-     * @return array $data          
-     */
-    protected function loadSourceFile($realPath)
+    protected function genFlapFiles($realPath)
     {
-        /**
-         * 因為會用到 Closure，所以必須這樣宣告
-         * 
-         * @var App\Http\Controllers\Controller\HoneyBabyController
-         */
-        $self = $this;
-
         $this->setStartMemberCode();
-
         $data = $this->getDataPrototype($realPath);
+        
+        $excel = \App::make('excel');
+        $insertFile = $excel->load($this->getInsertFilePath());
+        $updateFile = $excel->load($this->getUpdateFilePath());
 
-        // 讀取更新檔案的excel模板
-        Excel::load($self->getUpdateFilePath(), function ($updatefile) use ($self, &$data) {
-            // 讀取新增檔案的excel模板
-            Excel::load($self->getInsertFilePath(), function ($insertfile) use ($self, &$data, &$updatefile) {
-                // 讀取上傳檔案，使用 chunk 減少記憶體需求
-                Excel::selectSheetsByIndex(0)                         
-                ->filter('chunk')
-                ->load($data['realpath'])
-                // 這個算是 Laravel chunk 的問題吧，會剛好在 chunk size 發生 repeat 的問題，
-                // skip 第一行就會正常了。
-                ->skip(1)                                
-                ->chunk(HoneyBaby::CHUNK_SIZE, function ($result) use ($self, &$data, &$updatefile, &$insertfile) {
-                    $names = [];
-                    $existMembers = [];
+        $this
+            ->setAppendInsertClosureMemberProfile($data)
+            ->setAppendUpdateClosureMemberProfile($data)
+            ->setAppendInsertClosureMemberDistFlag($data)
+            ->setAppendUpdateClosureMemberDistFlag($data)
+        ;
 
-                    $self
-                        ->extendData($result, $data, $names, $existMembers)
-                        ->insertFileHandleProcess($insertfile, $data)
-                        ->updateFileHandleProcess($updatefile, $data)
-                        ->freeVariables($data, $names, $existMembers)
-                    ;          
-                });
-            })->store('xls', storage_path('excel/exports'));
-        })->store('xls', storage_path('excel/exports'));
+        Excel::selectSheetsByIndex(0)
+            ->filter('chunk')
+            ->load($data['realpath'])
+            ->skip(HoneyBaby::SKIP_LARAVEL_EXCEL_CHUNK_BUG_INDEX)
+            ->chunk(HoneyBaby::CHUNK_SIZE, $this->getChunkProcess($data, $insertFile, $updateFile));
 
-        return $data;
+        $insertFile->store('xls', storage_path('excel/exports'));
+        $updateFile->store('xls', storage_path('excel/exports'));
+
+        return $this;
     }
 
-    protected function extendData($result, &$data, &$names, &$existMembers)
+    protected function getChunkProcess(&$data, &$insertFile, &$updateFile)
     {
+        return function ($result) use (&$data, &$insertFile, &$updateFile) {
+            $this->extendData($result, $data);
+
+            $insertFile->sheet(HoneyBaby::SHEETNAME_MEMBER_PROFILE, $this->getAppendInsertClosureMemberProfile());
+            $insertFile->sheet(HoneyBaby::SHEETNAME_MEMBER_DISTFLAG, $this->getAppendInsertClosureMemberDistFlag());
+
+            $updateFile->sheet(HoneyBaby::SHEETNAME_MEMBER_PROFILE, $this->getAppendUpdateClosureMemberProfile());
+            $updateFile->sheet(HoneyBaby::SHEETNAME_MEMBER_DISTFLAG, $this->getAppendUpdateClosureMemberDistFlag());
+            
+            return $this->freeVariables($data, $names, $existMembers);          
+        };
+    }
+
+    protected function extendData($result, &$data)
+    {
+        $names = []; 
+        $existMembers = [];
+
         foreach ($result as $row) {
             $names[] = $this->getRowVal($row, HoneyBaby::IMPORT_NAME_INDEX);
         }
@@ -217,71 +216,6 @@ class HoneyBabyController extends Controller
         ];
     }
 
-    protected function insertFileHandleProcess(&$insertfile, &$data) 
-    {
-        $self = $this;
-
-        // Append in insert
-        $insertfile->sheet(HoneyBaby::SHEETNAME_MEMBER_PROFILE, function($sheet) use ($self, &$data) {
-            foreach ($data['insert'] as $key => $info) {
-                // +2 的原因是 
-                // 1(Excel第一行從0開始，陣列是0, 所以這邊要shift1) 
-                // + 1(略過被寫入excel模板的第一行[表頭])
-                $sheet->appendRow(
-                    $self->getAppendRowIndex($key, $data['iterateInsertTimes']), 
-                    $info['memberinfo']
-                );                    
-            }
-        });
-
-        $insertfile->sheet(HoneyBaby::SHEETNAME_MEMBER_DISTFLAG, function($sheet) use ($self, &$data) {
-            foreach ($data['insert'] as $key => $info) {
-                // +2 的原因是 
-                // 1(Excel第一行從0開始，陣列是0, 所以這邊要shift1) 
-                // + 1(略過被寫入excel模板的第一行[表頭])
-                $sheet->appendRow(
-                    $self->getAppendRowIndex($key, $data['iterateInsertTimes']), 
-                    $info['flag']
-                );                    
-            }
-        });
-
-        return $this;
-    }
-
-    protected function updateFileHandleProcess(&$updatefile, &$data)
-    {
-        $self = $this;
-
-        // Append in update
-        $updatefile->sheet(HoneyBaby::SHEETNAME_MEMBER_PROFILE, function($sheet) use ($self, &$data) {
-            foreach ($data['update'] as $key => $info) {
-                // +2 的原因是 
-                // 1(Excel第一行從0開始，陣列是0, 所以這邊要shift1) 
-                // + 1(略過被寫入excel模板的第一行[表頭])
-                $sheet->appendRow(
-                    $self->getAppendRowIndex($key, $data['iterateUpdateTimes']), 
-                    $info['memberinfo']
-                );                    
-            }
-        });
-
-        // Append in update
-        $updatefile->sheet(HoneyBaby::SHEETNAME_MEMBER_DISTFLAG, function($sheet) use ($self, &$data) {
-            foreach ($data['update'] as $key => $info) {
-                // +2 的原因是 
-                // 1(Excel第一行從0開始，陣列是0, 所以這邊要shift1) 
-                // + 1(略過被寫入excel模板的第一行[表頭])
-                $sheet->appendRow(
-                    $self->getAppendRowIndex($key, $data['iterateUpdateTimes']), 
-                    $info['flag']
-                );                    
-            }
-        });
-
-        return $this;
-    }
-
     protected function freeVariables(&$data, &$names, &$existMembers)
     {
         $data['iterateInsertTimes'] += count($data['insert']);
@@ -290,8 +224,6 @@ class HoneyBabyController extends Controller
         // release array memory
         unset($data['update']);
         unset($data['insert']);
-        unset($names);
-        unset($existMembers);
         
         $data['update'] = [];
         $data['insert'] = [];         
@@ -615,7 +547,6 @@ class HoneyBabyController extends Controller
 
         return (array_key_exists($date, $map)) ? $map[$date] : 'DISTINC_UNDEFINED';
     }
-
     
     /**
      * 產生輔翼系統新增會員檔案
@@ -708,5 +639,69 @@ class HoneyBabyController extends Controller
     protected function getImportFileName()
     {
         return ExportExcel::HONEYBABY_FILENAME . $this->getStamp();
+    }
+
+    protected function setAppendInsertClosureMemberProfile(&$data)
+    {
+        $this->appendInsertClosureMemberProfile = function($sheet) use (&$data) {
+            foreach ($data['insert'] as $key => $info) {
+                $sheet->appendRow($this->getAppendRowIndex($key, $data['iterateInsertTimes']), $info['memberinfo']);                    
+            }
+        };
+
+        return $this;
+    }
+
+    protected function setAppendInsertClosureMemberDistFlag(&$data)
+    {
+        $this->appendInsertClosureMemberDistFlag = function($sheet) use (&$data) {
+            foreach ($data['insert'] as $key => $info) {
+                $sheet->appendRow($this->getAppendRowIndex($key, $data['iterateInsertTimes']), $info['flag']);                    
+            }
+        };
+
+        return $this;
+    }
+
+    protected function setAppendUpdateClosureMemberProfile(&$data)
+    {
+        $this->appendUpdateClosureMemberProfile = function($sheet) use (&$data) {
+            foreach ($data['update'] as $key => $info) {
+                $sheet->appendRow($this->getAppendRowIndex($key, $data['iterateUpdateTimes']), $info['memberinfo']);                    
+            }
+        };
+
+        return $this;
+    }
+
+    protected function setAppendUpdateClosureMemberDistFlag(&$data)
+    {
+        $this->appendUpdateClosureMemberDistFlag = function($sheet) use (&$data) {
+            foreach ($data['update'] as $key => $info) {
+                $sheet->appendRow($this->getAppendRowIndex($key, $data['iterateUpdateTimes']), $info['flag']);                    
+            }
+        };
+
+        return $this;
+    }
+
+    protected function getAppendInsertClosureMemberProfile()
+    {
+        return $this->appendInsertClosureMemberProfile;
+    }
+
+    protected function getAppendInsertClosureMemberDistFlag()
+    {
+        return $this->appendInsertClosureMemberDistFlag;
+    }
+
+    protected function getAppendUpdateClosureMemberProfile()
+    {
+        return $this->appendUpdateClosureMemberProfile;
+    }
+
+    protected function getAppendUpdateClosureMemberDistFlag()
+    {
+        return $this->appendUpdateClosureMemberDistFlag;
     }
 }

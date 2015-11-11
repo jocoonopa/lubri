@@ -5,6 +5,7 @@ namespace App\Utility\Chinghwa\Compare;
 abstract class HoneyBaby
 {
 	const CHUNK_SIZE                                   = 200;
+	const SKIP_LARAVEL_EXCEL_CHUNK_BUG_INDEX 		   = 1;
 
 	const TITLE 									   = '寵兒比對'; 
 	const SHEETNAME_MEMBER_PROFILE 					   = '會員資料';
