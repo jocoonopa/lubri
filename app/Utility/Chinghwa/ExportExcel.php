@@ -9,6 +9,16 @@ abstract class ExportExcel
 	const COMPANY = 'chinghwa';
 
 	/**
+	 * 檔案驗證不合法訊息
+	 */
+	const VALIDATE_INVALID_MSG = '檔案驗證不合法';
+
+	/**
+	 * 地址替換字元
+	 */
+	const ADDRESS_REPLACE_CHAR = '之';
+
+	/**
 	 * 金額格式
 	 */
 	const NUMBER_FORMAT = '#,##0_);(#,##0)';
