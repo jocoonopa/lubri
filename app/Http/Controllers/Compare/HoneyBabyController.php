@@ -46,6 +46,7 @@ class HoneyBabyController extends Controller
             ->setStamp(uniqid())
             ->genFlapInsertFile()
             ->genFlapUpdateFile()
+            ->setStartMemberCode()
         ; 
         
         $this->genFlapFiles($this->moveUploadFile());
@@ -132,7 +133,6 @@ class HoneyBabyController extends Controller
 
     protected function genFlapFiles($realPath)
     {
-        $this->setStartMemberCode();
         $data = $this->getDataPrototype($realPath);
         
         $excel = \App::make('excel');
@@ -169,7 +169,7 @@ class HoneyBabyController extends Controller
             $updateFile->sheet(HoneyBaby::SHEETNAME_MEMBER_PROFILE, $this->getAppendUpdateClosureMemberProfile());
             $updateFile->sheet(HoneyBaby::SHEETNAME_MEMBER_DISTFLAG, $this->getAppendUpdateClosureMemberDistFlag());
             
-            return $this->freeVariables($data, $names, $existMembers);          
+            return $this->freeVariables($data);          
         };
     }
 
@@ -216,7 +216,7 @@ class HoneyBabyController extends Controller
         ];
     }
 
-    protected function freeVariables(&$data, &$names, &$existMembers)
+    protected function freeVariables(&$data)
     {
         $data['iterateInsertTimes'] += count($data['insert']);
         $data['iterateUpdateTimes'] += count($data['update']);
@@ -644,9 +644,7 @@ class HoneyBabyController extends Controller
     protected function setAppendInsertClosureMemberProfile(&$data)
     {
         $this->appendInsertClosureMemberProfile = function($sheet) use (&$data) {
-            foreach ($data['insert'] as $key => $info) {
-                $sheet->appendRow($this->getAppendRowIndex($key, $data['iterateInsertTimes']), $info['memberinfo']);                    
-            }
+            $this->appendRow($sheet, $data['insert'], $data['iterateInsertTimes'], 'memberinfo');
         };
 
         return $this;
@@ -655,9 +653,7 @@ class HoneyBabyController extends Controller
     protected function setAppendInsertClosureMemberDistFlag(&$data)
     {
         $this->appendInsertClosureMemberDistFlag = function($sheet) use (&$data) {
-            foreach ($data['insert'] as $key => $info) {
-                $sheet->appendRow($this->getAppendRowIndex($key, $data['iterateInsertTimes']), $info['flag']);                    
-            }
+            $this->appendRow($sheet, $data['insert'], $data['iterateInsertTimes'], 'flag');
         };
 
         return $this;
@@ -666,9 +662,7 @@ class HoneyBabyController extends Controller
     protected function setAppendUpdateClosureMemberProfile(&$data)
     {
         $this->appendUpdateClosureMemberProfile = function($sheet) use (&$data) {
-            foreach ($data['update'] as $key => $info) {
-                $sheet->appendRow($this->getAppendRowIndex($key, $data['iterateUpdateTimes']), $info['memberinfo']);                    
-            }
+            $this->appendRow($sheet, $data['update'], $data['iterateUpdateTimes'], 'memberinfo');
         };
 
         return $this;
@@ -677,10 +671,17 @@ class HoneyBabyController extends Controller
     protected function setAppendUpdateClosureMemberDistFlag(&$data)
     {
         $this->appendUpdateClosureMemberDistFlag = function($sheet) use (&$data) {
-            foreach ($data['update'] as $key => $info) {
-                $sheet->appendRow($this->getAppendRowIndex($key, $data['iterateUpdateTimes']), $info['flag']);                    
-            }
+            $this->appendRow($sheet, $data['update'], $data['iterateUpdateTimes'], 'flag');
         };
+
+        return $this;
+    }
+
+    protected function appendRow(&$sheet, array $data, $point, $srcKey)
+    {
+        foreach ($data as $key => $info) {
+            $sheet->appendRow($this->getAppendRowIndex($key, $point), $info[$srcKey]);                    
+        }
 
         return $this;
     }
