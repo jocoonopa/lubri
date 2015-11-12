@@ -140,22 +140,27 @@ class HoneyBabyController extends Controller
         $updateFile = $excel->load($this->getUpdateFilePath());
 
         $this
-            ->setAppendInsertClosureMemberProfile($data)
-            ->setAppendUpdateClosureMemberProfile($data)
-            ->setAppendInsertClosureMemberDistFlag($data)
-            ->setAppendUpdateClosureMemberDistFlag($data)
+            ->setAppendInsertMemberProfileSheet($data)
+            ->setAppendUpdateMemberProfileSheet($data)
+            ->setAppendInsertMemberDistFlagSheet($data)
+            ->setAppendUpdateMemberDistFlagSheet($data)
         ;
 
-        Excel::selectSheetsByIndex(0)
-            ->filter('chunk')
-            ->load($data['realpath'])
-            ->skip(HoneyBaby::SKIP_LARAVEL_EXCEL_CHUNK_BUG_INDEX)
-            ->chunk(HoneyBaby::CHUNK_SIZE, $this->getChunkProcess($data, $insertFile, $updateFile));
+        $this->injectInsertAndUpdateData($data, $insertFile, $updateFile);
 
         $insertFile->store('xls', storage_path('excel/exports'));
         $updateFile->store('xls', storage_path('excel/exports'));
 
         return $this;
+    }
+
+    protected function injectInsertAndUpdateData(&$data, &$insertFile, &$updateFile)
+    {
+        return Excel::selectSheetsByIndex(0)
+            ->filter('chunk')
+            ->load($data['realpath'])
+            ->skip(HoneyBaby::SKIP_LARAVEL_EXCEL_CHUNK_BUG_INDEX)
+            ->chunk(HoneyBaby::CHUNK_SIZE, $this->getChunkProcess($data, $insertFile, $updateFile));
     }
 
     protected function getChunkProcess(&$data, &$insertFile, &$updateFile)
@@ -641,7 +646,7 @@ class HoneyBabyController extends Controller
         return ExportExcel::HONEYBABY_FILENAME . $this->getStamp();
     }
 
-    protected function setAppendInsertClosureMemberProfile(&$data)
+    protected function setAppendInsertMemberProfileSheet(&$data)
     {
         $this->appendInsertClosureMemberProfile = function($sheet) use (&$data) {
             $this->appendRow($sheet, $data['insert'], $data['iterateInsertTimes'], 'memberinfo');
@@ -650,7 +655,7 @@ class HoneyBabyController extends Controller
         return $this;
     }
 
-    protected function setAppendInsertClosureMemberDistFlag(&$data)
+    protected function setAppendInsertMemberDistFlagSheet(&$data)
     {
         $this->appendInsertClosureMemberDistFlag = function($sheet) use (&$data) {
             $this->appendRow($sheet, $data['insert'], $data['iterateInsertTimes'], 'flag');
@@ -659,7 +664,7 @@ class HoneyBabyController extends Controller
         return $this;
     }
 
-    protected function setAppendUpdateClosureMemberProfile(&$data)
+    protected function setAppendUpdateMemberProfileSheet(&$data)
     {
         $this->appendUpdateClosureMemberProfile = function($sheet) use (&$data) {
             $this->appendRow($sheet, $data['update'], $data['iterateUpdateTimes'], 'memberinfo');
@@ -668,7 +673,7 @@ class HoneyBabyController extends Controller
         return $this;
     }
 
-    protected function setAppendUpdateClosureMemberDistFlag(&$data)
+    protected function setAppendUpdateMemberDistFlagSheet(&$data)
     {
         $this->appendUpdateClosureMemberDistFlag = function($sheet) use (&$data) {
             $this->appendRow($sheet, $data['update'], $data['iterateUpdateTimes'], 'flag');
