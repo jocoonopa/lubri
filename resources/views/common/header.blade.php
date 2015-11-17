@@ -31,7 +31,8 @@
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="compare">資料比對 <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="compare">
             <li><a href="{{ route('compare_m64') }}">64期期刊會員</a></li>
-            <li><a href="{{ route('compare_honeybaby') }}">寵兒名單比對</a></li>                                 
+            <li><a href="{{ route('compare_honeybaby') }}">寵兒名單比對</a></li>            
+            <li><a href="{{ route('compare_financial_strike_balance_index')}}">財務沖帳比對</a></li>                     
           </ul> 
         </li>
         <li class="dropdown">

@@ -123,10 +123,10 @@ class HoneyBabyController extends Controller
      */
     protected function moveUploadFile()
     {
-        $file = Input::file('excel');
-        $fileName = ExportExcel::HONEYBABY_FILENAME . $this->getStamp();
-        $destinationPath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/import/';
-        $file->move($destinationPath, $fileName);
+        $fileName        = ExportExcel::HONEYBABY_FILENAME . $this->getStamp();
+        $destinationPath = "{$_SERVER['DOCUMENT_ROOT']}/../storage/excel/import/";
+        
+        Input::file('excel')->move($destinationPath, $fileName);
 
         return $this->getImportRealPath();
     }

@@ -76,28 +76,47 @@ class RetailSalesController extends Controller
 
         $filePath = __DIR__ . '/../../../../storage/excel/exports/' . ExportExcel::RS_FILENAME . '_' . $this->getDateObj()->format('Ymd') . '.xls';
         $subject = '門市營業額分析日報表' . $this->getDateObj()->format('Ym') . '01-'. $this->getDateObj()->format('d');
+        $self = $this;
 
-        Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $filePath) {
-            $m
-            	->to('lingying3025@chinghwa.com.tw', '俐穎')
-            	->cc('meganlee@chinghwa.com.tw', '6500李惠淑')
-            	->cc('sl@chinghwa.com.tw', '6700莊淑玲')
-            	->cc('tonyvanhsu@chinghwa.com.tw', '6820徐士弘')
-            	->cc('s008@chinghwa.com.tw', 'S008高雄SOGO門市')
-            	->cc('s009@chinghwa.com.tw', 'S009美麗華門市')
-            	->cc('s013@chinghwa.com.tw', 'S013新光站前')
-            	->cc('s014@chinghwa.com.tw', 'S014新光台中')
-            	->cc('s017@chinghwa.com.tw', 'S017大統百貨')
-            	->cc('s028@chinghwa.com.tw', 'S028台南西門新光百貨')
-            	->cc('s049@chinghwa.com.tw', 'S049新光A8')
-            	->cc('s051@chinghwa.com.tw', 'S051漢神小巨蛋')
-                ->cc('jocoonopa@chinghwa.com.tw', '小閎')
-                ->subject($subject)
-                ->attach($filePath)
-            ;
+        Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $filePath, $self) {
+            $m->subject($subject)->attach($filePath);
+
+            foreach ($self->getToList() as $email => $name) {
+                $m->to($email, $name);
+            }
+
+            foreach ($self->getCCList() as $email => $name) { 
+                $m->cc($email, $name);
+            }
         });
 
         return '門市營業額分析日報表 Send Complete!';
+    }
+
+    protected function getToList()
+    {
+        return [
+            'lingying3025@chinghwa.com.tw' => '6521吳俐穎'
+        ];
+    }
+
+    protected function getCCList()
+    {
+        return [
+            'meganlee@chinghwa.com.tw' => '6500李惠淑',
+            'sl@chinghwa.com.tw' => '6700莊淑玲',
+            'swhsu@chinghwa.com.tw' => '6800徐士偉',
+            'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
+            's008@chinghwa.com.tw' => 'S008高雄SOGO門市',
+            's009@chinghwa.com.tw' => 'S009美麗華門市',
+            's013@chinghwa.com.tw' => 'S013新光站前',
+            's014@chinghwa.com.tw' => 'S014新光台中',
+            's017@chinghwa.com.tw' => 'S017大統百貨',
+            's028@chinghwa.com.tw' => 'S028台南西門新光百貨',
+            's049@chinghwa.com.tw' => 'S049新光A8',
+            's051@chinghwa.com.tw' => 'S051漢神小巨蛋',
+            'jocoonopa@chinghwa.com.tw' => '6231小閎'
+        ];
     }
 
     protected function getTotalGroup()
@@ -172,7 +191,7 @@ class RetailSalesController extends Controller
 
     protected function groupAreaData(array $container, array $arr)
     {
-    	$area = array();
+    	$area = [];
     	$stores = $arr;
 
     	foreach ($container[$arr[0]] as $key => $val) {

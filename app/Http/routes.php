@@ -96,6 +96,11 @@ Route::group(['namespace' => 'Compare', 'prefix' => 'compare'], function() {
 
 	Route::get('/honeybaby/download/insert', ['uses' => 'HoneyBabyController@downloadInsert', 'as' => 'compare_honeybaby_download_insert']);
 	Route::get('/honeybaby/download/update', ['uses' => 'HoneyBabyController@downloadUpdate', 'as' => 'compare_honeybaby_download_update']);
+
+	Route::group(['prefix' => 'financial_strike_balance'], function () {
+		Route::get('/', ['uses' => 'FinancialStrikeBalanceController@index', 'as' => 'compare_financial_strike_balance_index']);
+		Route::any('/donsun', ['uses' => 'FinancialStrikeBalanceController@donsun', 'as' => 'compare_financial_strike_balance_donsun']);
+	});
 });
 
 Route::group(['namespace' => 'Broad', 'prefix' => 'broad'], function() {
