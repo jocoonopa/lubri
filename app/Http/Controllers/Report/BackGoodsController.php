@@ -44,8 +44,8 @@ class BackGoodsController extends Controller
     {
         return [
             '表格', 
-            ['G' => '@','H' => '@'], 
-            'J', 
+            ['D' => '@', 'I' => '@', 'J' => '@'], 
+            'M', 
             $this->getQuery(),
             $this->genHead()
         ];
@@ -63,15 +63,15 @@ class BackGoodsController extends Controller
     protected function getToList()
     {
         return [
-            // 'oliver@chinghwa.com.tw' => '誌遠',
-            // 'vivian@chinghwa.com.tw' => '玉英'
+            'oliver@chinghwa.com.tw' => '誌遠',
+            'vivian@chinghwa.com.tw' => '玉英'
         ];
     }
 
     protected function getCCList()
     {
         return [
-            //'melodyhung@chinghwa.com.tw' => '鑾英',
+            'melodyhong@chinghwa.com.tw' => '鑾英',
             'jocoonopa@chinghwa.com.tw' => '小閎'    
         ];
     }
@@ -93,16 +93,19 @@ class BackGoodsController extends Controller
     protected function genHead()
     {
         return [
-            'OrderNo',
-            'Code',
-            'ReceiveMan',
-            'City',
-            'Town',
-            'Address',
-            'Tel1',
-            'Tel2',
-            'DeliveryType',
-            'Remark'
+            '日期',
+            '來回件',
+            '景華訂單編號',
+            '客戶代號',
+            '收貨人姓名',
+            '縣市',
+            '區',
+            '地址',
+            '電話1',
+            '電話2',
+            '收貨時間',
+            '備註',
+            '備註'
         ];
     }
 

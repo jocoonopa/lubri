@@ -1,4 +1,6 @@
 SELECT 
+	CCS_OrderIndex.OrderDate,
+	CCS_OrderDivIndex.IsReturn,
 	CCS_OrderIndex.OrderNo, 
 	POS_Member.Code, 
 	CCS_OrderDivIndex.ReceiveMan, 
