@@ -261,6 +261,11 @@ abstract class Controller extends BaseController
         return $this;
     }
 
+    protected function execute($query)
+    {
+        return odbc_exec($this->connectToErp(), $this->cb5($query));
+    }
+
     protected function getThreeCodeJSON()
     {
         return '{

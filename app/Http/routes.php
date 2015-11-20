@@ -84,6 +84,13 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 		Route::get('/', ['uses' => 'DailySaleRecordController@index', 'as' => 'daily_sale_record_index']);
 		Route::get('/process', ['uses' => 'DailySaleRecordController@process', 'as' => 'daily_sale_record_download']);
 	});
+
+	// 每日回貨
+	// BackGoodsController
+	Route::group(['prefix' => 'daily_back_goods'], function () {
+		Route::get('/', ['uses' => 'BackGoodsController@index', 'as' => 'daily_back_goods_index']);
+		Route::get('/process', ['uses' => 'BackGoodsController@process', 'as' => 'daily_back_goods_process']);
+	});
 });
 
 // 會員比對類的處理都在這裡
@@ -114,5 +121,6 @@ Route::group(['namespace' => 'Fix', 'prefix' => 'fix'], function() {
 	Route::get('/birth', ['uses' => 'ZipCodeController@birth', 'as' => 'fix_birth']);
 	Route::get('/equipment/ping', ['uses' => 'EquipmentController@ping', 'as' => 'fix_equipment_ping']);
 	Route::get('/distflag', ['uses' => 'DistFlagController@index', 'as' => 'fix_distflag']);
+	Route::get('/pis_goods/import', ['uses' => 'PISGoodsController@import', 'as' => 'pis_goods_import']);
 });
 
