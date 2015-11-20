@@ -20,48 +20,58 @@ class BackGoodsController extends Controller
     public function process()
     {
         $self = $this;
-        $subject = '每日回貨' . date('Ymd');
         
         Excel::create($this->getFileName(), function ($excel) use ($self) {
-            $self->genBasicSheet(
-                $excel, 
-                '表格', 
-                ['G' => '@','H' => '@'], 
-                'J', 
-                $self->getQuery(),
-                $self->genHead()
-            );
-        })->store('xlsx', storage_path('excel/exports'));
-
-        $filePath = $this->getFilePath();
+            $params = $self->getBascitSheetParams();
+            $self->genBasicSheet($excel, $params[0], $params[1], $params[2], $params[3], $params[4]);
+        })->store(ExportExcel::XLS, storage_path('excel/exports'));  
             
-        Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $filePath, $self) {
-            $m->subject($subject)->attach($filePath);
+        Mail::send('emails.creditCard', ['title' => $this->getSubject()], function ($m) use ($self) {
+            $m->subject($self->getSubject())->attach($self->getFilePath());
             
-            foreach ($self->getToList() as $email => $name) {
-                $m->to($email, $name);
-            }
-
-            foreach ($self->getCCList() as $email => $name) {
-                $m->cc($email, $name);
-            }
+            $this->addMailGetter($m, $self->getToList())->addMailGetter($m, $self->getCCList(), 'cc');
         });
 
-        return $subject . ' send complete!';
+        return "{$this->getSubject()} send complete!";
+    }
+
+    protected function getSubject()
+    {
+        return '每日回貨' . date('Ymd');
+    }
+
+    protected function getBascitSheetParams()
+    {
+        return [
+            '表格', 
+            ['G' => '@','H' => '@'], 
+            'J', 
+            $this->getQuery(),
+            $this->genHead()
+        ];
+    }
+
+    protected function addMailGetter(&$m, array $list, $action = 'to')
+    {
+        foreach ($list as $email => $name) {
+            $m->$action($email, $name);
+        }
+
+        return $this;
     }
 
     protected function getToList()
     {
         return [
-            'oliver@chinghwa.com.tw' => '誌遠',
-            'vivian@chinghwa.com.tw' => '玉英'
+            // 'oliver@chinghwa.com.tw' => '誌遠',
+            // 'vivian@chinghwa.com.tw' => '玉英'
         ];
     }
 
     protected function getCCList()
     {
         return [
-            'melodyhung@chinghwa.com.tw' => '鑾英',
+            //'melodyhung@chinghwa.com.tw' => '鑾英',
             'jocoonopa@chinghwa.com.tw' => '小閎'    
         ];
     }
@@ -77,7 +87,7 @@ class BackGoodsController extends Controller
 
     protected function getFilePath()
     {
-        return __DIR__ . '/../../../../storage/excel/exports/' . $this->getFileName() .  '.xlsx';
+        return __DIR__ . '/../../../../storage/excel/exports/' . $this->getFileName() .  '.' . ExportExcel::XLS;
     }
 
     protected function genHead()

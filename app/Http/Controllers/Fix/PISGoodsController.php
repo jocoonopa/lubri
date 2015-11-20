@@ -17,41 +17,31 @@ class PISGoodsController extends Controller
     public function import()
     {
         $queryHelper = new PISGoodsImportQueryHelper();
+        $insertRows = [];
+        $lastSerNo = NULL;
 
-        $insertRows = $this->getInsertRows($queryHelper);
-        $lastSerNo = $this->getLastSerNo($queryHelper);
+        $this
+            ->odbcFetchArray($queryHelper->genSelectQuery(), $this->getInsertFunc(), $insertRows)
+            ->odbcFetchArray($queryHelper->genFetchLastSerNoQuery(), $this->getLastFunc(), $lastSerNo)
+        ;
 
         $this->displayAllQuery($queryHelper, $insertRows, $lastSerNo);
 
         return;
     }
 
-    protected function getInsertRows(PISGoodsImportQueryHelper $queryHelper)
+    protected function getInsertFunc()
     {
-        $insertRows = [];
-
-        $selectQuery = $queryHelper->genSelectQuery();
-        if ($res = $this->execute($selectQuery)) {
-            while ($row = odbc_fetch_array($res)) {
-                $this->c8res($row);
-                $insertRows[] = $row;
-            }
-        }
-
-        return $insertRows;
+        return function (&$insertRows, $row) {
+            $insertRows[] = $row;
+        };
     }
 
-    protected function getLastSerNo(PISGoodsImportQueryHelper $queryHelper)
+    protected function getLastFunc()
     {
-        $lastSerNoQuery = $queryHelper->genFetchLastSerNoQuery();
-        if ($res = $this->execute($lastSerNoQuery)) {
-            while ($row = odbc_fetch_array($res)) {
-                $this->c8res($row);
-                $lastSerNo = $row['SerNo'];
-            }
-        }
-
-        return $lastSerNo;
+        return function (&$lastSerNo, $row) {
+            $lastSerNo = $row['SerNo'];
+        };
     }
 
     protected function displayAllQuery(PISGoodsImportQueryHelper $queryHelper, array $insertRows, $lastSerNo)

@@ -238,7 +238,7 @@ abstract class Controller extends BaseController
                     ->setFontFamily(ExportExcel::FONT_DEFAULT)
                     ->setFontSize(12)
                     ->setColumnFormat($columnFormatArray)
-                    ->setBorder('A1:' . $borderRange .'1', ExportExcel::BOLDER_DEFAULT)
+                    //->setBorder('A1:' . $borderRange .'1', ExportExcel::BOLDER_DEFAULT)
                     ->freezeFirstRow()
                 ; 
 
@@ -264,6 +264,18 @@ abstract class Controller extends BaseController
     protected function execute($query)
     {
         return odbc_exec($this->connectToErp(), $this->cb5($query));
+    }
+
+    protected function odbcFetchArray($query, $callback, &$src)
+    {
+        if ($res = $this->execute($query)) {
+            while ($row = odbc_fetch_array($res)) {
+                $this->c8res($row);
+                $callback($src, $row);
+            }
+        }
+
+        return $this;
     }
 
     protected function getThreeCodeJSON()

@@ -8,6 +8,8 @@ abstract class ExportExcel
 	const CREATOR = 'mis@chinghwa.com.tw';
 	const COMPANY = 'chinghwa';
 
+	const XLS = 'xls';
+
 	/**
 	 * 檔案驗證不合法訊息
 	 */
