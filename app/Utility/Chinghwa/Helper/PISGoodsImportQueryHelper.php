@@ -24,8 +24,7 @@ class PISGoodsImportQueryHelper
 
 	public function genSelectQuery()
 	{
-		// , 'D00115'
-		$sql = "SELECT * FROM PIS_Goods WHERE Code IN " . $this->genInPartialQuery($this->getCodeList()) . " ORDER BY CRT_TIME DESC";
+		$sql = "SELECT * FROM PIS_Goods WHERE Code IN {$this->genInPartialQuery($this->getCodeList())} ORDER BY CRT_TIME DESC";
 
 		return $sql;
 	}
@@ -41,12 +40,9 @@ class PISGoodsImportQueryHelper
 		return substr($sql, 0, -1) . ')';
 	}
 
-	protected function getCodeList()
+	public function getCodeList()
 	{
-		return [
-			'A00174', 
-			'D00016'
-		];
+		return json_decode(file_get_contents(__DIR__ . '/../../../../storage/json/goodslist.json'), true);
 	}
 
 	public function genInsertQuery(array $row, &$lastSerNo)
@@ -63,45 +59,110 @@ class PISGoodsImportQueryHelper
 		$sql = '(';
 
 		foreach ($this->getColumns() as $column) {
-			switch (strtoupper($column)) {
-				case 'CODE':
-				case 'BARCODE':
-				case 'GOODSSTYLECODE':
-					$row[$column] = "CT{$row[$column]}";
-					break;
-
-				case 'SERNO':
-					$row[$column] = $this->getNextGoodsSerNo($lastSerNo);
-					break;
-
-				case 'COSTPRICE':
-				case 'TAXEDCOSTPRICE':
-				case 'LISTPRICE':
-				case 'TAXEDLISTPRICE':
-				case 'UPSETPRICE':
-				case 'TAXEDUPSETPRICE':
-				case 'PRICE':
-				case 'TAXEDPRICE':
-				case 'GOLDPRICE':
-				case 'TAXEDGOLDPRICE':
-				case 'SILVERPRICE':
-				case 'TAXEDSILVERPRICE':
-				case 'PLATINMPRICE':
-				case 'TAXEDPLATINMPRICE':
-				case 'DEPARTPRICE':
-				case 'TAXEDDEPARTPRICE':
-				case 'EQUALPRICE':
-				case 'TAXEDEQUALPRICE':
-					$row[$column] += 100;
-
-				default:
-					break;
-			}
-
-			$sql .= ('' === $row[$column]) ? 'NULL,' : "'{$row[$column]}',";
+			$sql .= $this
+				->rowCodeModify($row, $column)
+				->rowSerNoModify($row, $column, $lastSerNo)
+				->rowPriceModify($row, $column)
+				->rowNameModify($row, $column)
+				->getSqlCell($row, $column)
+			;
 		}
 
 		return substr($sql, 0, -1) . ')';
+	}
+
+	protected function rowCodeModify(&$row, $column)
+	{
+		if ($this->isCode(strtoupper($column))) {
+			$row[$column] = "CT{$row[$column]}";
+		}
+
+		return $this;
+	}
+
+	protected function rowSerNoModify(&$row, $column, &$lastSerNo)
+	{
+		if ($this->isSerNo(strtoupper($column))) {
+			$row[$column] = $this->getNextGoodsSerNo($lastSerNo);
+		}
+
+		return $this;
+	}
+
+	protected function rowPriceModify(&$row, $column)
+	{
+		if ($this->isPrice(strtoupper($column))) {
+			$row[$column] += 100;
+		}
+
+		return $this;
+	}
+
+	protected function rowNameModify(&$row, $column)
+	{
+		if ($this->isName(strtoupper($column))) {
+			$row[$column] = str_replace("'", "''", $row[$column]);
+		}
+
+		return $this;
+	}
+
+	protected function getSqlCell($row, $column)
+	{
+		return ('' === $row[$column]) ? 'NULL,' : "'{$row[$column]}',";
+	}
+
+	protected function isCode($val)
+	{
+		$list = [
+			'CODE',
+			'BARCODE',
+			'GOODSSTYLECODE'
+		];
+
+		return in_array($val, $list);
+	}
+
+	protected function isSerNo($val)
+	{
+		return 'SERNO' === $val;
+	}
+
+	protected function isPrice($val)
+	{
+		$list = [
+			'COSTPRICE',
+			'TAXEDCOSTPRICE',
+			'LISTPRICE',
+			'TAXEDLISTPRICE',
+			'UPSETPRICE',
+			'TAXEDUPSETPRICE',
+			'PRICE',
+			'TAXEDPRICE',
+			'GOLDPRICE',
+			'TAXEDGOLDPRICE',
+			'SILVERPRICE',
+			'TAXEDSILVERPRICE',
+			'PLATINMPRICE',
+			'TAXEDPLATINMPRICE',
+			'DEPARTPRICE',
+			'TAXEDDEPARTPRICE',
+			'EQUALPRICE',
+			'TAXEDEQUALPRICE'
+		];
+
+		return in_array($val, $list);
+	}
+
+	protected function isName($val)
+	{
+		$list = [
+			'Name',
+			'InvoiceName',
+			'SpecName'
+		];
+
+		return in_array($val, $list);
 	}
 
 	public function genFetchLastSerNoQuery()
@@ -113,10 +174,6 @@ class PISGoodsImportQueryHelper
 
 	/**
 	 * 產編SPECGOODS, 14個0, 7 數字
-	 *
-	 * 
-	 * @param  [type] &$SerNo [description]
-	 * @return [type]         [description]
 	 */
 	public function getNextGoodsSerNo(&$SerNo)
 	{
@@ -135,7 +192,7 @@ class PISGoodsImportQueryHelper
 	{
 		$columns = $this->getColumns();
 
-		return $this->genInPartialQuery($columns);
+		return str_replace("'", '', $this->genInPartialQuery($columns));
 	}
 
 	protected function getColumns()

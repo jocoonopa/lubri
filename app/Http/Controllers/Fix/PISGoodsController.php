@@ -17,9 +17,19 @@ class PISGoodsController extends Controller
     public function import()
     {
         $queryHelper = new PISGoodsImportQueryHelper();
+
+        $insertRows = $this->getInsertRows($queryHelper);
+        $lastSerNo = $this->getLastSerNo($queryHelper);
+
+        $this->displayAllQuery($queryHelper, $insertRows, $lastSerNo);
+
+        return;
+    }
+
+    protected function getInsertRows(PISGoodsImportQueryHelper $queryHelper)
+    {
         $insertRows = [];
-        $lastSerNo = '';
-        
+
         $selectQuery = $queryHelper->genSelectQuery();
         if ($res = $this->execute($selectQuery)) {
             while ($row = odbc_fetch_array($res)) {
@@ -28,6 +38,11 @@ class PISGoodsController extends Controller
             }
         }
 
+        return $insertRows;
+    }
+
+    protected function getLastSerNo(PISGoodsImportQueryHelper $queryHelper)
+    {
         $lastSerNoQuery = $queryHelper->genFetchLastSerNoQuery();
         if ($res = $this->execute($lastSerNoQuery)) {
             while ($row = odbc_fetch_array($res)) {
@@ -36,11 +51,18 @@ class PISGoodsController extends Controller
             }
         }
 
+        return $lastSerNo;
+    }
+
+    protected function displayAllQuery(PISGoodsImportQueryHelper $queryHelper, array $insertRows, $lastSerNo)
+    {
         foreach ($insertRows as $insertRow) {
             $insertQuery = $queryHelper->genInsertQuery($insertRow, $lastSerNo);
 
-            echo $insertQuery . "<br />";
+            echo "{$insertQuery}<br />";
         }
+
+        return $this;
     }
 }
 

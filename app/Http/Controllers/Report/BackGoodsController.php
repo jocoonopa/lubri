@@ -34,7 +34,6 @@ class BackGoodsController extends Controller
         })->store('xlsx', storage_path('excel/exports'));
 
         $filePath = $this->getFilePath();
-        $self = $this;
             
         Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $filePath, $self) {
             $m->subject($subject)->attach($filePath);
