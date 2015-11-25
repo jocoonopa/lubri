@@ -92,7 +92,7 @@ class PISGoodsImportQueryHelper
 	protected function rowPriceModify(&$row, $column)
 	{
 		if ($this->isPrice(strtoupper($column))) {
-			$row[$column] += 100;
+			//$row[$column] += 100;
 		}
 
 		return $this;
@@ -148,9 +148,11 @@ class PISGoodsImportQueryHelper
 	protected function isName($val)
 	{
 		$list = [
-			'Name',
-			'InvoiceName',
-			'SpecName'
+			'NAME',
+			'INVOICENAME',
+			'SPECNAME',
+			'ENAME',
+			'ESPECNAME'
 		];
 
 		return in_array($val, $list);

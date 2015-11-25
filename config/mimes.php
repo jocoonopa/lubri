@@ -89,7 +89,7 @@ return array(
 	'docx'  => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 	'xlsx'  => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 	'word'  => array('application/msword', 'application/octet-stream'),
-	'xl'    => 'application/excel',
+	'xls'    => 'application/excel',
 	'eml'   => 'message/rfc822',
 	'json'  => array('application/json', 'text/json'),
 );

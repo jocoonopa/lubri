@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
 use App\Utility\Chinghwa\Compare\HoneyBaby;
 use Illuminate\Http\Request;
+use Response;
 use Maatwebsite\Excel\Facades\Excel;
 
 class HoneyBabyController extends Controller
@@ -64,14 +65,22 @@ class HoneyBabyController extends Controller
 
     public function downloadInsert(Request $request)
     {
-        return Excel::load($_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Insert.xls')
-        ->export();
+        $dateTime = date('YmdH');
+
+        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Insert.xls';
+        $headers = ['Content-Type: application/excel'];
+
+        return Response::download($filePath, "FlapMemberInsert_{$dateTime}.xls", $headers);
     }
 
     public function downloadUpdate(Request $request)
     {
-        return Excel::load($_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Update.xls')
-        ->export();
+        $dateTime = date('YmdH');
+
+        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Update.xls';
+        $headers = ['Content-Type: application/excel'];
+
+        return Response::download($filePath, "FlapMemberUpdate_{$dateTime}.xls", $headers);
     }
 
     /**
