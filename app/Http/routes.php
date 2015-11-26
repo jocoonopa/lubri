@@ -15,13 +15,30 @@ Route::get('/', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);
 
+// 使用者
+Route::resource('user', 'User\UserController');
+
+Route::get('/user/feature/import', ['uses' => 'User\FeatureController@import']);
+Route::get('/user/feature/update', ['uses' => 'User\FeatureController@updateIpExt']);
+
 // 文章發布
 Route::resource('articles', 'ArticlesController');
 
-Route::controllers([
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController'
-]);
+// Route::controllers([
+// 	'auth' => 'Auth\AuthController',
+// 	'password' => 'Auth\PasswordController'
+// ]);
+
+// Authentication routes...
+Route::group(['namespace' => 'Auth', 'prefix' => 'auth'], function () {
+	Route::get('login', 'AuthController@getLogin');
+	Route::post('login', 'AuthController@postLogin');
+	Route::get('logout', 'AuthController@getLogout');
+
+	// Registration routes...
+	Route::get('register', 'AuthController@getRegister');
+	Route::post('register', 'AuthController@postRegister');
+});
 
 // 介紹
 Route::group(['namespace' => 'Intro', 'prefix' => 'intro'], function() {

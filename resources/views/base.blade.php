@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-	<meta charset="UTF-8">
-	<title>{{ $title or '首頁'}}</title>
+	<meta charset="utf-8">
+	<title>@section('title'){{ $title or '首頁'}}@show</title>
 	<link rel="stylesheet" href="https://bootswatch.com/united/bootstrap.min.css">
 	<link rel="stylesheet" href="{!! URL::asset('/assets/css/timeline.css') !!}">
 	
