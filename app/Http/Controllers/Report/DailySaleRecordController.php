@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
@@ -374,7 +375,7 @@ class DailySaleRecordController extends Controller
 
     protected function fetchPosData()
     {
-        if (!($res = odbc_exec($this->connectToPos(), $this->cb5($this->getPOSQuery())))) {
+        if (!($res = Processor::execPos($this->getPOSQuery()))) {
             return null;
         }
         
@@ -383,7 +384,7 @@ class DailySaleRecordController extends Controller
 
     protected function fetchCtiData()
     {
-        if (!($res = odbc_exec($this->connectToCti(), $this->cb5($this->getCTIQuery())))) {
+        if (!($res = Processor::execCti($this->getCTIQuery()))) {
             return null;
         }
         
@@ -392,7 +393,7 @@ class DailySaleRecordController extends Controller
 
     protected function fetchErpData()
     {
-        if (!($res = odbc_exec($this->connectToErp(), $this->cb5($this->getERPQuery())))) {
+        if (!($res = Processor::execErp($this->getERPQuery()))) {
             return null;
         }
         
@@ -402,7 +403,7 @@ class DailySaleRecordController extends Controller
     protected function transResToArr($res) 
     {
         $data = [];
-
+        
         while ($row = odbc_fetch_array($res)) {
             $this->c8res($row);
 

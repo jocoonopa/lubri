@@ -8,59 +8,75 @@ use App\User;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use Session;
 
 class FeatureController extends Controller
 {
     public function import()
     {
-        // $insertRows = [];
+        $insertRows = [];
 
-        // $this->odbcFetchArray($this->getUserDataQuery(), $this->getInsertFunc(), $insertRows);
+        $this->odbcFetchArray($this->getUserDataQuery(), $this->getInsertFunc(), $insertRows);
 
-        // foreach ($insertRows as $row) {
-        //     $this->insert($row);
-        // }
+        foreach ($insertRows as $row) {
+            $this->insert($row);
+        }
 
-        // return;
+        Session::flash('success', '輔翼使用者資料匯入完成');
+
+        return redirect('user');
     }
 
     public function updateIpExt()
     {
         $self = $this;
 
-        Excel::load(__DIR__ . '/../../../../storage/excel/example/ip_ext.xls', function($reader) use ($self) {
-            $results = $reader->get();
+        Excel::selectSheets('全區')->load(__DIR__ . '/../../../../storage/excel/example/ip_ext.xls', $this->updateClosure());
+        
+        Session::flash('success', '全部人員<b>Ip</b>以及<b>分機</b>更新完成');
 
-            foreach($results as $row) {
+        return redirect('user');
+    }
+
+    protected function updateClosure()
+    {
+        return function ($worksheet) {
+            $worksheet->each(function ($row) {
                 foreach ($row as $cell) {
-                    $data = explode("\n", $cell);
-
-                    if (!isset($data[0])) {
-                        continue;
-                    }
-                    
-                    if ($self->isIp($data[0])) {
+                    if (!$this->isDataValid($data = explode("\n", $cell))) {
                         continue;
                     }
 
-                    if (!$self->isNameExtMixed($data)) {
+                    if (!$this->isExistUsernameCountUnique($data)) {
                         continue;
                     }
 
-                    // Find name , do update
-                    $count = User::where('username', $self->getName($data))->count();
-
-                    if (1 !== $count) {
-                        continue;
-                    }
-
-                    $user = User::where('username', $self->getName($data))->first();
-                    $user->ip = $self->getIp($data);
-                    $user->ext = $self->getExt($data);
-                    $user->save();
+                    $this->updateUser($data);
                 }
-            }
-        });
+            });
+        };
+    }
+
+    protected function isDataValid(array $data)
+    {
+        return (isset($data[0]) && !$this->isIp($data[0]) && $this->isNameExtMixed($data));
+    }
+
+    protected function isExistUsernameCountUnique(array $data)
+    {
+        $count = User::where('username', $this->getName($data))->count();
+
+        return 1 === $count;
+    }
+
+    protected function updateUser(array $data)
+    {
+        $user = User::where('username', $this->getName($data))->first();
+        $user->ip = $this->getIp($data);
+        $user->ext = $this->getExt($data);
+        $user->save();
+
+        return $user;
     }
 
     protected function isNameExtMixed(array $data)
@@ -80,10 +96,7 @@ class FeatureController extends Controller
 
     protected function getIp(array $data)
     {
-        return !(array_key_exists(1, $data)) 
-            ? NULL 
-            : ($this->isIp($data[1]) ? $data[1] : NULL)
-        ;
+        return !(array_key_exists(1, $data)) ? NULL : ($this->isIp($data[1]) ? $data[1] : NULL);
     }
 
     protected function getExt(array $data)
@@ -102,14 +115,7 @@ class FeatureController extends Controller
     {
         $user = new User;
 
-        $user->username = $row['UName'];
-        $user->email = "{$row['Code']}@chinghwa.com.tw";
-        $user->account = $row['Code'];
-        $user->ip = NULL;
-        $user->corp = $row['CName'];
-        $user->password = 'WHATEVER';
-
-        $user->save();
+        $user->setProfileByErpRow($row)->save();
     }
 
     protected function getUserDataQuery()

@@ -1,4 +1,9 @@
 <div class="form-group">
+	{!! Form::label('corp', '部門:') !!}
+	{!! Form::text('corp', null, ['class' => 'form-control', 'placeholder' => '部門']) !!}
+</div>
+
+<div class="form-group">
 	{!! Form::label('account', '帳號:') !!}
 	{!! Form::text('account', null, ['class' => 'form-control']) !!}
 </div>

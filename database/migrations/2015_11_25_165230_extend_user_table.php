@@ -15,6 +15,7 @@ class ExtendUserTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('ip')->nullable();
             $table->string('corp')->nullable();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +26,10 @@ class ExtendUserTable extends Migration
      */
     public function down()
     {
-        // Schema::drop('tasks');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('ip');
+            $table->dropColumn('corp');
+            $table->dropColumn('deleted_at');
+        });
     }
 }

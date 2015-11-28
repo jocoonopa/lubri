@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
 use Input;
@@ -21,17 +22,13 @@ class PromoGradeController extends Controller
 
     public function process()
     {
-        if (ExportExcel::TOKEN !== Input::get('token')) {
-            return 'Unvalid token!';
-        }
-
         set_time_limit(0);
         ini_set('memory_limit', '512M');
         
         $self = $this;
 
         Excel::create($this->getFileName(), function ($excel) use ($self) {
-            $self->genBasicSheet(
+            ExcelHelper::genBasicSheet(
                 $excel, 
                 '表格', 
                 ['A' => '@','B' => '@', 'L' => '@', 'N' => '@', 'O' => '@'], 

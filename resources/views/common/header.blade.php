@@ -39,23 +39,23 @@
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="intro">常用資訊<span class="caret"></span></a>  
           <ul class="dropdown-menu" aria-labelledby="intro">
             <li><a href="{{ route('intro_report') }}">報表一覽</a></li>
-            <li><a href="{{ route('intro_b') }}">廠商一覽</a></li>                                 
+            <li><a href="{{ route('intro_b') }}">廠商一覽</a></li>   
+            <li><a href="{{ url('user') }}">使用者一覽</a></li>                                 
           </ul> 
           
         </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="download">分享 <span class="caret"></span></a>          
-        </li>
-        <li class="dropdown">
-          <a href="{{ route('broad_todo') }}">吐肚</a>          
-        </li>
+        <li><a href="{{ url('flap/members') }}">口袋名單</a></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
         <li><a href="https://github.com/jocoonopa/lubri" target="_blank">GitHub</a></li>
         <li><a href="http://tonyvonhsu.tw/phpbb/index.php" target="_blank">BY 景華資訊處</a></li>
+        @if (Auth::check())
+            <li><a href="{{ url('auth/logout') }}"><i class="glyphicon glyphicon-log-out"></i> 登出</a></li>
+        @else
+            <li><a href="{{ url('auth/login') }}"><i class="glyphicon glyphicon-log-in"></i> 登入</a></li>
+        @endif
       </ul>
-
     </div>
   </div>
 </div>

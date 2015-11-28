@@ -58,13 +58,13 @@ class CreditCardController extends Controller
 
     protected function genCreditCardDealHead()
     {
-        return array(
+        return [
             '訂單單號', '單據代號', '單據名稱', '訂單日期', 
             '出貨日期', '應付金額', '訂單金額',
             '會員代號', '會員姓名', '連絡電話', '公司電話', '手機號碼',
             '業務代號', '業務姓名', '部門代號', '部門名稱', '信用卡卡號', 
             '付款代號', '付款方式', '期數', '授權號碼', '刷卡金額'
-        );
+        ];
     }
 
     protected function genCreditCardDealReport($filename)
@@ -72,7 +72,7 @@ class CreditCardController extends Controller
         $self = $this;
 
         return Excel::create($filename, function($excel) use ($self) {
-            $formatArr = array(
+            $formatArr = [
                 'J' => '@',
                 'K' => '@',
                 'L' => '@',
@@ -90,7 +90,7 @@ class CreditCardController extends Controller
                 'H' => '@',
                 'F' => '0',
                 'G' => '0'
-            );
+            ];
 
             $self->genBasicSheet(
                 $excel, 

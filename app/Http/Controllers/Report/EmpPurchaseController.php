@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use Maatwebsite\Excel\Facades\Excel;
 use Input;
 use Mail;
@@ -21,10 +22,6 @@ class EmpPurchaseController extends Controller
 
     public function process()
     {
-        if (ExportExcel::TOKEN !== Input::get('token')) {
-            return 'Unvalid token!';
-        }
-
         if (!$this->hasToSend()) {
             return '員購銷貨單 No Task!';
         }
@@ -42,7 +39,7 @@ class EmpPurchaseController extends Controller
             // Call them separately
             $excel->setDescription(ExportExcel::EMPP_FILENAME);
 
-            $self->genBasicSheet($excel, '表格', ['C' => '@','G' => '@','I' => '@'], 'K', $self->getQuery(), $self->getExportHead());
+            ExcelHelper::genBasicSheet($excel, '表格', ['C' => '@','G' => '@','I' => '@'], 'K', $self->getQuery(), $self->getExportHead());
         })->store('xls', storage_path('excel/exports'));
 
         $msg = $this->send();

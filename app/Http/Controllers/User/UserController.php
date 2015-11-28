@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use DB;
+use Session;
 
 class UserController extends Controller
 {
@@ -17,7 +19,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::latest('created_at')->get();
+        $users = User::orderBy('corp')->get();
 
         return view('user.index', ['users' => $users]);
     }
@@ -41,6 +43,8 @@ class UserController extends Controller
     public function store(Request $request)
     {
         User::create($request->all());
+
+        Session::flash('success', "您已經新增了使用者<b>{$user->username}</b>");
 
         return redirect('user');
     }
@@ -82,6 +86,8 @@ class UserController extends Controller
 
         $user->update($request->all());
 
+        Session::flash('success', "您已經更新了<b>{$user->username}</b>的資料");
+
         return redirect("user/{$id}/edit");
     }
 
@@ -93,6 +99,12 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $user->delete();
+
+        Session::flash('success', "您已經移除了<b>{$user->username}</b>");
+
+        return redirect('user');
     }
 }

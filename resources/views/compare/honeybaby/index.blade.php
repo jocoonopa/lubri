@@ -16,6 +16,10 @@
 
 		{!! Form::open(array('route' => 'compare_honeybaby', 'files' => true)) !!}
 		<div class="form-group">
+			<a class="btn btn-sm btn-default" href="{{ route('compare_honeybaby_download_insert_example') }}"><i class="glyphicon glyphicon-floppy-save"></i>輔翼新增會員範例</a>
+			<a class="btn btn-sm btn-default" href="{{ route('compare_honeybaby_download_update_example') }}"><i class="glyphicon glyphicon-floppy-save"></i>輔翼更新會員範例</a>
+		</div>
+		<div class="form-group">
 			{!! Form::label('excel', '選擇比對檔案') !!}
 			{!! Form::file(
 				'excel', 

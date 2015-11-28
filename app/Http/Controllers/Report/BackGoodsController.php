@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
-use App\Utility\Chinghwa\RS\Row;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
@@ -23,7 +23,7 @@ class BackGoodsController extends Controller
         
         Excel::create($this->getFileName(), function ($excel) use ($self) {
             $params = $self->getBascitSheetParams();
-            $self->genBasicSheet($excel, $params[0], $params[1], $params[2], $params[3], $params[4]);
+            ExcelHelper::genBasicSheet($excel, $params[0], $params[1], $params[2], $params[3], $params[4]);
         })->store(ExportExcel::XLS, storage_path('excel/exports'));  
             
         Mail::send('emails.creditCard', ['title' => $this->getSubject()], function ($m) use ($self) {

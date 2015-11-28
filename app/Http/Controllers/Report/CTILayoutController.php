@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
-use App\Utility\Chinghwa\RS\Row;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
@@ -115,13 +116,13 @@ class CTILayoutController extends Controller
                     $cells->setBackground('#000000')->setFontColor('#ffffff')->setAlignment('center');
                 });
 
-                if ($res = odbc_exec($self->connectToErp(), $self->cb5($query))) {
+                if ($res = Processor::execErp($query)) {
                     $i = 0;
                     $sheet->row(++ $i, $headArray);
 
                     while ($row = odbc_fetch_array($res)) {
                         $row = array_values($row);
-                        $self->c8res($row);
+                        c8res($row);
                         $data = $self->getRefactRow($row);
                         $sheet->row(++ $i, $data);
                     }
@@ -140,14 +141,14 @@ class CTILayoutController extends Controller
             $data[$i] = $row[$i];
         }
 
-        $he = $this->getHospitalAndEdate($row[$this->rmi('AA')]);
-        //$splitBirthday = $this->getSplitBirthDay($row[$this->rmi('D')]);
+        $he = $this->getHospitalAndEdate($row[ExcelHelper::rmi('AA')]);
+        //$splitBirthday = $this->getSplitBirthDay($row[ExcelHelper::rmi('D')]);
 
-        $data[$this->rmi('AA')] = $he['edate'];
-        $data[$this->rmi('AB')] = $he['hospital'];
-        // $data[$this->rmi('AC')] = $splitBirthday['y'];
-        // $data[$this->rmi('AD')] = $splitBirthday['m'];
-        // $data[$this->rmi('AE')] = $splitBirthday['d'];
+        $data[ExcelHelper::rmi('AA')] = $he['edate'];
+        $data[ExcelHelper::rmi('AB')] = $he['hospital'];
+        // $data[ExcelHelper::rmi('AC')] = $splitBirthday['y'];
+        // $data[ExcelHelper::rmi('AD')] = $splitBirthday['m'];
+        // $data[ExcelHelper::rmi('AE')] = $splitBirthday['d'];
 
         return $data;
     }

@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
-use App\Utility\Chinghwa\RS\Row;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
@@ -28,11 +29,7 @@ class RetailSalesController extends Controller
     }
 
     public function process()
-    {
-        if (ExportExcel::TOKEN !== Input::get('token')) {
-            return 'Unvalid token!';
-        }
-        
+    {   
     	$self = $this;
     	$container = [];
     	$config = $this->getConfig();
@@ -40,11 +37,11 @@ class RetailSalesController extends Controller
         $date = $this->getDateObj();
 
     	// 取得資料
-    	if ($res = odbc_exec($self->connectToPos(), $this->cb5($self->getQuery($date)))) {
+    	if ($res = Processor::execPos($self->getQuery($date))) {
             while ($data = odbc_fetch_array($res)) {
-            	$tmp = array();
+            	$tmp = [];
                 foreach ($data as $key => $val) {
-                    $tmp[$self->c8($key)] = (string) $self->c8($val);
+                    $tmp[c8($key)] = (string) c8($val);
                 }
 
                 $tmp['goal'] = $config[$tmp['STOCK_NO']]['goal'];
@@ -277,33 +274,33 @@ class RetailSalesController extends Controller
 
                 foreach ($container as $store) {
                     //$this->pr($store);
-                    $row[$self->rmi('A')] = array_key_exists($store['STOCK_NO'], $config)
+                    $row[ExcelHelper::rmi('A')] = array_key_exists($store['STOCK_NO'], $config)
                         ? $store['STOCK_NO'] . $config[$store['STOCK_NO']]['name']
                         : $store['STOCK_NO'];
-                    $row[$self->rmi('B')] = @number_format($store['goal']);
-                    $row[$self->rmi('C')] = @number_format($store['goal']);
-                    $row[$self->rmi('D')] = @number_format($store['累計實績']);
-                    $row[$self->rmi('E')] = $store['累計實績']/$store['goal'];
-                    $row[$self->rmi('F')] = @number_format($store['去年同期']);
-                    $row[$self->rmi('G')] = (0 < $store['去年同期'])? $store['累計實績']/$store['去年同期'] - 1 : 0;
-                    $row[$self->rmi('H')] = @number_format($store['累計實績'] - $store['goal']);
-                    $row[$self->rmi('I')] = @number_format($store['去年當月']);
-                    $row[$self->rmi('J')] = @number_format($store['累計實績'] - $store['去年當月']);
-                    $row[$self->rmi('K')] = @number_format($store['PL業績']);
-                    $row[$self->rmi('L')] = (0 < $store['累計實績'])? $store['PL業績']/$store['累計實績'] : 0;
-                    $row[$self->rmi('M')] = @number_format($store['去年同期PL']);
-                    $row[$self->rmi('N')] = (0 < $store['去年同期PL'])? $store['PL業績']/$store['去年同期PL'] - 1 : 0;
-                    $row[$self->rmi('O')] = @number_format($store['pl']);
-                    $row[$self->rmi('P')] = @number_format($store['pl'] - $store['PL業績']);
-                    $row[$self->rmi('Q')] = @number_format($store['毛利']);
-                    $row[$self->rmi('R')] = (0 < $store['累計實績'])? $store['毛利']/$store['累計實績'] : 0;
-                    $row[$self->rmi('S')] = @number_format($store['PL毛利']);
-                    $row[$self->rmi('T')] = $store['本月來客'];
-                    $row[$self->rmi('U')] = $store['去年同期來客'];
-                    $row[$self->rmi('V')] = $store['本月來客'] - $store['去年同期來客'];
-                    $row[$self->rmi('W')] = (0 < $store['本月來客'])? @floor($store['累計實績'] / $store['本月來客']) : 0;
-                    $row[$self->rmi('X')] = (0 < $store['去年同期來客'])? floor($store['去年同期']/$store['去年同期來客']) : 0;
-                    $row[$self->rmi('Y')] = (0 < $store['本月來客'])? @floor(($store['累計實績'] / $store['本月來客']) - ($store['去年同期']/$store['去年同期來客'])) : 0;
+                    $row[ExcelHelper::rmi('B')] = @number_format($store['goal']);
+                    $row[ExcelHelper::rmi('C')] = @number_format($store['goal']);
+                    $row[ExcelHelper::rmi('D')] = @number_format($store['累計實績']);
+                    $row[ExcelHelper::rmi('E')] = $store['累計實績']/$store['goal'];
+                    $row[ExcelHelper::rmi('F')] = @number_format($store['去年同期']);
+                    $row[ExcelHelper::rmi('G')] = (0 < $store['去年同期'])? $store['累計實績']/$store['去年同期'] - 1 : 0;
+                    $row[ExcelHelper::rmi('H')] = @number_format($store['累計實績'] - $store['goal']);
+                    $row[ExcelHelper::rmi('I')] = @number_format($store['去年當月']);
+                    $row[ExcelHelper::rmi('J')] = @number_format($store['累計實績'] - $store['去年當月']);
+                    $row[ExcelHelper::rmi('K')] = @number_format($store['PL業績']);
+                    $row[ExcelHelper::rmi('L')] = (0 < $store['累計實績'])? $store['PL業績']/$store['累計實績'] : 0;
+                    $row[ExcelHelper::rmi('M')] = @number_format($store['去年同期PL']);
+                    $row[ExcelHelper::rmi('N')] = (0 < $store['去年同期PL'])? $store['PL業績']/$store['去年同期PL'] - 1 : 0;
+                    $row[ExcelHelper::rmi('O')] = @number_format($store['pl']);
+                    $row[ExcelHelper::rmi('P')] = @number_format($store['pl'] - $store['PL業績']);
+                    $row[ExcelHelper::rmi('Q')] = @number_format($store['毛利']);
+                    $row[ExcelHelper::rmi('R')] = (0 < $store['累計實績'])? $store['毛利']/$store['累計實績'] : 0;
+                    $row[ExcelHelper::rmi('S')] = @number_format($store['PL毛利']);
+                    $row[ExcelHelper::rmi('T')] = $store['本月來客'];
+                    $row[ExcelHelper::rmi('U')] = $store['去年同期來客'];
+                    $row[ExcelHelper::rmi('V')] = $store['本月來客'] - $store['去年同期來客'];
+                    $row[ExcelHelper::rmi('W')] = (0 < $store['本月來客'])? @floor($store['累計實績'] / $store['本月來客']) : 0;
+                    $row[ExcelHelper::rmi('X')] = (0 < $store['去年同期來客'])? floor($store['去年同期']/$store['去年同期來客']) : 0;
+                    $row[ExcelHelper::rmi('Y')] = (0 < $store['本月來客'])? @floor(($store['累計實績'] / $store['本月來客']) - ($store['去年同期']/$store['去年同期來客'])) : 0;
 
                     $rows[] = $row;
                 }
@@ -387,11 +384,11 @@ class RetailSalesController extends Controller
     protected function getSpecificNav()
     {
     	$arr = array_fill(0, 25, NULL);
-    	$arr[$this->rmi('B')] = '本月業績';
-    	$arr[$this->rmi('I')] = '去年';
-    	$arr[$this->rmi('K')] = 'PL業績(含稅)';
-    	$arr[$this->rmi('Q')] = '毛利(含稅)';
-    	$arr[$this->rmi('T')] = '來客&客單';
+    	$arr[ExcelHelper::rmi('B')] = '本月業績';
+    	$arr[ExcelHelper::rmi('I')] = '去年';
+    	$arr[ExcelHelper::rmi('K')] = 'PL業績(含稅)';
+    	$arr[ExcelHelper::rmi('Q')] = '毛利(含稅)';
+    	$arr[ExcelHelper::rmi('T')] = '來客&客單';
 
     	return $arr;
     }

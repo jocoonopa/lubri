@@ -1,11 +1,15 @@
 @extends('base')
 
+@section('title')
+使用者登入
+@stop
+
 @section('body')
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
 			<div class="panel panel-primary">
-				<div class="panel-heading">Login {{ Request::getClientIp(true) }}</div>
+				<div class="panel-heading">從 {{ Request::getClientIp(true) }} 準備登入</div>
 				<div class="panel-body">
 					@if (count($errors) > 0)
 						<div class="alert alert-danger">
@@ -18,41 +22,18 @@
 						</div>
 					@endif
 
-					<form class="form-horizontal" role="form" method="POST" action="{{ url('/auth/login') }}">
-						<input type="hidden" name="_token" value="{{ csrf_token() }}">
+					@if(Session::has('warning'))
+					    <div class="alert alert-warning" role="alert">
+					        <span>{!! Session::get('warning') !!}</span>
+					        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+					    </div>
+					@endif
 
-						<div class="form-group">
-							<label class="col-md-4 control-label">E-Mail Address</label>
-							<div class="col-md-6">
-								<input type="email" class="form-control" name="email" value="{{ old('email') }}">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-md-4 control-label">Password</label>
-							<div class="col-md-6">
-								<input type="password" class="form-control" name="password">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<div class="col-md-6 col-md-offset-4">
-								<div class="checkbox">
-									<label>
-										<input type="checkbox" name="remember"> Remember Me
-									</label>
-								</div>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<div class="col-md-6 col-md-offset-4">
-								<button type="submit" class="btn btn-primary">Login</button>
-
-								<a class="btn btn-link" href="{{ url('/password/email') }}">Forgot Your Password?</a>
-							</div>
-						</div>
-					</form>
+					{!! Form::open(['method' => 'POST', 'action' => 'Auth\AuthController@postLogin', 'class' => 'form-horizontal']) !!}
+						@include ('auth.loginform', ['submitButtonText' => '登入'])
+					{!! Form::close() !!}
 				</div>
 			</div>
 		</div>

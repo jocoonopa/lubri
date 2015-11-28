@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Utility\Chinghwa\ExportExcel;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 
 class DistFlagController extends Controller
 {
@@ -36,11 +37,11 @@ class DistFlagController extends Controller
             ->load($_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/import/hotfix_20151106.xlsx')
             ->chunk(500, function ($result) use (&$i, &$data, $self) {
                 foreach ($result as $row) {
-                    $mobile = str_replace('-' , '', $self->getRowVal($row, $self->rmi('C')));
-                    $memo = $self->getRowVal($row, $self->rmi('H'));
+                    $mobile = str_replace('-' , '', getRowVal($row, ExcelHelper::rmi('C')));
+                    $memo = getRowVal($row, ExcelHelper::rmi('H'));
                     
                     if (empty($mobile) || false === strpos($memo, $mobile)) {
-                        $code = $self->srp($self->getRowVal($row, $self->rmi('A')));
+                        $code = srp(getRowVal($row, ExcelHelper::rmi('A')));
                         $data[] = "{$memo};{$code}";
                     }
 

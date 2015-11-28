@@ -54,5 +54,17 @@ class PISGoodsController extends Controller
 
         return $this;
     }
+
+    protected function odbcFetchArray($query, $callback, &$src)
+    {
+        if ($res = $this->execute($query)) {
+            while ($row = odbc_fetch_array($res)) {
+                $this->c8res($row);
+                $callback($src, $row);
+            }
+        }
+
+        return $this;
+    }
 }
 

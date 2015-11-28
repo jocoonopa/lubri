@@ -10,6 +10,8 @@ use App\Utility\Chinghwa\Compare\HoneyBaby;
 use Illuminate\Http\Request;
 use Response;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Utility\Chinghwa\Database\Query\Grammers\Grammer;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class HoneyBabyController extends Controller
 {
@@ -63,6 +65,22 @@ class HoneyBabyController extends Controller
         ]);
     }
 
+    public function downloadInsertExample()
+    {
+        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/example/insertFormat.xls';
+        $headers = ['Content-Type: application/excel'];
+
+        return Response::download($filePath, 'FlapMemberInsertExample.xls', $headers);
+    }
+
+    public function downloadUpdateExample()
+    {
+        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/example/updateFormat.xls';
+        $headers = ['Content-Type: application/excel'];
+
+        return Response::download($filePath, 'FlapMemberUpdateExample.xls', $headers);
+    }
+
     public function downloadInsert(Request $request)
     {
         $dateTime = date('YmdH');
@@ -111,16 +129,16 @@ class HoneyBabyController extends Controller
     {
         $paramPack = new \stdClass;
 
-        $paramPack->name          = $this->srp($row[HoneyBaby::IMPORT_NAME_INDEX]);
-        $paramPack->state         = $this->srp($row[HoneyBaby::IMPORT_STATE_INDEX]);
-        $paramPack->city          = $this->srp($row[HoneyBaby::IMPORT_CITY_INDEX]);
-        $paramPack->address       = $this->srp($row[HoneyBaby::IMPORT_ADDRESS_INDEX], [ExportExcel::ADDRESS_REPLACE_CHAR, '', '', '', '']);
-        $paramPack->mobile        = $this->srp($row[HoneyBaby::IMPORT_MOBILE_INDEX]);
-        $paramPack->homeTel       = $this->srp($row[HoneyBaby::IMPORT_HOMETEL_INDEX]);
-        $paramPack->email         = $this->srp($row[HoneyBaby::IMPORT_EMAIL_INDEX]);
-        $paramPack->flag          = $this->srp($row[HoneyBaby::IMPORT_FLAG23_INDEX]);
-        $paramPack->oldCustomMemo = $this->srp($row[HoneyBaby::IMPORT_OLDMEMO_INDEX]);
-        $paramPack->newCustomMemo = $this->srp($row[HoneyBaby::IMPORT_NEWMEMO_INDEX]);
+        $paramPack->name          = srp($row[HoneyBaby::IMPORT_NAME_INDEX]);
+        $paramPack->state         = srp($row[HoneyBaby::IMPORT_STATE_INDEX]);
+        $paramPack->city          = srp($row[HoneyBaby::IMPORT_CITY_INDEX]);
+        $paramPack->address       = srp($row[HoneyBaby::IMPORT_ADDRESS_INDEX], [ExportExcel::ADDRESS_REPLACE_CHAR, '', '', '', '']);
+        $paramPack->mobile        = srp($row[HoneyBaby::IMPORT_MOBILE_INDEX]);
+        $paramPack->homeTel       = srp($row[HoneyBaby::IMPORT_HOMETEL_INDEX]);
+        $paramPack->email         = srp($row[HoneyBaby::IMPORT_EMAIL_INDEX]);
+        $paramPack->flag          = srp($row[HoneyBaby::IMPORT_FLAG23_INDEX]);
+        $paramPack->oldCustomMemo = srp($row[HoneyBaby::IMPORT_OLDMEMO_INDEX]);
+        $paramPack->newCustomMemo = srp($row[HoneyBaby::IMPORT_NEWMEMO_INDEX]);
         
         return $paramPack;
     }
@@ -193,12 +211,12 @@ class HoneyBabyController extends Controller
         $existMembers = [];
 
         foreach ($result as $row) {
-            $names[] = $this->getRowVal($row, HoneyBaby::IMPORT_NAME_INDEX);
+            $names[] = getRowVal($row, HoneyBaby::IMPORT_NAME_INDEX);
         }
 
         $nameQuery = $this->getNameQuery($names);
 
-        if ($res = odbc_exec($this->connectToErp(), $this->cb5($nameQuery))) {
+        if ($res = Processor::execErp($nameQuery)) {
            while ($existMembers[] = odbc_fetch_array($res));
         }
 
@@ -256,19 +274,19 @@ class HoneyBabyController extends Controller
     protected function isExist($existMembers, $row)
     {
         foreach ($existMembers as $key => $exitstMember) {
-            if (trim($this->c8($exitstMember['Name'])) !== trim($row[HoneyBaby::IMPORT_NAME_INDEX])) {
+            if (trim(c8($exitstMember['Name'])) !== trim($row[HoneyBaby::IMPORT_NAME_INDEX])) {
                 continue;
             }
 
-            if ($this->strictCompare($this->c8($exitstMember['CellPhone']), $row[HoneyBaby::IMPORT_MOBILE_INDEX])) {
+            if ($this->strictCompare(c8($exitstMember['CellPhone']), $row[HoneyBaby::IMPORT_MOBILE_INDEX])) {
                 return $exitstMember;
             }
 
-            if ($this->strictCompare($this->c8($exitstMember['HomeAddress_Address']), $row[HoneyBaby::IMPORT_ADDRESS_INDEX])) {
+            if ($this->strictCompare(c8($exitstMember['HomeAddress_Address']), $row[HoneyBaby::IMPORT_ADDRESS_INDEX])) {
                 return $exitstMember;
             }
 
-            if ($this->strictCompare($this->c8($exitstMember['HomeTel']), $row[HoneyBaby::IMPORT_HOMETEL_INDEX])) {
+            if ($this->strictCompare(c8($exitstMember['HomeTel']), $row[HoneyBaby::IMPORT_HOMETEL_INDEX])) {
                 return $exitstMember;
             }
         }
@@ -287,33 +305,23 @@ class HoneyBabyController extends Controller
      */
     protected function strictCompare($str1, $str2, $placeholder = [''])
     {
-        return !empty(str_replace($this->queryReplaceWordsArray, $placeholder, $str1)) && str_replace($this->queryReplaceWordsArray, $placeholder, $str1) === str_replace($this->queryReplaceWordsArray, $placeholder, $str2);
+        return !empty(str_replace(getReplaceWords(), $placeholder, $str1)) && str_replace(getReplaceWords(), $placeholder, $str1) === str_replace(getReplaceWords(), $placeholder, $str2);
     }
 
     protected function getNameQuery(array $names)
     {
-        $inString = $this->genQueryInConditionString($names);
+        $inString = Grammer::genInQuery($names);
 
         $sql = "SELECT Code,Name,HomeTel,OfficeTel,CellPhone,HomeAddress_State,HomeAddress_City,HomeAddress_Address FROM POS_Member WHERE Name IN ({$inString})";
 
         return $sql;
     }
 
-    protected function genQueryInConditionString(array $names)
-    {
-        $inString = '';
-        foreach ($names as $key => $val) {
-            $inString .= "'{$val}',";
-        }
-
-        return substr($inString, 0, -1);
-    }
-
     protected function setStartMemberCode()
     {
         $query = 'SELECT TOP 1 MemberCardNo FROM POS_Member WHERE MemberCardNo LIKE \'T%\' ORDER BY Code DESC';
         
-        $res = odbc_exec($this->connectToErp(), $query);
+        $res = Processor::execErp($query);
         $member = odbc_fetch_array($res);
 
         $this->memberCode = $member['MemberCardNo'];
@@ -368,8 +376,8 @@ class HoneyBabyController extends Controller
          */
         $mixInfo = [];
 
-        $mixInfo['flag23'] = $this->getRowVal($row, HoneyBaby::IMPORT_FLAG23_INDEX);
-        $mixInfo['flag38'] = $this->getRowVal($row, $this->rmi('M'));
+        $mixInfo['flag23'] = getRowVal($row, HoneyBaby::IMPORT_FLAG23_INDEX);
+        $mixInfo['flag38'] = getRowVal($row, $this->rmi('M'));
         
         /**
          * 會員旗標
@@ -397,7 +405,7 @@ class HoneyBabyController extends Controller
         $mixInfo['memberinfo'][$this->rmi('A')] = $member['Code'];
 
         // 舊客備註
-        $mixInfo['memberinfo'][$this->rmi('P')] = $this->getRowVal($row, HoneyBaby::IMPORT_OLDMEMO_INDEX);
+        $mixInfo['memberinfo'][$this->rmi('P')] = getRowVal($row, HoneyBaby::IMPORT_OLDMEMO_INDEX);
 
         return $this;
     }
@@ -445,20 +453,20 @@ class HoneyBabyController extends Controller
          * 會員資料
          */
         $mixInfo['code']          = $this->increMemberCode()->getMemberCode();
-        $mixInfo['name']          = $this->getRowVal($row, HoneyBaby::IMPORT_NAME_INDEX);
-        $mixInfo['birthday']      = $this->formatBirthday($this->getRowVal($row, HoneyBaby::IMPORT_BIRTHDAY_INDEX));
-        $mixInfo['areacode']      = ctype_digit($areacode = $this->getRowVal($row, HoneyBaby::IMPORT_AREACODE_INDEX)) ? $areacode : HoneyBaby::DEFAULT_AREACODE;
-        $mixInfo['state']         = $this->getRowVal($row, HoneyBaby::IMPORT_STATE_INDEX);
-        $mixInfo['city']          = $this->getRowVal($row, HoneyBaby::IMPORT_CITY_INDEX);
-        $mixInfo['address']       = $this->getRowVal($row, HoneyBaby::IMPORT_ADDRESS_INDEX);
-        $mixInfo['mobile']        = $this->getRowVal($row, HoneyBaby::IMPORT_MOBILE_INDEX);
-        $mixInfo['homeTel']       = $this->getRowVal($row, HoneyBaby::IMPORT_HOMETEL_INDEX);
-        $mixInfo['companyTel']    = $this->getRowVal($row, HoneyBaby::IMPORT_COMPANYTEL_INDEX);
-        $mixInfo['email']         = $this->getRowVal($row, HoneyBaby::IMPORT_EMAIL_INDEX);
-        $mixInfo['flag23']        = $this->getRowVal($row, HoneyBaby::IMPORT_FLAG23_INDEX);
-        $mixInfo['flag37']        = $this->getRowVal($row, $this->rmi('M'));
-        $mixInfo['oldCustomMemo'] = $this->getRowVal($row, HoneyBaby::IMPORT_OLDMEMO_INDEX);
-        $mixInfo['newCustomMemo'] = $this->getRowVal($row, HoneyBaby::IMPORT_NEWMEMO_INDEX);
+        $mixInfo['name']          = getRowVal($row, HoneyBaby::IMPORT_NAME_INDEX);
+        $mixInfo['birthday']      = $this->formatBirthday(getRowVal($row, HoneyBaby::IMPORT_BIRTHDAY_INDEX));
+        $mixInfo['areacode']      = ctype_digit($areacode = getRowVal($row, HoneyBaby::IMPORT_AREACODE_INDEX)) ? $areacode : HoneyBaby::DEFAULT_AREACODE;
+        $mixInfo['state']         = getRowVal($row, HoneyBaby::IMPORT_STATE_INDEX);
+        $mixInfo['city']          = getRowVal($row, HoneyBaby::IMPORT_CITY_INDEX);
+        $mixInfo['address']       = getRowVal($row, HoneyBaby::IMPORT_ADDRESS_INDEX);
+        $mixInfo['mobile']        = getRowVal($row, HoneyBaby::IMPORT_MOBILE_INDEX);
+        $mixInfo['homeTel']       = getRowVal($row, HoneyBaby::IMPORT_HOMETEL_INDEX);
+        $mixInfo['companyTel']    = getRowVal($row, HoneyBaby::IMPORT_COMPANYTEL_INDEX);
+        $mixInfo['email']         = getRowVal($row, HoneyBaby::IMPORT_EMAIL_INDEX);
+        $mixInfo['flag23']        = getRowVal($row, HoneyBaby::IMPORT_FLAG23_INDEX);
+        $mixInfo['flag37']        = getRowVal($row, $this->rmi('M'));
+        $mixInfo['oldCustomMemo'] = getRowVal($row, HoneyBaby::IMPORT_OLDMEMO_INDEX);
+        $mixInfo['newCustomMemo'] = getRowVal($row, HoneyBaby::IMPORT_NEWMEMO_INDEX);
 
         /**
          * 會員旗標

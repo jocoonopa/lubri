@@ -8,3 +8,4 @@ storage/excel/import
 storage/logs
 public/web.config
 .phpintel/
+composer.lock

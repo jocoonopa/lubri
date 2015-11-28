@@ -2,6 +2,8 @@
 
 namespace App\Utility\Chinghwa\Helper;
 
+use App\Utility\Chinghwa\Database\Query\Grammers\Grammer;
+
 class PISGoodsImportQueryHelper
 {
 	const GOODS_SERNO_LENGTH = 26;
@@ -24,20 +26,14 @@ class PISGoodsImportQueryHelper
 
 	public function genSelectQuery()
 	{
-		$sql = "SELECT * FROM PIS_Goods WHERE Code IN {$this->genInPartialQuery($this->getCodeList())} ORDER BY CRT_TIME DESC";
+		$sql = "SELECT * FROM PIS_Goods WHERE Code IN ({$this->genInPartialQuery($this->getCodeList())}) ORDER BY CRT_TIME DESC";
 
 		return $sql;
 	}
 
 	protected function genInPartialQuery(array $codes)
 	{
-		$sql = '(';
-
-		foreach ($codes as $code) {
-			$sql .= "'{$code}',";
-		}
-
-		return substr($sql, 0, -1) . ')';
+		return Grammer::genInQuery($data);
 	}
 
 	public function getCodeList()

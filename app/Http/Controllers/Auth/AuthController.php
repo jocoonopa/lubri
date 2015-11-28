@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Auth;
 use App\User;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -23,7 +25,7 @@ class AuthController extends Controller
 
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
-    protected $redirectTo = '/articles';
+    protected $redirectTo = '';
     protected $loginPath = '/login';
 
     /**
@@ -38,12 +40,26 @@ class AuthController extends Controller
 
     public function getLogin()
     {
+        if (Auth::viaRemember()) {
+            return redirect()->intended('');
+        }
+        
         return view('auth.login');
     }
 
-    public function postLogin()
+    public function postLogin(Request $request)
     {
-        return 'postLogin';
+        $account = $request->request->get('account');
+        $password = $request->request->get('password');
+        $remember = $request->request->get('remember');
+
+        if (Auth::attempt(['account' => $account, 'password' => $password], $remember)) {
+            return redirect()->intended('');
+        } else {
+            \Session::flash('warning', '帳號或密碼有錯誤喔');
+
+            return redirect('auth/login');
+        }
     }
 
     /**
@@ -57,7 +73,7 @@ class AuthController extends Controller
         return Validator::make($data, [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
+            'password' => 'required|confirmed|min:4',
         ]);
     }
 

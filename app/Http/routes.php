@@ -15,29 +15,43 @@ Route::get('/', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);
 
+Route::get('/home', ['as' => 'index', function () {
+    return view('base', ['title' => 'LubriNutrimate']);
+}]);
+
 // 使用者
 Route::resource('user', 'User\UserController');
 
-Route::get('/user/feature/import', ['uses' => 'User\FeatureController@import']);
+Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
+	Route::get('members', 'MemberController@index');
+	Route::get('members/show', 'MemberController@show');
+	Route::get('members/show/detail', 'MemberController@detail');
+});
+
+// 使用者資料匯入更新
+Route::get('/user/feature/import', ['uses' => 'User\FeatureController@import', 'middleware' => 'report']);
 Route::get('/user/feature/update', ['uses' => 'User\FeatureController@updateIpExt']);
 
 // 文章發布
 Route::resource('articles', 'ArticlesController');
 
-// Route::controllers([
-// 	'auth' => 'Auth\AuthController',
-// 	'password' => 'Auth\PasswordController'
-// ]);
-
-// Authentication routes...
+// 權限相關路徑
 Route::group(['namespace' => 'Auth', 'prefix' => 'auth'], function () {
 	Route::get('login', 'AuthController@getLogin');
 	Route::post('login', 'AuthController@postLogin');
 	Route::get('logout', 'AuthController@getLogout');
 
-	// Registration routes...
-	Route::get('register', 'AuthController@getRegister');
-	Route::post('register', 'AuthController@postRegister');
+	// // Registration routes...
+	// Route::get('register', 'AuthController@getRegister');
+	// Route::post('register', 'AuthController@postRegister');
+	 
+	// Password reset link request routes...
+	Route::get('password/email', 'PasswordController@getEmail');
+	Route::post('password/email', 'PasswordController@postEmail');
+
+	// Password reset routes...
+	Route::get('password/reset/{token}', 'PasswordController@getReset');
+	Route::post('password/reset', 'PasswordController@postReset');
 });
 
 // 介紹
@@ -60,32 +74,32 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 	// 門市營業額分析日報表
 	Route::group(['prefix' => 'retail_sales'], function () {
 		Route::get('/', ['uses' => 'RetailSalesController@index', 'as' => 'retail_sales_index']);
-		Route::get('/process', ['uses' => 'RetailSalesController@process', 'as' => 'retail_sales_process']);
+		Route::get('/process', ['uses' => 'RetailSalesController@process', 'as' => 'retail_sales_process', 'middleware' => 'report']);
 	});
 
 	// 每周發送的員購銷貨單
 	Route::group(['prefix' => 'emppurchase'], function () {
 		Route::get('/', ['uses' => 'EmpPurchaseController@index', 'as' => 'emppurchase_index']);
-		Route::get('/process', ['uses' => 'EmpPurchaseController@process', 'as' => 'emppurchase_process']);
+		Route::get('/process', ['uses' => 'EmpPurchaseController@process', 'as' => 'emppurchase_process', 'middleware' => 'report']);
 	});
 
 	// 每月初發送的康思特報表
 	Route::group(['prefix' => 'conce'], function () {
 		Route::get('/', ['uses' => 'ConceController@index', 'as' => 'conce_index']);
-		Route::get('/process', ['uses' => 'ConceController@process', 'as' => 'conce_process']);
+		Route::get('/process', ['uses' => 'ConceController@process', 'as' => 'conce_process', 'middleware' => 'report']);
 	});
 
 	// 每月初發送的進銷貨報表
 	Route::group(['prefix' => 'spb'], function () {
 		Route::get('/', ['uses' => 'SellAndPurchaseAndBackController@index', 'as' => 'spb_index']);
-		Route::get('/process', ['uses' => 'SellAndPurchaseAndBackController@process', 'as' => 'spb_process']);
+		Route::get('/process', ['uses' => 'SellAndPurchaseAndBackController@process', 'as' => 'spb_process', 'middleware' => 'report']);
 	});
 
 	// 每月初發送的促銷模組成效
 	// PromoGradeController
 	Route::group(['prefix' => 'promograde'], function () {
 		Route::get('/', ['uses' => 'PromoGradeController@index', 'as' => 'promograde_index']);
-		Route::get('/process', ['uses' => 'PromoGradeController@process', 'as' => 'promograde_process']);
+		Route::get('/process', ['uses' => 'PromoGradeController@process', 'as' => 'promograde_process', 'middleware' => 'report']);
 	});
 
 	// 偉特 CTI Import Layout
@@ -120,15 +134,13 @@ Route::group(['namespace' => 'Compare', 'prefix' => 'compare'], function() {
 
 	Route::get('/honeybaby/download/insert', ['uses' => 'HoneyBabyController@downloadInsert', 'as' => 'compare_honeybaby_download_insert']);
 	Route::get('/honeybaby/download/update', ['uses' => 'HoneyBabyController@downloadUpdate', 'as' => 'compare_honeybaby_download_update']);
+	Route::get('/honeybaby/download/insert_example', ['uses' => 'HoneyBabyController@downloadInsertExample', 'as' => 'compare_honeybaby_download_insert_example']);
+	Route::get('/honeybaby/download/update_example', ['uses' => 'HoneyBabyController@downloadUpdateExample', 'as' => 'compare_honeybaby_download_update_example']);
 
 	Route::group(['prefix' => 'financial_strike_balance'], function () {
 		Route::get('/', ['uses' => 'FinancialStrikeBalanceController@index', 'as' => 'compare_financial_strike_balance_index']);
 		Route::any('/donsun', ['uses' => 'FinancialStrikeBalanceController@donsun', 'as' => 'compare_financial_strike_balance_donsun']);
 	});
-});
-
-Route::group(['namespace' => 'Broad', 'prefix' => 'broad'], function() {
-	Route::get('/todo', ['uses' => 'TodoController@index', 'as' => 'broad_todo']);
 });
 
 // 會員地址修正

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use Mail;
 use Input;
 
@@ -29,13 +30,7 @@ class SellAndPurchaseAndBackController extends Controller
 
     public function process()
     {
-        if (ExportExcel::TOKEN !== Input::get('token')) {
-            return 'Unvalid token!';
-        }
-
-        $self = $this;
-
-        Excel::create($this->getFileName(), function ($excel) use ($self) {
+        Excel::create($this->getFileName(), function ($excel) {
             // Set the title
             $excel->setTitle('進銷退明細');
 
@@ -46,15 +41,13 @@ class SellAndPurchaseAndBackController extends Controller
             // Call them separately
             $excel->setDescription(ExportExcel::SPB_FILENAME);
 
-            $self
-                ->genBasicSheet($excel, '退貨原因', array('G' => '@'), 'K', $self->getBackReasonQuery(), $self->getExportHead()['backReason'])
-                ->genBasicSheet($excel, '進貨單', array('G' => '@'), 'N', $self->getPurchaseQuery(), $self->getExportHead()['purchase'])
-                ->genBasicSheet($excel, '樣品出貨單', array('G' => '@'), 'N', $self->getSampleDispatchQuery(), $self->getExportHead()['sampleDispatch'])
-                ->genBasicSheet($excel, '樣品退回單', array('G' => '@'), 'N', $self->getSampleBackQuery(), $self->getExportHead()['sampleBack'])
-                ->genBasicSheet($excel, '調撥單據', array('G' => '@'), 'N', $self->getAllocateQuery(), $self->getExportHead()['allocate'])
-                ->genBasicSheet($excel, '銷貨退回', array('G' => '@'), 'N', $self->getSoldBackQuery(), $self->getExportHead()['soldBack'])
-                ->genBasicSheet($excel, '銷貨單', array('G' => '@'), 'N', $self->getSellQuery(), $self->getExportHead()['sell'])
-            ;
+            ExcelHelper::genBasicSheet($excel, '退貨原因', array('G' => '@'), 'K', $this->getBackReasonQuery(), $this->getExportHead()['backReason']);
+            ExcelHelper::genBasicSheet($excel, '進貨單', array('G' => '@'), 'N', $this->getPurchaseQuery(), $this->getExportHead()['purchase']);
+            ExcelHelper::genBasicSheet($excel, '樣品出貨單', array('G' => '@'), 'N', $this->getSampleDispatchQuery(), $this->getExportHead()['sampleDispatch']);
+            ExcelHelper::genBasicSheet($excel, '樣品退回單', array('G' => '@'), 'N', $this->getSampleBackQuery(), $this->getExportHead()['sampleBack']);
+            ExcelHelper::genBasicSheet($excel, '調撥單據', array('G' => '@'), 'N', $this->getAllocateQuery(), $this->getExportHead()['allocate']);
+            ExcelHelper::genBasicSheet($excel, '銷貨退回', array('G' => '@'), 'N', $this->getSoldBackQuery(), $this->getExportHead()['soldBack']);
+            ExcelHelper::genBasicSheet($excel, '銷貨單', array('G' => '@'), 'N', $this->getSellQuery(), $this->getExportHead()['sell']);
         })->store('xls', storage_path('excel/exports'));
 
         $msg = $this->send();

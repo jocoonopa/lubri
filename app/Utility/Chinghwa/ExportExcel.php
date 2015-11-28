@@ -87,4 +87,7 @@ abstract class ExportExcel
 	 * 偉特CTI Import Layout
 	 */
 	const WAYTER_IMPORTLAYOUT_FILENAME = 'CTI_Import_Layout';
+
+	const ASCII_NUMBER_A = 64;
+    const ALPHABET_NUMBERS = 26;
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Utility\Chinghwa\ExportExcel;
 
 class ReportMiddleware
 {
@@ -16,7 +17,7 @@ class ReportMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (self::TOKEN !== $request->get('token')) {
+        if (self::TOKEN !== $request->get('token') && ExportExcel::TOKEN !== $request->get('token')) {
             throw new \Exception('Token unvalid!');
         }
 

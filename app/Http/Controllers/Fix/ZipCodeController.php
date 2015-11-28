@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Fix;
 
 use App\Http\Controllers\Controller;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class ZipCodeController extends Controller
 {
@@ -14,9 +15,9 @@ class ZipCodeController extends Controller
         $sqlbase = 'UPDATE POS_Member SET ';
 
         foreach ($codes as $key => $code) {
-            $execSql = $sqlbase . 'Birthday=\'' . $births[$key] . '\' WHERE Code=\''. $code .'\'';
+            $execSql = "{$sqlbase}Birthday='{$births[$key]}'WHERE Code='{$code}'";
 
-            echo $execSql . "<br/>";
+            echo "{$execSql}<br/>";
         }
 
         return NULL;
@@ -28,9 +29,7 @@ class ZipCodeController extends Controller
 
 		$i = 0;
 	    $codeIndexArray = $this->convertToCodeIndexArray();
-
-	    $queryBIG5 = $this->cb5($this->genFetchQuery());
-	    $res = odbc_exec($this->connectToErp(), $queryBIG5);
+	    $res = Processor::execErp($this->genFetchQuery());
 	    
 	    while ($member = odbc_fetch_array($res)) {
 	    	$cityAndStateArr = $this->getArrayVal($codeIndexArray, $member['HomeAddress_ZipCode'], ['city' => '', 'state' => '']);
@@ -39,9 +38,6 @@ class ZipCodeController extends Controller
 		    $member['HomeAddress_Address'] = $this->c8($member['HomeAddress_Address']);
 		    $member['HomeAddress_City'] = $cityAndStateArr['city'];
 		    $member['HomeAddress_State'] = $cityAndStateArr['state'];
-
-		    echo "<pre>"; echo $this->genUpdateQuery($member); echo "</pre>";
-		    //odbc_exec($this->connectToErp(), $this->cb5($this->genUpdateQuery($member)));
 
 		    $i ++;
 	    }
@@ -96,4 +92,9 @@ class ZipCodeController extends Controller
 
 		return $codeIndexArray;
 	}
+
+	protected function getThreeCodeJSON()
+    {
+        return file_get_contents(__DIR__ . '/../../../storage/json/zipcode.json');
+    }
 }
