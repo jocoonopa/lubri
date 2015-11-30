@@ -10,3 +10,8 @@
   </div>
 
 </footer>
+<div style="position: fixed; bottom: 1%; right: 2%;">
+	<button class="btn btn-primary btn-xs" onclick="javascript: window.location.href='#'">
+		<i class="glyphicon glyphicon-triangle-top"></i>
+	</button>
+</div>

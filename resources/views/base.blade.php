@@ -10,11 +10,12 @@
 	<meta name="keywords" content="nutrimate, chinghwa, IT, lubri, flap">
 	<link rel="stylesheet" href="https://bootswatch.com/united/bootstrap.min.css">
 	<link rel="stylesheet" href="{!! URL::asset('/assets/css/timeline.css') !!}">
+	<link rel="shortcut icon" type="image/png" href="{!! URL::asset('/assets/image/favicon.png') !!}"/>
 	<link rel="apple-touch-icon" href="{!! URL::asset('/assets/image/favicon.png') !!}">
   @yield('css')
 </head>
 
-<body>
+<body id="body">
 	@include('common/header')
 	
 	<div class="container">

@@ -1,0 +1,23 @@
+SELECT 
+	POS_Member.Code,
+	POS_Member.Name,
+	POS_Member.SerNo,
+	POS_Member.Sex,
+	POS_Member.Birthday,
+	POS_Member.CellPhone,
+	POS_Member.HomeTel,
+	POS_Member.OfficeTel,
+	CCS_CRMFields.CRMNote1,
+	CCS_ShoppingBehaviorBrief.LastConsumeDate,
+	CCS_ShoppingBehaviorBrief.BusinessDate,
+	CCS_ShoppingBehaviorBrief.TotalConsume,
+	(SELECT TOP 1 DCS_BonusLog.BonusAfter
+		FROM DCS_BonusLog 
+		WHERE DCS_BonusLog.MemberSerNoStr = POS_Member.SerNo 
+		ORDER BY BonusLogSerNo DESC) AS TotalBonus
+FROM POS_Member 
+	LEFT JOIN CCS_MemberFlags ON POS_Member.SerNo = CCS_MemberFlags.MemberSerNoStr 
+	LEFT JOIN CCS_ShoppingBehaviorBrief ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr 
+	LEFT JOIN CCS_CRMFields ON POS_Member.SerNo = CCS_CRMFields.MemberSerNoStr 
+	LEFT JOIN POS_MemberCategory ON POS_MemberCategory.SerNo = POS_Member.MemberClassSerNo 
+WHERE POS_Member.EmployeeSerNo = '$empserno' 

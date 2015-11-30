@@ -69,3 +69,57 @@ function arraySelect(array $arr, array $targets, $column)
 
     return $indexList;
 }
+
+function str_replace_first($search, $replace, $subject) {
+    $pos = strpos($subject, $search);
+    if ($pos !== false) {
+        $subject = substr_replace($subject, $replace, $pos, strlen($search));
+    }
+    return $subject;
+}
+
+function tranSex($num)
+{
+    switch ($num) {
+        case 0:
+        case 2:
+            return '小姐';
+            break;
+        case 1:
+            return '先生';
+            break;
+        default:
+            return '';
+            break;
+    }
+}
+
+function tranAge($dateString)
+{
+    if ('' === $dateString) {
+        return 0;
+    }
+
+    $shift = substr($dateString, 4, 4) > date('md') ? 1 : 0;
+
+    return date('Y') - substr($dateString, 0, 4) + $shift;
+}
+
+function assignAgeGroup($dateString)
+{
+    $age = tranAge($dateString);
+
+    if ($age < 20) {
+        return 'YG-1';
+    } elseif ($age < 35) {
+        return 'YG-2';
+    } elseif ($age < 50) {
+        return 'YG-3';
+    } elseif ($age < 65) {
+        return 'YG-4';
+    } elseif ($age < 80) {
+        return 'YG-5';
+    } else {
+        return 'YG-6';
+    }
+}

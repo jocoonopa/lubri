@@ -5,29 +5,33 @@ namespace App\Http\Controllers\Flap;
 use Auth;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Utility\Chinghwa\Helper\PosMemberListHelper;
+use App\Utility\Chinghwa\Helper\Flap\PosMemberProfileHelper;
+use App\Utility\Chinghwa\Helper\Flap\PosMemberListHelper;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $listHelper = new PosMemberListHelper;
+        $members = [];
 
-        $user = Auth::user();
+        if ($user = Auth::user()) {
+            $members = $listHelper->get($user);
+        } else {
+            \Session::flash('warning', '檢視口袋名單請先登入系統喔 ♥');
 
-        $members = $listHelper->get($user);
+            return redirect('auth/login');
+        }
 
-        return view('flap.members.index', compact('members'));
+        return ('mix' === $request->query->get('type')) 
+            ? view('flap.members.indexMix', compact('members'))
+            : view('flap.members.indexTable', compact('members'))
+        ;
     }
 
-    public function show()
+    public function show($code)
     {
-        return 'show';
-    }
-
-    public function detail()
-    {
-        return 'detail';
+        return view('flap.members.show', compact('code'));
     }
 }

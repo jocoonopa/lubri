@@ -196,13 +196,13 @@ class DailySaleRecordController extends Controller
         $allGroup['工作日'] = 0; 
 
         foreach ($totalGroup as $groupCode => $group) {
-            $allGroup['會員數'] += (int) $this->getArrayVal($group, '會員數', 0);
-            $allGroup['訂單數'] += (int) $this->getArrayVal($group, '訂單數', 0);
-            $allGroup['淨額'] += (int) $this->getArrayVal($group, '淨額', 0);
-            $allGroup['撥打會員數'] += (int) $this->getArrayVal($group, '撥打會員數', 0);
-            $allGroup['撥打通數'] += (int) $this->getArrayVal($group, '撥打通數', 0);
-            $allGroup['撥打秒數'] += (int) $this->getArrayVal($group, '撥打秒數', 0);
-            $allGroup['工作日'] += (int) $this->getArrayVal($group, '工作日', 0);
+            $allGroup['會員數'] += (int) getArrayVal($group, '會員數', 0);
+            $allGroup['訂單數'] += (int) getArrayVal($group, '訂單數', 0);
+            $allGroup['淨額'] += (int) getArrayVal($group, '淨額', 0);
+            $allGroup['撥打會員數'] += (int) getArrayVal($group, '撥打會員數', 0);
+            $allGroup['撥打通數'] += (int) getArrayVal($group, '撥打通數', 0);
+            $allGroup['撥打秒數'] += (int) getArrayVal($group, '撥打秒數', 0);
+            $allGroup['工作日'] += (int) getArrayVal($group, '工作日', 0);
         }
 
         $allGroup['會員均單'] = (int) ($allGroup['淨額']/$allGroup['會員數']);
@@ -218,15 +218,15 @@ class DailySaleRecordController extends Controller
             $totalGroup[$groupCode] = array_merge($totalGroup[$groupCode], $this->initTotalGroup());
         }
 
-        $totalGroup[$groupCode]['會員數'] += (int) $this->getArrayVal($display, '會員數', 0);
-        $totalGroup[$groupCode]['訂單數'] += (int) $this->getArrayVal($display, '訂單數', 0);
-        $totalGroup[$groupCode]['淨額'] += (int) $this->getArrayVal($display, '淨額', 0);
+        $totalGroup[$groupCode]['會員數'] += (int) getArrayVal($display, '會員數', 0);
+        $totalGroup[$groupCode]['訂單數'] += (int) getArrayVal($display, '訂單數', 0);
+        $totalGroup[$groupCode]['淨額'] += (int) getArrayVal($display, '淨額', 0);
         $totalGroup[$groupCode]['會員均單'] = (int) $totalGroup[$groupCode]['淨額']/$totalGroup[$groupCode]['會員數'];
         $totalGroup[$groupCode]['訂單均價'] = (int) $totalGroup[$groupCode]['淨額']/$totalGroup[$groupCode]['訂單數'];
-        $totalGroup[$groupCode]['撥打會員數'] += (int) $this->getArrayVal($display, '撥打會員數', 0);
-        $totalGroup[$groupCode]['撥打通數'] += (int) $this->getArrayVal($display, '撥打通數', 0);
-        $totalGroup[$groupCode]['撥打秒數'] += (int) $this->getArrayVal($display, '撥打秒數', 0);
-        $totalGroup[$groupCode]['工作日'] += (int) $this->getArrayVal($display, '工作日', 0);
+        $totalGroup[$groupCode]['撥打會員數'] += (int) getArrayVal($display, '撥打會員數', 0);
+        $totalGroup[$groupCode]['撥打通數'] += (int) getArrayVal($display, '撥打通數', 0);
+        $totalGroup[$groupCode]['撥打秒數'] += (int) getArrayVal($display, '撥打秒數', 0);
+        $totalGroup[$groupCode]['工作日'] += (int) getArrayVal($display, '工作日', 0);
 
         return $totalGroup;
     }
@@ -238,15 +238,15 @@ class DailySaleRecordController extends Controller
             $totalGroup[$groupCode] = array_merge($totalGroup[$groupCode], $this->initTotalGroup());
         }
 
-        $totalGroup[$groupCode]['會員數'] += (int) $this->getArrayVal($display, '會員數', 0);
-        $totalGroup[$groupCode]['訂單數'] += (int) $this->getArrayVal($display, '訂單數', 0);
-        $totalGroup[$groupCode]['淨額'] += (int) $this->getArrayVal($display, '淨額', 0);
+        $totalGroup[$groupCode]['會員數'] += (int) getArrayVal($display, '會員數', 0);
+        $totalGroup[$groupCode]['訂單數'] += (int) getArrayVal($display, '訂單數', 0);
+        $totalGroup[$groupCode]['淨額'] += (int) getArrayVal($display, '淨額', 0);
         $totalGroup[$groupCode]['會員均單'] = (int) $totalGroup[$groupCode]['淨額']/$totalGroup[$groupCode]['會員數'];
         $totalGroup[$groupCode]['訂單均價'] = (int) $totalGroup[$groupCode]['淨額']/$totalGroup[$groupCode]['訂單數'];
-        $totalGroup[$groupCode]['撥打會員數'] += (int) $this->getArrayVal($display, '撥打會員數', 0);
-        $totalGroup[$groupCode]['撥打通數'] += (int) $this->getArrayVal($display, '撥打通數', 0);
-        $totalGroup[$groupCode]['撥打秒數'] += (int) $this->getArrayVal($display, '撥打秒數', 0);
-        $totalGroup[$groupCode]['工作日'] += (int) $this->getArrayVal($display, '工作日', 0);
+        $totalGroup[$groupCode]['撥打會員數'] += (int) getArrayVal($display, '撥打會員數', 0);
+        $totalGroup[$groupCode]['撥打通數'] += (int) getArrayVal($display, '撥打通數', 0);
+        $totalGroup[$groupCode]['撥打秒數'] += (int) getArrayVal($display, '撥打秒數', 0);
+        $totalGroup[$groupCode]['工作日'] += (int) getArrayVal($display, '工作日', 0);
 
         return $totalGroup;
     }
@@ -405,7 +405,7 @@ class DailySaleRecordController extends Controller
         $data = [];
         
         while ($row = odbc_fetch_array($res)) {
-            $this->c8res($row);
+            c8res($row);
 
             $data[] = $row;
         }

@@ -24,8 +24,7 @@ Route::resource('user', 'User\UserController');
 
 Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 	Route::get('members', 'MemberController@index');
-	Route::get('members/show', 'MemberController@show');
-	Route::get('members/show/detail', 'MemberController@detail');
+	Route::get('members/{code}', 'MemberController@show');
 });
 
 // 使用者資料匯入更新
