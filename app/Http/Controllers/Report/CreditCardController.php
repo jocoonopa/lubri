@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
@@ -92,7 +93,7 @@ class CreditCardController extends Controller
                 'G' => '0'
             ];
 
-            $self->genBasicSheet(
+            ExcelHelper::genBasicSheet(
                 $excel, 
                 '表格', 
                 $formatArr, 
