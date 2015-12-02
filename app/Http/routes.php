@@ -82,6 +82,12 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 		Route::get('/process', ['uses' => 'EmpPurchaseController@process', 'as' => 'emppurchase_process', 'middleware' => 'report']);
 	});
 
+	// 每月初發送門市營業額分析-人報表
+	Route::group(['prefix' => 'retail_sales_persontype'], function () {
+		//Route::get('/', ['uses' => 'RetailSalesController@index', 'as' => 'retail_sales_persontype_index']);
+		Route::get('/process', ['uses' => 'RetailSaleByPersonTypeController@process', 'as' => 'retail_sales_persontype_process', 'middleware' => 'report']);
+	});
+
 	// 每月初發送的康思特報表
 	Route::group(['prefix' => 'conce'], function () {
 		Route::get('/', ['uses' => 'ConceController@index', 'as' => 'conce_index']);

@@ -105,4 +105,9 @@ class Processor
     {
         return self::execErp(self::toSql($queryBuilder));
     }
+
+    public static function getPos(Builder $queryBuilder)
+    {
+        return self::execPos(self::toSql($queryBuilder));
+    }
 }
