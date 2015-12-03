@@ -2,20 +2,45 @@
 
 namespace App\Utility\Chinghwa\Helper\Flap;
 
+use App\Utility\Chinghwa\ExportExcel;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
+
 class RetailSaleByPersonTypeHelper 
 {
-	const STORE = '門市';
-	const AREA = '分區';
+	const STORE        = '門市';
+	const AREA         = '分區';
+	const FILENAME     = 'Retail_Sale_PersonType_';
+	const TITLE        = '門市營業額分析月報表-人';
+	const COMPLETE_MSG = self::TITLE . 'Send Complete';
 
 	protected $stores;
 	protected $areas;
 	protected $tree;
 	protected $rows;
 	protected $areaRows;
+	protected $startDate;
 
-	public function __construct(array $emps)
+	public function __construct(array $emps, Carbon $startDate)
 	{
-		$this->setAreas($emps)->setTree($emps)->setRows($emps);
+		$this
+			->setStartDate($startDate)
+			->setAreas($emps)
+			->setTree($emps)
+			->setRowsByIterateTree($emps)
+		;
+	}
+
+	protected function setStartDate(Carbon $startDate)
+	{
+		$this->startDate = $startDate;
+
+		return $this;
+	}
+
+	protected function getStartDate()
+	{
+		return $this->startDate;
 	}
 
 	public function getRows()
@@ -25,11 +50,7 @@ class RetailSaleByPersonTypeHelper
 
 	public function setTree(array $emps)
 	{
-		$tmp = [];
-
-		foreach ($this->getAreas() as $area) {
-			$tmp[$area] = [];
-		}
+		$tmp = array_declare($this->getAreas(), []);
 
 		foreach ($emps as $emp) {
 			if (!isset($tmp[$emp[self::AREA]][$emp[self::STORE]])) {
@@ -59,38 +80,166 @@ class RetailSaleByPersonTypeHelper
 		return $this->tree;
 	}
 
-	public function setRows(array $emps)
+	public static function getFileRealPathWithDate($dateString)
 	{
-		$rows = [];
-		$areaRows = [];
+		return __DIR__ . '/../../../../../storage/excel/exports/' . self::FILENAME . "{$dateString}.xls";
+	}
 
-		$rows[] = $this->genHeadRow();
+	public function setRowsByIterateTree(array $emps)
+	{
+		$this->rows = [$this->genHeadRow()];
 
 		foreach ($this->getTree() as $areaName => $areaPak) {
-			$row = $this->genRowByArea($emps, $areaName);
-			$this->setRowCssStyle($row, ['backgroundColor' => '#000000', 'color' => '#ffffff', 'fontWeight' => 'bold']);
-			$rows[] = $row;
-			$areaRows[] = $row;
+			$this->handleAreaRow($emps, $areaName);
 
 			foreach ($areaPak as $storeName => $storePak) {
-				$row = $this->genRowByStore($emps, $storeName);				
-				$this->setRowCssStyle($row, ['backgroundColor' => '#C19B69', 'color' => '#ffffff', 'fontWeight' => 'bold']);
-				$rows[] = $row;
+				$this->handleStoreRow($emps, $storeName);
 
 				foreach ($storePak as $emp) {
-					$this->cal($emp);
-					$rows[] = $emp;
+					$this->handleEmpRow($emp);
 				}
 			}
 		}
 
-		$row = $this->combineRows($areaRows);
+		$this->handleTotalRow();
+		
+		return $this;
+	}
+
+	protected function handleAreaRow(array $emps, $areaName)
+	{
+		$row = $this->genRowByArea($emps, $areaName);
+		$row['isArea'] = true;
+		
+		$this->setRowCssStyle($row, ['backgroundColor' => '#000000', 'color' => '#ffffff', 'fontWeight' => 'bold']);
+		$this->rows[] = $row;
+
+		return $this;
+	}
+
+	protected function handleStoreRow(array $emps, $storeName)
+	{
+		$row = $this->genRowByStore($emps, $storeName);				
+		$this->setRowCssStyle($row, ['backgroundColor' => '#C19B69', 'color' => '#ffffff', 'fontWeight' => 'bold']);
+		$this->rows[] = $row;
+
+		return $this;
+	}
+
+	protected function handleEmpRow(array $emp)
+	{
+		$this->cal($emp);
+		$this->rows[] = $emp;
+
+		return $this;
+	}
+
+	protected function handleTotalRow()
+	{
+		$row = $this->combineRows($this->getAreaRows());
 		$this->setRowCssStyle($row, ['backgroundColor' => '#000000', 'color' => '#ffffff', 'fontWeight' => 'bold']);
 
-		$rows[] = $row;
-		$this->rows = $rows;
-		//dd($this->rows);
 		return $this;
+	}
+
+	protected function getAreaRows()
+	{
+		return array_filter($this->getRows(), function($row) {
+		    return isset($row['isArea']);
+		}, ARRAY_FILTER_USE_BOTH);
+	}
+
+	public function createAndStore()
+	{
+		return Excel::create(
+			self::FILENAME . $this->startDate->format('Ym'), 
+			$this->getExcelCallBackFun($this->getRows())
+		)->store('xls', storage_path('excel/exports'));
+	}
+
+	protected function getExcelCallBackFun($rows)
+	{
+		return function($excel) use ($rows) {
+		    $excel->sheet('報表', function($sheet) use ($rows) {
+		    	$this->setBasicSheetProperty($sheet);
+
+		    	foreach ($rows as $index => $row) {
+		    		$sheet->cells("A{$index}:G{$index}", $this->getSetCssStyleCallback($row, ++ $index));
+		    		
+		    		$sheet->appendRow($index, $this->getRowAppendData($row, $index));		    			
+		    	}
+		    });
+		};
+	}
+
+	protected function setBasicSheetProperty(&$sheet)
+	{
+		$sheet
+            ->setAutoSize(true)
+            ->setFontFamily(ExportExcel::FONT_DEFAULT)
+            ->setFontSize(12)
+            ->setColumnFormat([
+            	'A' => '@',
+            	'B' => '@',	          
+            	'C' => '0%', 
+            	'D' => '@',
+            	'E' => '0%',
+            	'F' => '@',
+            	'G' => '0%',
+            ])
+            ->freezeFirstRow()
+        ; 
+
+        return $this;
+	}
+
+	protected function setCellsCss(&$cells, array $row)
+	{
+		if (array_key_exists('backgroundColor', $row)) {
+			$cells->setBackground($row['backgroundColor']);
+		}
+
+		if (array_key_exists('color', $row)) {
+			$cells->setFontColor($row['color']);
+		}
+
+		if (array_key_exists('fontWeight', $row)) {
+			$cells->setFontWeight($row['fontWeight']);
+		}
+
+		return $this;
+	}
+
+	protected function setHeaderCellsFontStyle(&$cells)
+	{
+		$cells->setFontWeight('bold');
+		$cells->setFontSize(14);
+
+		return $this;
+	}
+
+	protected function isHead($index)
+	{
+		return (1 === $index);
+	}
+
+	protected function getSetCssStyleCallback($row, $index)
+	{
+		return function($cells) use ($row, $index) {
+			if ($this->isHead($index)) {
+				$this->setHeaderCellsFontStyle($cells);
+			}
+
+			$this->setCellsCss($cells, $row);
+		};
+	}
+
+	protected function getRowAppendData(array $row, $index)
+	{
+		return ($this->isHead($index)) 
+			? [$row['PC_NAME'], $row['PL業績'], $row['PL業績佔比'], $row['nonPL業績'], $row['nonPL業績佔比'], $row['業績'], $row['佔比']]
+			: [$row['PC_NAME'],number_format((int) $row['PL業績']), $row['PL業績佔比'], number_format((int) $row['nonPL業績']), $row['nonPL業績佔比'], number_format((int) $row['業績']), $row['佔比']]
+		;
 	}
 
 	protected function setRowCssStyle(array &$row, array $cssArr)
@@ -128,7 +277,6 @@ class RetailSaleByPersonTypeHelper
 		return $a;
 	}
 
-	// PL業績, PL業績佔比, nonPL業績, NonPL業績佔比, 業績, 佔比
 	public function genRowByArea(array $emps, $areaName)
 	{
 		$row = $this->genRowProcess($emps, $areaName, self::AREA);

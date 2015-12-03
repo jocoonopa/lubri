@@ -3,107 +3,69 @@
 namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
-use App\Utility\Chinghwa\ExportExcel;
-use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use App\Utility\Chinghwa\Helper\Flap\RetailSaleByPersonTypeHelper;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
-use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use Mail;
-use Input;
+use App\Utility\Chinghwa\Helper\MailHelper;
 use Carbon\Carbon;
 
 class RetailSaleByPersonTypeController extends Controller
 {
+	protected $startDate;
+	protected $endDate;
+
 	public function process()
 	{
-		$self = $this;
-		$startDate = new Carbon('first day of last month');
-		$emps = Processor::getArrayResult($this->getQb($startDate, new Carbon('last day of last month')), 'Pos');
-		$helper = new RetailSaleByPersonTypeHelper($emps);
-		$rows = $helper->getRows();
-		$subject = '門市營業額分析月報表-人' . $startDate->format('Ym');
+		$emps = Processor::getArrayResult($this->getQb($this->setStartDate()->getStartDate(), $this->setEndDate()->getEndDate()), 'Pos');
+		
+		with(new RetailSaleByPersonTypeHelper($emps, $this->getStartDate()))->createAndStore();
+		
+		return with(new MailHelper($this->getMailConfig()))->mail(RetailSaleByPersonTypeHelper::COMPLETE_MSG);
+	}
 
-		Excel::create('Retail_Sale_PersonType_' . $startDate->format('Ym'), function($excel) use ($rows) {
-		    $excel->sheet('報表', function($sheet) use ($rows) {
-		    	$sheet
-	                ->setAutoSize(true)
-	                ->setFontFamily(ExportExcel::FONT_DEFAULT)
-	                ->setFontSize(12)
-	                ->setColumnFormat([
-	                	'A' => '@',
-	                	'B' => '@',	          
-	                	'C' => '0%', 
-	                	'D' => '@',
-	                	'E' => '0%',
-	                	'F' => '@',
-	                	'G' => '0%',
-	                ])
-	                ->freezeFirstRow()
-	            ; 
+	protected function setStartDate()
+	{
+		$this->startDate = new Carbon('first day of last month');
 
-		    	foreach ($rows as $index => $row) {
-		    		$_index = $index + 1;
-		    		$sheet->cells("A{$_index}:G{$_index}", function($cells) use ($row, $_index) {
-		    			if (array_key_exists('backgroundColor', $row)) {
-		    				$cells->setBackground($row['backgroundColor']);
-		    			}
+		return $this;
+	}
 
-		    			if (array_key_exists('color', $row)) {
-		    				$cells->setFontColor($row['color']);
-		    			}
+	protected function getStartDate()
+	{
+		return $this->startDate;
+	}
 
-		    			if (array_key_exists('fontWeight', $row)) {
-		    				$cells->setFontWeight($row['fontWeight']);
-		    			}
+	protected function setEndDate()
+	{
+		$this->endDate = new Carbon('last day of last month');
 
-		    			if (1 === $_index) {
-		    				$cells->setFontWeight('bold');
-		    				$cells->setFontSize(14);
-		    			}
-					});
+		return $this;
+	}
 
-		    		if (1 === $_index) {
-		    			$sheet->appendRow($_index, [$row['PC_NAME'], $row['PL業績'], $row['PL業績佔比'], $row['nonPL業績'], $row['nonPL業績佔比'], $row['業績'], $row['佔比']]);		    			
-		    		}  else {
-		    			$sheet->appendRow(
-		    				$_index, 
-		    				[
-		    					$row['PC_NAME'], 
-		    					number_format((int) $row['PL業績']), 
-		    					$row['PL業績佔比'], 
-		    					number_format((int) $row['nonPL業績']), 
-		    					$row['nonPL業績佔比'], 
-		    					number_format((int) $row['業績']), 
-		    					$row['佔比']
-		    				]
-		    			);
-		    		}
-		    	}
-		    });
+	protected function getEndDate()
+	{
+		return $this->endDate;
+	}
 
-		})->store('xls', storage_path('excel/exports'));
+	protected function getMailConfig()
+	{
+		$subject = RetailSaleByPersonTypeHelper::TITLE . $this->getStartDate()->format('Ym');
 
- 		Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $startDate, $self) {
-            $m->subject($subject)->attach(__DIR__ . '/../../../../storage/excel/exports/Retail_Sale_PersonType_' . $startDate->format('Ym') . '.xls');
-
-            foreach ($self->getToList() as $email => $name) {
-                $m->to($email, $name);
-            }
-
-            foreach ($self->getCCList() as $email => $name) { 
-                $m->cc($email, $name);
-            }
-        });
-
-        return '門市營業額分析月報表-人 Send Complete!';
+		return [
+			'template' => 'emails.creditCard',
+			'title' => $subject,
+			'subject' => $subject,
+			'cc' => $this->getCCList(),
+			'to' => $this->getToList(),
+			'filepath' => [RetailSaleByPersonTypeHelper::getFileRealPathWithDate($this->getStartDate()->format('Ym'))]
+		];
 	}
 
 	protected function getToList()
     {
         return [
             'lingying3025@chinghwa.com.tw' => '6521吳俐穎',
-            'meganlee@chinghwa.com.tw' => '6500李惠淑'
+            'meganlee@chinghwa.com.tw' => '6500李惠淑',
+            'amy@chinghwa.com.tw' => '6221李佩蓉'
         ];
     }
 

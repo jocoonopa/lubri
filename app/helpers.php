@@ -123,3 +123,14 @@ function assignAgeGroup($dateString)
         return 'YG-6';
     }
 }
+
+function array_declare(array $a, $assign = NULL)
+{
+    $tmp = [];
+
+    foreach ($a as $v) {
+        $tmp[$v] = $assign;
+    }
+
+    return $tmp;
+}
