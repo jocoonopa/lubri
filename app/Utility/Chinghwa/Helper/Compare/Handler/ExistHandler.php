@@ -3,6 +3,7 @@
 namespace App\Utility\Chinghwa\Helper\Compare\Handler;
 
 use App\Utility\Chinghwa\Compare\HoneyBaby;
+use App\Utility\Chinghwa\Compare\Handler\ExistFlow;
 use App\Utility\Chinghwa\Database\Query\Grammers\Grammer;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
@@ -52,20 +53,30 @@ class ExistHandler
     public static function isExist($mightExistMembers, $row)
     {
         foreach ($mightExistMembers as $key => $exitstMember) {
-            if (trim(c8($exitstMember['Name'])) !== trim($row[HoneyBaby::IMPORT_NAME_INDEX])) {
-                continue;
-            }
-
-            if (self::strictCompare(c8($exitstMember['CellPhone']), $row[HoneyBaby::IMPORT_MOBILE_INDEX])) {
+            if (self::isExistProcess($exitstMember, $row)) {
                 return $exitstMember;
             }
+        }
 
-            if (self::strictCompare(c8($exitstMember['HomeAddress_Address']), $row[HoneyBaby::IMPORT_ADDRESS_INDEX])) {
-                return $exitstMember;
-            }
+        return false;
+    }
 
-            if (self::strictCompare(c8($exitstMember['HomeTel']), $row[HoneyBaby::IMPORT_HOMETEL_INDEX])) {
-                return $exitstMember;
+    protected static function isExistProcess($exitstMember, $row)
+    {
+        return trim(c8($exitstMember['Name'])) === trim($row[HoneyBaby::IMPORT_NAME_INDEX]) && true === self::checkByiterateList($exitstMember, $row);
+    }
+
+    protected static function checkByiterateList($exitstMember, $row)
+    {
+        $list = [
+            'CellPhone' => HoneyBaby::IMPORT_MOBILE_INDEX, 
+            'HomeAddress_Address' => HoneyBaby::IMPORT_ADDRESS_INDEX, 
+            'HomeTel' => HoneyBaby::IMPORT_HOMETEL_INDEX
+        ];
+
+        foreach ($list as $memberKey => $rowKey) {
+            if (self::strictCompare(c8($exitstMember[$memberKey]), $row[$rowKey])) {
+                return true;
             }
         }
 

@@ -51,7 +51,7 @@ class MixInfoHandler
 	/**
      * 產生貼上新增檔案的資料陣列
      * 
-     * @param  array/hook $row    [上傳檔案會員資料]
+     * @param  array $row    [上傳檔案會員資料]
      * @return array $mixInfo      
      */
     public function buildInsertAppendRow($row)
@@ -98,7 +98,7 @@ class MixInfoHandler
      * 產生貼上更新檔案的資料陣列
      * 
      * @param  array $member [輔翼DB會員資料]
-     * @param  array/hook $row    [上傳檔案會員資料]
+     * @param  array $row    [上傳檔案會員資料]
      * @return array $mixInfo
      */
     public function buildUpdateAppendRow($member, $row)

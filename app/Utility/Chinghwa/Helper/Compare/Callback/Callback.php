@@ -43,7 +43,6 @@ class Callback
         $this->data['iterateInsertTimes'] += count($this->data['insert']);
         $this->data['iterateUpdateTimes'] += count($this->data['update']);
 
-        // release array memory
         unset($this->data['update']);
         unset($this->data['insert']);
         
