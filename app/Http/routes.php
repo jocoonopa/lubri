@@ -142,7 +142,7 @@ Route::group(['namespace' => 'Compare', 'prefix' => 'compare'], function() {
 	Route::post('/m64', 'Magazine64Controller@process');
 
 	Route::get('/honeybaby', ['uses' => 'HoneyBabyController@index', 'as' => 'compare_honeybaby']);
-	Route::post('/honeybaby', 'HoneyBabyController@process');
+	Route::post('/honeybaby', ['uses' => 'HoneyBabyController@process', 'middleware' => 'honeybaby']);
 
 	Route::get('/honeybaby/download/insert', ['uses' => 'HoneyBabyController@downloadInsert', 'as' => 'compare_honeybaby_download_insert']);
 	Route::get('/honeybaby/download/update', ['uses' => 'HoneyBabyController@downloadUpdate', 'as' => 'compare_honeybaby_download_update']);
