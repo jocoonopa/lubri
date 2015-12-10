@@ -33,7 +33,7 @@ class PISGoodsImportQueryHelper
 
 	protected function genInPartialQuery(array $codes)
 	{
-		return Grammer::genInQuery($data);
+		return Grammer::genInQuery($codes);
 	}
 
 	public function getCodeList()
@@ -45,7 +45,7 @@ class PISGoodsImportQueryHelper
 	{
 		$insertColumnQueryString = $this->genInsertColumnString();
 
-		$sql = "INSERT INTO PIS_Goods {$insertColumnQueryString} VALUES ";
+		$sql = "INSERT INTO PIS_Goods ({$insertColumnQueryString}) VALUES ";
 
 		return $sql . $this->genInsertValuesString($row, $lastSerNo);
 	}
@@ -87,9 +87,7 @@ class PISGoodsImportQueryHelper
 
 	protected function rowPriceModify(&$row, $column)
 	{
-		if ($this->isPrice(strtoupper($column))) {
-			//$row[$column] += 100;
-		}
+		if ($this->isPrice(strtoupper($column))) {}
 
 		return $this;
 	}

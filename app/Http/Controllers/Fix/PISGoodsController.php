@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Fix;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\Helper\PISGoodsImportQueryHelper;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class PISGoodsController extends Controller
 {
@@ -57,12 +58,7 @@ class PISGoodsController extends Controller
 
     protected function odbcFetchArray($query, $callback, &$src)
     {
-        if ($res = $this->execute($query)) {
-            while ($row = odbc_fetch_array($res)) {
-                $this->c8res($row);
-                $callback($src, $row);
-            }
-        }
+        Processor::fetchArray($query, $callback, $src);
 
         return $this;
     }

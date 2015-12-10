@@ -1,6 +1,7 @@
 SELECT 
     CASE WHEN h1.STOCK_NO IN ('S009','S013','S049') THEN '北區' ELSE '南區' END AS 分區,
-    h1.STOCK_NO,h1.業績 AS 累計實績,
+    h1.STOCK_NO,
+    h1.業績 AS 累計實績,
     h2.業績 AS 去年同期, 
     h3.業績 AS 去年當月,
     h4.PL業績,

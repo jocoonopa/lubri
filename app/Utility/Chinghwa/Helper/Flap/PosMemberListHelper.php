@@ -2,7 +2,7 @@
 
 namespace App\Utility\Chinghwa\Helper\Flap;
 
-use App\User;
+use App\Model\User;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class PosMemberListHelper

@@ -22,6 +22,13 @@ Route::get('/home', ['as' => 'index', function () {
 // 使用者
 Route::resource('user', 'User\UserController');
 
+// POS 相關
+Route::group(['namespace' => 'Pos', 'prefix' => 'pos/store'], function () {
+	Route::resource('store', 'Store\StoreController');
+	Route::resource('store_goal', 'Store\StoreGoalController');
+	Route::resource('store_area', 'Store\StoreAreaController');
+});
+
 Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 	Route::get('members', 'MemberController@index');
 	Route::get('members/{code}', 'MemberController@show');

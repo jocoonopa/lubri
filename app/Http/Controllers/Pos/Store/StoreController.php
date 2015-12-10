@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Pos\Store;
 
 use Illuminate\Http\Request;
 
-use App\Model\User;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use DB;
-use Session;
+use App\Model\Pos\Store\Store;
+use App\Model\Pos\Store\StoreArea;
 
-class UserController extends Controller
+class StoreController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,9 +18,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::orderBy('corp')->get();
+        $stores = Store::all();
 
-        return view('user.index', ['users' => $users]);
+        return view('pos.store.store.index', compact('stores'));
     }
 
     /**
@@ -31,7 +30,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('user.create');
+        $areas = StoreArea::lists('name', 'id');
+ 
+        return view('pos.store.store.create', compact('areas'));
     }
 
     /**
@@ -42,11 +43,12 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        User::create($request->all());
+        $store = Store::create($request->all());
 
-        Session::flash('success', "您已經新增了使用者<b>{$user->username}</b>");
+        $store->storeArea()->associate(StoreArea::find($request->input('store_area')));
+        $store->save();
 
-        return redirect('user');
+        return redirect('pos/store/store');
     }
 
     /**
@@ -55,9 +57,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Store $store)
     {
-        //
+        $areas = StoreArea::lists('name', 'id');
+
+        return view('pos.store.store.edit', compact('store', 'areas'));
     }
 
     /**
@@ -66,11 +70,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Store $store)
     {
-        $user = User::findOrFail($id);
+        $areas = StoreArea::lists('name', 'id');
 
-        return view('user.edit', compact('user'));
+        return view('pos.store.store.edit', compact('store', 'areas'));
     }
 
     /**
@@ -80,15 +84,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Store $store)
     {
-        $user = User::findOrFail($id);
+        $store->update($request->all());
+        $store->storeArea()->associate(StoreArea::find($request->input('store_area')));
+        $store->save();
 
-        $user->update($request->all());
-
-        Session::flash('success', "您已經更新了<b>{$user->username}</b>的資料");
-
-        return redirect("user/{$id}/edit");
+        return redirect('pos/store/store');
     }
 
     /**
@@ -99,12 +101,6 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-
-        $user->delete();
-
-        Session::flash('success', "您已經移除了<b>{$user->username}</b>");
-
-        return redirect('user');
+        //
     }
 }

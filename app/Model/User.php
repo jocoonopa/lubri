@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Model;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -50,18 +50,18 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function articles()
     {
-        return $this->hasMany('App\Article');
+        return $this->hasMany('App\Model\Article');
     }
 
     public function setProfileByErpRow(array $row)
     {
         $this->username = $row['UName'];
-        $this->email = "{$row['Code']}@" . env('DOMAIN');
-        $this->account = $row['Code'];
-        $this->ip = NULL;
-        $this->corp = $row['CName'];
-        $this->code = $row['HCode'];
-        $this->serno = $row['HSerNo'];
+        $this->email    = "{$row['Code']}@" . env('DOMAIN');
+        $this->account  = $row['Code'];
+        $this->ip       = NULL;
+        $this->corp     = $row['CName'];
+        $this->code     = $row['HCode'];
+        $this->serno    = $row['HSerNo'];
         $this->password = bcrypt(self::USER_DEFAULT_PASSWORD);
 
         return $this;
