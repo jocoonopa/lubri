@@ -45,8 +45,7 @@ class StoreController extends Controller
     {
         $store = Store::create($request->all());
 
-        $store->storeArea()->associate(StoreArea::find($request->input('store_area')));
-        $store->save();
+        $this->associateForeignKey($store);
 
         return redirect('pos/store/store');
     }
@@ -54,7 +53,7 @@ class StoreController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  Store $store
      * @return \Illuminate\Http\Response
      */
     public function show(Store $store)
@@ -67,7 +66,7 @@ class StoreController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  Store $store
      * @return \Illuminate\Http\Response
      */
     public function edit(Store $store)
@@ -81,14 +80,13 @@ class StoreController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Store $store
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Store $store)
     {
         $store->update($request->all());
-        $store->storeArea()->associate(StoreArea::find($request->input('store_area')));
-        $store->save();
+        $this->associateForeignKey($store);
 
         return redirect('pos/store/store');
     }
@@ -96,11 +94,24 @@ class StoreController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  Store $store
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Store $store)
     {
-        //
+        return $store;
+    }
+
+    /**
+     * associateForeignKey 
+     * 
+     * @param  Store $store 
+     * @return Store $store     
+     */
+    protected function associateForeignKey(Store $store)
+    {
+        $store->storeArea()->associate(StoreArea::find($request->input('store_area')));
+
+        return $store->save();
     }
 }

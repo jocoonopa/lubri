@@ -6,6 +6,7 @@ use Validator;
 use Input;
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use App\Utility\Chinghwa\Compare\HoneyBaby;
 use Illuminate\Http\Request;
 use Response;
@@ -67,7 +68,7 @@ class HoneyBabyController extends Controller
 
     public function downloadInsertExample()
     {
-        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/example/insertFormat.xls';
+        $filePath = __DIR__ . '/../../../../storage/excel/example/insertFormat.xls';
         $headers = ['Content-Type: application/excel'];
 
         return Response::download($filePath, 'FlapMemberInsertExample.xls', $headers);
@@ -75,7 +76,7 @@ class HoneyBabyController extends Controller
 
     public function downloadUpdateExample()
     {
-        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/example/updateFormat.xls';
+        $filePath = __DIR__ . '/../../../../storage/excel/example/updateFormat.xls';
         $headers = ['Content-Type: application/excel'];
 
         return Response::download($filePath, 'FlapMemberUpdateExample.xls', $headers);
@@ -85,7 +86,7 @@ class HoneyBabyController extends Controller
     {
         $dateTime = date('YmdH');
 
-        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Insert.xls';
+        $filePath = __DIR__ . '/../../../../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Insert.xls';
         $headers = ['Content-Type: application/excel'];
 
         return Response::download($filePath, "FlapMemberInsert_{$dateTime}.xls", $headers);
@@ -95,7 +96,7 @@ class HoneyBabyController extends Controller
     {
         $dateTime = date('YmdH');
 
-        $filePath = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Update.xls';
+        $filePath = __DIR__ . '/../../../../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Update.xls';
         $headers = ['Content-Type: application/excel'];
 
         return Response::download($filePath, "FlapMemberUpdate_{$dateTime}.xls", $headers);
@@ -151,7 +152,7 @@ class HoneyBabyController extends Controller
     protected function moveUploadFile()
     {
         $fileName        = ExportExcel::HONEYBABY_FILENAME . $this->getStamp();
-        $destinationPath = "{$_SERVER['DOCUMENT_ROOT']}/../storage/excel/import/";
+        $destinationPath = __DIR__ . '/../../../../storage/excel/import/';
         
         Input::file('excel')->move($destinationPath, $fileName);
 
@@ -377,7 +378,7 @@ class HoneyBabyController extends Controller
         $mixInfo = [];
 
         $mixInfo['flag23'] = getRowVal($row, HoneyBaby::IMPORT_FLAG23_INDEX);
-        $mixInfo['flag38'] = getRowVal($row, $this->rmi('M'));
+        $mixInfo['flag38'] = getRowVal($row, ExcelHelper::rmi('M'));
         
         /**
          * 會員旗標
@@ -394,7 +395,7 @@ class HoneyBabyController extends Controller
     {
         $mixInfo['memberinfo'] = [];
 
-        for ($i = 0; $i < $this->rmi('S'); $i ++) {
+        for ($i = 0; $i < ExcelHelper::rmi('S'); $i ++) {
             $mixInfo['memberinfo'][$i] = NULL;
         }
 
@@ -402,10 +403,10 @@ class HoneyBabyController extends Controller
          * 會員資料
          */
         // 會員編號
-        $mixInfo['memberinfo'][$this->rmi('A')] = $member['Code'];
+        $mixInfo['memberinfo'][ExcelHelper::rmi('A')] = $member['Code'];
 
         // 舊客備註
-        $mixInfo['memberinfo'][$this->rmi('P')] = getRowVal($row, HoneyBaby::IMPORT_OLDMEMO_INDEX);
+        $mixInfo['memberinfo'][ExcelHelper::rmi('P')] = getRowVal($row, HoneyBaby::IMPORT_OLDMEMO_INDEX);
 
         return $this;
     }
@@ -464,7 +465,7 @@ class HoneyBabyController extends Controller
         $mixInfo['companyTel']    = getRowVal($row, HoneyBaby::IMPORT_COMPANYTEL_INDEX);
         $mixInfo['email']         = getRowVal($row, HoneyBaby::IMPORT_EMAIL_INDEX);
         $mixInfo['flag23']        = getRowVal($row, HoneyBaby::IMPORT_FLAG23_INDEX);
-        $mixInfo['flag37']        = getRowVal($row, $this->rmi('M'));
+        $mixInfo['flag37']        = getRowVal($row, ExcelHelper::rmi('M'));
         $mixInfo['oldCustomMemo'] = getRowVal($row, HoneyBaby::IMPORT_OLDMEMO_INDEX);
         $mixInfo['newCustomMemo'] = getRowVal($row, HoneyBaby::IMPORT_NEWMEMO_INDEX);
 
@@ -495,7 +496,7 @@ class HoneyBabyController extends Controller
     {
         $mixInfo['memberinfo'] = [];
 
-        for ($i = 0; $i < $this->rmi('AP'); $i ++) {
+        for ($i = 0; $i < ExcelHelper::rmi('AP'); $i ++) {
             $mixInfo['memberinfo'][$i] = NULL;
         }
 
@@ -577,7 +578,7 @@ class HoneyBabyController extends Controller
      */
     protected function genFlapInsertFile()
     {
-        $file = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/example/insertFormat.xls';
+        $file = __DIR__ . '/../../../../storage/excel/example/insertFormat.xls';
         $dest = $this->getInsertFilePath();
 
         if (!copy($file, $dest)) {
@@ -594,7 +595,7 @@ class HoneyBabyController extends Controller
      */
     protected function genFlapUpdateFile()
     {
-        $file = $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/example/updateFormat.xls';
+        $file = __DIR__ . '/../../../../storage/excel/example/updateFormat.xls';
         $dest = $this->getUpdateFilePath();
 
         if (!\File::copy($file, $dest)) {
@@ -611,7 +612,7 @@ class HoneyBabyController extends Controller
      */
     protected function getImportRealPath()
     {
-        return $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/import/' . $this->getImportFileName();
+        return __DIR__ . '/../../../../storage/excel/import/' . $this->getImportFileName();
     }
 
     /**
@@ -621,7 +622,7 @@ class HoneyBabyController extends Controller
      */
     protected function getInsertFilePath()
     {
-        return  $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/exports/' . $this->getImportFileName() . '_Insert.xls';
+        return __DIR__ . '/../../../../storage/excel/exports/' . $this->getImportFileName() . '_Insert.xls';
     }
 
     /**
@@ -631,7 +632,7 @@ class HoneyBabyController extends Controller
      */
     protected function getUpdateFilePath()
     {
-        return  $_SERVER['DOCUMENT_ROOT'] . '/../storage/excel/exports/' . $this->getImportFileName() . '_Update.xls';
+        return __DIR__ . '/../../../../storage/excel/exports/' . $this->getImportFileName() . '_Update.xls';
     }
 
     protected function setDate()
