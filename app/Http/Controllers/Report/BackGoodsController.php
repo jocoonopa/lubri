@@ -18,18 +18,16 @@ class BackGoodsController extends Controller
     }
 
     public function process()
-    {
-        $self = $this;
-        
-        Excel::create($this->getFileName(), function ($excel) use ($self) {
-            $params = $self->getBascitSheetParams();
+    { 
+        Excel::create($this->getFileName(), function ($excel) {
+            $params = $this->getBascitSheetParams();
             ExcelHelper::genBasicSheet($excel, $params[0], $params[1], $params[2], $params[3], $params[4]);
         })->store(ExportExcel::XLS, storage_path('excel/exports'));  
             
-        Mail::send('emails.creditCard', ['title' => $this->getSubject()], function ($m) use ($self) {
-            $m->subject($self->getSubject())->attach($self->getFilePath());
+        Mail::send('emails.creditCard', ['title' => $this->getSubject()], function ($m) {
+            $m->subject($this->getSubject())->attach($this->getFilePath());
             
-            $this->addMailGetter($m, $self->getToList())->addMailGetter($m, $self->getCCList(), 'cc');
+            $this->addMailGetter($m, $this->getToList())->addMailGetter($m, $this->getCCList(), 'cc');
         });
 
         return "{$this->getSubject()} send complete!";

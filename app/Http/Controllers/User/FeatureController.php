@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Maatwebsite\Excel\Facades\Excel;
 use Session;
 
@@ -14,9 +15,7 @@ class FeatureController extends Controller
 {
     public function import()
     {
-        $insertRows = [];
-
-        $this->odbcFetchArray($this->getUserDataQuery(), $this->getInsertFunc(), $insertRows);
+        $insertRows = Processor::getArrayResult($this->getUserDataQuery());
 
         foreach ($insertRows as $row) {
             $this->insert($row);

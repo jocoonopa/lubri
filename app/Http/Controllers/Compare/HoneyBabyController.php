@@ -17,6 +17,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class HoneyBabyController extends Controller
 {
+    const EXPORTFOLDER_PATH = __DIR__ . '/../../../../storage/excel/exports/';
+    const INSERTEXAMPLE_PATH = __DIR__ . '/../../../../storage/excel/example/insertFormat.xls';
+    const UPDATEEXAMPLE_PATH = __DIR__ . '/../../../../storage/excel/example/updateFormat.xls';
+    const DESTINATION_PATH = __DIR__ . '/../../../../storage/excel/import/';
+
     protected $temper;
     protected $callback;
     protected $fileHelper;
@@ -63,38 +68,26 @@ class HoneyBabyController extends Controller
 
     public function downloadInsertExample()
     {
-        $filePath = __DIR__ . '/../../../../storage/excel/example/insertFormat.xls';
-        $headers = ['Content-Type: application/excel'];
-
-        return Response::download($filePath, 'FlapMemberInsertExample.xls', $headers);
+        return Response::download(self::INSERTEXAMPLE_PATH, 'FlapMemberInsertExample.xls', ['Content-Type: application/excel']);
     }
 
     public function downloadUpdateExample()
     {
-        $filePath = __DIR__ . '/../../../../storage/excel/example/updateFormat.xls';
-        $headers = ['Content-Type: application/excel'];
-
-        return Response::download($filePath, 'FlapMemberUpdateExample.xls', $headers);
+        return Response::download(self::UPDATEEXAMPLE_PATH, 'FlapMemberUpdateExample.xls', ['Content-Type: application/excel']);
     }
 
     public function downloadInsert(Request $request)
     {
-        $dateTime = date('YmdH');
+        $filePath = self::EXPORTFOLDER_PATH .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Insert.xls';
 
-        $filePath = __DIR__ . '/../../../../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Insert.xls';
-        $headers = ['Content-Type: application/excel'];
-
-        return Response::download($filePath, "FlapMemberInsert_{$dateTime}.xls", $headers);
+        return Response::download($filePath, "FlapMemberInsert_" . Input::get('stamp') . ".xls", ['Content-Type: application/excel']);
     }
 
     public function downloadUpdate(Request $request)
     {
-        $dateTime = date('YmdH');
+        $filePath = self::EXPORTFOLDER_PATH .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Update.xls';
 
-        $filePath = __DIR__ . '/../../../../storage/excel/exports/' .  ExportExcel::HONEYBABY_FILENAME . Input::get('stamp') . '_Update.xls';
-        $headers = ['Content-Type: application/excel'];
-
-        return Response::download($filePath, "FlapMemberUpdate_{$dateTime}.xls", $headers);
+        return Response::download($filePath, "FlapMemberUpdate_" . Input::get('stamp') . ".xls", ['Content-Type: application/excel']);
     }
 
     /**
@@ -103,11 +96,8 @@ class HoneyBabyController extends Controller
      * @return string $realPath
      */
     protected function moveUploadFile()
-    {
-        $fileName        = ExportExcel::HONEYBABY_FILENAME . $this->temper->getStamp();
-        $destinationPath = __DIR__ . '/../../../../storage/excel/import/';
-        
-        Input::file('excel')->move($destinationPath, $fileName);
+    {     
+        Input::file('excel')->move(self::DESTINATION_PATH, ExportExcel::HONEYBABY_FILENAME . $this->temper->getStamp());
 
         return $this->fileHelper->getImportRealPath();
     }

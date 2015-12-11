@@ -63,7 +63,7 @@ class ExistHandler
 
     protected static function isExistProcess($exitstMember, $row)
     {
-        return trim(c8($exitstMember['Name'])) === trim($row[HoneyBaby::IMPORT_NAME_INDEX]) && true === self::checkByiterateList($exitstMember, $row);
+        return !empty(trim($row[HoneyBaby::IMPORT_NAME_INDEX])) && trim(c8($exitstMember['Name'])) === trim($row[HoneyBaby::IMPORT_NAME_INDEX]) && true === self::checkByiterateList($exitstMember, $row);
     }
 
     protected static function checkByiterateList($exitstMember, $row)

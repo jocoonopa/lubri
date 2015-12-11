@@ -102,25 +102,51 @@ class RetailSaleByPersonTypeHelper
 		}
 
 		$this->handleTotalRow();
-		
+
 		return $this;
 	}
 
+    protected function genHeadRow()
+    {
+        $row = $this->getRowPrototype();
+
+        foreach ($row as $key => $ele) {
+            $row[$key] = $key;
+        }
+
+        return $row;
+    }
+
 	protected function handleAreaRow(array $emps, $areaName)
 	{
-		$row = $this->genRowByArea($emps, $areaName);
-		$row['isArea'] = true;
-		
-		$this->setRowCssStyle($row, ['backgroundColor' => '#000000', 'color' => '#ffffff', 'fontWeight' => 'bold']);
-		$this->rows[] = $row;
-
-		return $this;
+		return $this->pushRowsAndSettingStyle($this->genRowByArea($emps, $areaName), [
+			'backgroundColor' => '#000000', 
+			'color' => '#ffffff', 
+			'fontWeight' => 'bold'
+		]);
 	}
 
 	protected function handleStoreRow(array $emps, $storeName)
 	{
-		$row = $this->genRowByStore($emps, $storeName);				
-		$this->setRowCssStyle($row, ['backgroundColor' => '#C19B69', 'color' => '#ffffff', 'fontWeight' => 'bold']);
+		return $this->pushRowsAndSettingStyle($this->genRowByStore($emps, $storeName), [
+			'backgroundColor' => '#C19B69', 
+			'color' => '#ffffff', 
+			'fontWeight' => 'bold'
+		]);
+	}
+
+	protected function handleTotalRow()
+	{
+		return $this->pushRowsAndSettingStyle($this->combineRows($this->getAreaRows()), [
+			'backgroundColor' => '#000000', 
+			'color' => '#ffffff', 
+			'fontWeight' => 'bold'
+		]);
+	}
+
+	protected function pushRowsAndSettingStyle($row, array $cssArr)
+	{
+		$this->setRowCssStyle($row, $cssArr);
 		$this->rows[] = $row;
 
 		return $this;
@@ -130,14 +156,6 @@ class RetailSaleByPersonTypeHelper
 	{
 		$this->cal($emp);
 		$this->rows[] = $emp;
-
-		return $this;
-	}
-
-	protected function handleTotalRow()
-	{
-		$row = $this->combineRows($this->getAreaRows());
-		$this->setRowCssStyle($row, ['backgroundColor' => '#000000', 'color' => '#ffffff', 'fontWeight' => 'bold']);
 
 		return $this;
 	}
@@ -164,7 +182,9 @@ class RetailSaleByPersonTypeHelper
 		    	$this->setBasicSheetProperty($sheet);
 
 		    	foreach ($rows as $index => $row) {
-		    		$sheet->cells("A{$index}:G{$index}", $this->getSetCssStyleCallback($row, ++ $index));
+                    $index ++;
+
+		    		$sheet->cells("A{$index}:G{$index}", $this->getSetCssStyleCallback($row, $index));
 		    		
 		    		$sheet->appendRow($index, $this->getRowAppendData($row, $index));		    			
 		    	}
@@ -280,6 +300,7 @@ class RetailSaleByPersonTypeHelper
 	public function genRowByArea(array $emps, $areaName)
 	{
 		$row = $this->genRowProcess($emps, $areaName, self::AREA);
+		$row['isArea'] = true;
 
 		return $row;
 	}
@@ -287,17 +308,6 @@ class RetailSaleByPersonTypeHelper
 	public function genRowByStore(array $emps, $storeName)
 	{
 		$row = $this->genRowProcess($emps, $storeName, self::STORE);
-
-		return $row;
-	}
-
-	protected function genHeadRow()
-	{
-		$row = $this->getRowPrototype();
-
-		foreach ($row as $key => $ele) {
-			$row[$key] = $key;
-		}
 
 		return $row;
 	}

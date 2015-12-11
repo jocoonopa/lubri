@@ -84,13 +84,12 @@ function tranSex($num)
         case 0:
         case 2:
             return '小姐';
-            break;
+
         case 1:
             return '先生';
-            break;
+
         default:
             return '';
-            break;
     }
 }
 

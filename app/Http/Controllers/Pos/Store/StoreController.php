@@ -45,7 +45,7 @@ class StoreController extends Controller
     {
         $store = Store::create($request->all());
 
-        $this->associateForeignKey($store);
+        $this->associateForeignKey($request, $store);
 
         return redirect('pos/store/store');
     }
@@ -86,7 +86,7 @@ class StoreController extends Controller
     public function update(Request $request, Store $store)
     {
         $store->update($request->all());
-        $this->associateForeignKey($store);
+        $this->associateForeignKey($request, $store);
 
         return redirect('pos/store/store');
     }
@@ -108,7 +108,7 @@ class StoreController extends Controller
      * @param  Store $store 
      * @return Store $store     
      */
-    protected function associateForeignKey(Store $store)
+    protected function associateForeignKey(Request $request, Store $store)
     {
         $store->storeArea()->associate(StoreArea::find($request->input('store_area')));
 

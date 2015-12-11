@@ -43,7 +43,6 @@ class CTILayoutController extends Controller
     protected function getFileName()
     {
         $date = new \DateTime;
-        //$date->modify('-1 month');
 
         return ExportExcel::WAYTER_IMPORTLAYOUT_FILENAME . '_' . $date->format('Ymd');
     }
@@ -56,7 +55,6 @@ class CTILayoutController extends Controller
     protected function getSubject()
     {
         $date = new \DateTime;
-        //$date->modify('-1 month');
 
         return 'CTI的Import Layout' . $date->format('Ym');
     }
@@ -91,10 +89,7 @@ class CTILayoutController extends Controller
             '累積紅利點數', 
             '輔翼會員參數', 
             '預產期', 
-            '醫院', 
-            // '生日-年', 
-            // '生日-月', 
-            // '生日-日'
+            '醫院'
         ];
     }
 
@@ -142,13 +137,9 @@ class CTILayoutController extends Controller
         }
 
         $he = $this->getHospitalAndEdate($row[ExcelHelper::rmi('AA')]);
-        //$splitBirthday = $this->getSplitBirthDay($row[ExcelHelper::rmi('D')]);
 
         $data[ExcelHelper::rmi('AA')] = $he['edate'];
         $data[ExcelHelper::rmi('AB')] = $he['hospital'];
-        // $data[ExcelHelper::rmi('AC')] = $splitBirthday['y'];
-        // $data[ExcelHelper::rmi('AD')] = $splitBirthday['m'];
-        // $data[ExcelHelper::rmi('AE')] = $splitBirthday['d'];
 
         return $data;
     }

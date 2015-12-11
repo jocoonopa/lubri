@@ -6,7 +6,7 @@ use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class MemberCode
 {
-	protected $code = false;
+	protected $code = '';
 
 	public function setStartCode()
     {
@@ -31,7 +31,7 @@ class MemberCode
 
     public function getCode()
     {
-    	if (false === $this->code) {
+    	if ('' === $this->code) {
     		$this->setStartCode();
     	}
 

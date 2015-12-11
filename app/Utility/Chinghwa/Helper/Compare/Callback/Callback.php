@@ -7,6 +7,10 @@ use App\Utility\Chinghwa\Helper\Compare\FixtureHelper;
 class Callback
 {
 	protected $data;
+    protected $appendInsertClosureMemberProfile;
+    protected $appendInsertClosureMemberDistFlag;
+    protected $appendUpdateClosureMemberProfile;
+    protected $appendUpdateClosureMemberDistFlag;
 
     public function __construct($realPath)
     {
@@ -43,9 +47,6 @@ class Callback
         $this->data['iterateInsertTimes'] += count($this->data['insert']);
         $this->data['iterateUpdateTimes'] += count($this->data['update']);
 
-        unset($this->data['update']);
-        unset($this->data['insert']);
-        
         $this->data['update'] = [];
         $this->data['insert'] = [];         
 

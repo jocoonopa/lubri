@@ -9,6 +9,16 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $username
+ * @property string $email
+ * @property string $account
+ * @property string $ip
+ * @property string $corp
+ * @property string $code
+ * @property string $serno
+ * @property string $password
+ */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
     const USER_DEFAULT_PASSWORD = '1111';

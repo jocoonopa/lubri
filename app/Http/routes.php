@@ -46,10 +46,6 @@ Route::group(['namespace' => 'Auth', 'prefix' => 'auth'], function () {
 	Route::get('login', 'AuthController@getLogin');
 	Route::post('login', 'AuthController@postLogin');
 	Route::get('logout', 'AuthController@getLogout');
-
-	// // Registration routes...
-	// Route::get('register', 'AuthController@getRegister');
-	// Route::post('register', 'AuthController@postRegister');
 	 
 	// Password reset link request routes...
 	Route::get('password/email', 'PasswordController@getEmail');
@@ -91,7 +87,6 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 
 	// 每月初發送門市營業額分析-人報表
 	Route::group(['prefix' => 'retail_sales_persontype'], function () {
-		//Route::get('/', ['uses' => 'RetailSalesController@index', 'as' => 'retail_sales_persontype_index']);
 		Route::get('/process', ['uses' => 'RetailSaleByPersonTypeController@process', 'as' => 'retail_sales_persontype_process', 'middleware' => 'report']);
 	});
 
@@ -161,7 +156,6 @@ Route::group(['namespace' => 'Fix', 'prefix' => 'fix'], function() {
 	Route::get('/zipcode', ['uses' => 'ZipCodeController@index', 'as' => 'fix_zipcode']);
 	Route::get('/birth', ['uses' => 'ZipCodeController@birth', 'as' => 'fix_birth']);
 	Route::get('/equipment/ping', ['uses' => 'EquipmentController@ping', 'as' => 'fix_equipment_ping']);
-	Route::get('/distflag', ['uses' => 'DistFlagController@index', 'as' => 'fix_distflag']);
 	Route::get('/pis_goods/import', ['uses' => 'PISGoodsController@import', 'as' => 'pis_goods_import']);
 });
 

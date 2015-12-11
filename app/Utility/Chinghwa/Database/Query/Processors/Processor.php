@@ -33,15 +33,32 @@ class Processor
         return odbc_exec(Connector::toCti(), cb5($query));
     }
 
+    public static function getErp(Builder $queryBuilder)
+    {
+        return self::execErp(self::toSql($queryBuilder));
+    }
+
+    public static function getPos(Builder $queryBuilder)
+    {
+        return self::execPos(self::toSql($queryBuilder));
+    }
+
+    public static function getCti(Builder $queryBuilder)
+    {
+        return self::execCti(self::toSql($queryBuilder));
+    }
+
     /**
-     * [fetchArray description]
-     * @param  [type] $query    [description]
-     * @param  [type] $callback 
+     * Execute query and fetch result then stored in array($src)
+     * 
+     * @param  string|object    $query 
+     * @param  closure          $callback 
      * @example  function (&$insertRows, $row) {
      *     $insertRows[] = $row;
      * };
-     * @param  [type] &$src     [description]
-     * @return [type]           [description]
+     * @param  array &$src  
+     *   
+     * @return void         
      */
     public static function fetchArray($query, $callback, &$src)
     {
@@ -58,14 +75,11 @@ class Processor
     }
 
     /**
-     * [fetchArray description]
-     * @param  [type] $query    [description]
-     * @param  [type] $callback 
-     * @example  function (&$insertRows, $row) {
-     *     $insertRows[] = $row;
-     * };
-     * @param  [type] &$src     [description]
-     * @return [type]           [description]
+     * Execute query and return array result
+     * 
+     * @param  string|object $query 
+     * @param  string $dbFlag
+     * @return array        
      */
     public static function getArrayResult($query, $dbFlag = 'Erp')
     {
@@ -87,6 +101,12 @@ class Processor
         return $data;
     }
 
+    /**
+     * Return sql statement
+     * 
+     * @param  Builder $queryBuilder 
+     * @return string                
+     */
     public static function toSql(Builder $queryBuilder)
     {
         $params = $queryBuilder->getBindings();
@@ -99,15 +119,5 @@ class Processor
         }
 
         return str_replace('`', '', $pdoStatement);
-    }
-
-    public static function getErp(Builder $queryBuilder)
-    {
-        return self::execErp(self::toSql($queryBuilder));
-    }
-
-    public static function getPos(Builder $queryBuilder)
-    {
-        return self::execPos(self::toSql($queryBuilder));
     }
 }

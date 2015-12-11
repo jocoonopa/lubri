@@ -9,6 +9,10 @@ use Illuminate\Mail\Message;
 use App\Http\Controllers\Controller;
 use Session;
 
+/**
+ * @method void validate() [trait ValidatesRequests]
+ * @method string getEmailSubject() [trait ResetsPasswords]
+ */
 class PasswordController extends Controller
 {
     /*
@@ -24,6 +28,7 @@ class PasswordController extends Controller
 
     use ResetsPasswords;
     protected $redirectTo = '';
+    protected $subject = '';
 
     /**
      * Create a new password controller instance.

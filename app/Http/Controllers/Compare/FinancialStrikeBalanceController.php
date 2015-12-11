@@ -26,7 +26,7 @@ class FinancialStrikeBalanceController extends Controller
         $dispatchCodes = $this->fetchCodesFromRow($dispatchFile->skip(1)->get([2]));
         $turnbackCodes = $this->fetchCodesFromRow($turnbackFile->skip(1)->get([2]));
 
-        $this->pr(array_intersect($dispatchCodes, $turnbackCodes));
+        pr(array_intersect($dispatchCodes, $turnbackCodes));
 
         echo "count:dispatchFile".count($dispatchCodes)."<br>";
         echo "count:turnbackCodes".count($turnbackCodes)."<br>";
@@ -59,6 +59,6 @@ class FinancialStrikeBalanceController extends Controller
      */
     protected function getDonsunFilePath()
     {
-        return  "{$_SERVER['DOCUMENT_ROOT']}/../storage/excel/example/10407tonsan.xlsx";
+        return  __DIR__ . '/../../../../storage/excel/example/10407tonsan.xlsx';
     }
 }

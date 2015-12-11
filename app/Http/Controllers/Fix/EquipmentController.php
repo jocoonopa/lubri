@@ -63,8 +63,7 @@ class EquipmentController extends Controller
             return false;
         }
 
-        // 用 TTL 的有無當判定
-        if (false !== strpos($output[self::TTL_INDEX], self::CHECK_TARGET)) {
+        if ($this->hasTTL($output)) {
             return true;
         }
 
@@ -72,7 +71,21 @@ class EquipmentController extends Controller
     }
 
     /**
+     * 用 TTL 的有無當判定設備是否可正常 ping 到
+     * 
+     * @param  array   $output
+     * @return boolean        
+     */
+    protected function hasTTL(array $output)
+    {
+        return false !== strpos($output[self::TTL_INDEX], self::CHECK_TARGET);
+    }
+
+    /**
      * getCheckList
+     *
+     * 'GateWay2' => '192.168.172.254', 這台是台中宏遠的，已經停用囉
+     * '門禁系統' => '192.168.100.97' 暫時停用
      * 
      * @return array
      */
@@ -95,9 +108,7 @@ class EquipmentController extends Controller
             'VM' => '192.168.11.41',
             'MailServer' => '192.168.10.2',
             'GateWay1' => '192.168.100.254',
-            //'GateWay2' => '192.168.172.254', 這台是台中宏遠的，已經停用囉
-            'ADDNS' => '192.168.11.31'
-            //'門禁系統' => '192.168.100.97'
+            'ADDNS' => '192.168.11.31'          
         ];
     }
 

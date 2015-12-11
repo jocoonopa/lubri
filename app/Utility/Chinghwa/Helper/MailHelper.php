@@ -1,6 +1,6 @@
 <?php
 
-namespace  App\Utility\Chinghwa\Helper;
+namespace App\Utility\Chinghwa\Helper;
 
 use Mail;
 use Exception;

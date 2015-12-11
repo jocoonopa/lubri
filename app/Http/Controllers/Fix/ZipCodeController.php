@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Fix;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use App\Utility\Chinghwa\Helper\Fixture\ZipCode;
 
 class ZipCodeController extends Controller
 {
@@ -77,9 +78,7 @@ class ZipCodeController extends Controller
 
 	protected function convertToCodeIndexArray()
 	{
-		$json = $this->getThreeCodeJSON();
-
-		$states = json_decode($json, true);
+		$states = ZipCode::get();
 
 		$codeIndexArray = array();
 
@@ -92,9 +91,4 @@ class ZipCodeController extends Controller
 
 		return $codeIndexArray;
 	}
-
-	protected function getThreeCodeJSON()
-    {
-        return file_get_contents(__DIR__ . '/../../../storage/json/zipcode.json');
-    }
 }

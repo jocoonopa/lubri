@@ -31,21 +31,32 @@ class MixInfoHandler
      * 
      * 擴充 data 陣列內容
      * 
-     * @param  obj $result
-     * @param  array &$data 
+     * @param  object   $result [load src excel result]
+     * @param  array    $data 
      * @return $this        
      */
-    public function extendData($result, $data)
+    public function extendData($result, array $data)
     {
         foreach ($result as $row) {
             if (false !== ($member = ExistHandler::isExist(ExistHandler::fetchMightExistMembers($result), $row))) {
                 $data['update'][] = (array) $this->buildUpdateAppendRow($member, $row);
-            } else {
+            } else if ($this->isRowhasName($row)) {
                 $data['insert'][] = (array) $this->buildInsertAppendRow($row);
             }
         }
 
         return $data;
+    }
+
+    /**
+     * src excel single row has name value or not
+     * 
+     * @param  object  $row
+     * @return boolean     
+     */
+    protected function isRowhasName($row)
+    {
+        return isset($row[HoneyBaby::IMPORT_NAME_INDEX]) && 0 < strlen($row[HoneyBaby::IMPORT_NAME_INDEX]);
     }
 
 	/**
