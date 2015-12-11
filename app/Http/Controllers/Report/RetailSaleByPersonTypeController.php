@@ -63,18 +63,18 @@ class RetailSaleByPersonTypeController extends Controller
 	protected function getToList()
     {
         return [
-            //'lingying3025@chinghwa.com.tw' => '6521吳俐穎',
-            //'meganlee@chinghwa.com.tw' => '6500李惠淑',
-            //'amy@chinghwa.com.tw' => '6221李佩蓉'
+            'lingying3025@chinghwa.com.tw' => '6521吳俐穎',
+            'meganlee@chinghwa.com.tw' => '6500李惠淑',
+            'amy@chinghwa.com.tw' => '6221李佩蓉'
         ];
     }
 
     protected function getCCList()
     {
         return [
-            //'sl@chinghwa.com.tw' => '6700莊淑玲',
-            //'swhsu@chinghwa.com.tw' => '6800徐士偉',
-            //'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
+            'sl@chinghwa.com.tw' => '6700莊淑玲',
+            'swhsu@chinghwa.com.tw' => '6800徐士偉',
+            'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
             'jocoonopa@chinghwa.com.tw' => '6231小閎'
         ];
     }

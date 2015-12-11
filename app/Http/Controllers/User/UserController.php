@@ -37,10 +37,10 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Model\User $user
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, User $user)
+    public function store(User $user)
     {
         Session::flash('success', "您已經新增了使用者<b>{$user->username}</b>");
 
@@ -49,11 +49,8 @@ class UserController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  App\Model\User $user
-     * @return \Illuminate\Http\Response
      */
-    public function show(User $user){}
+    public function show(){}
 
     /**
      * Show the form for editing the specified resource.
@@ -69,17 +66,16 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  App\Model\User $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update( User $user)
     {
         $user->update($request->all());
 
         Session::flash('success', "您已經更新了<b>{$user->username}</b>的資料");
 
-        return redirect("user/{$id}/edit");
+        return redirect("user/{$user->id}/edit");
     }
 
     /**

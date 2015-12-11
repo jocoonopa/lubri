@@ -65,22 +65,17 @@ class ArticlesController extends Controller
      */
     public function edit(Article $article)
     {
-        $article = Article::findOrFail($id);
-
         return view('articles.edit', compact('article'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  App\Http\Requests\ArticleRequest  $request
      * @param  App\Model\Article $article
      * @return \Illuminate\Http\Response
      */
-    public function update(ArticleRequest $request, Article $article)
+    public function update(Article $article)
     {
-        $article = Article::findOrFail($id);
-
         $article->update($request->all());
 
         return redirect('articles');
@@ -88,9 +83,6 @@ class ArticlesController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  App\Model\Article $article
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Article $article){}
+    public function destroy(){}
 }
