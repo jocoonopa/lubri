@@ -37,11 +37,13 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  App\Model\User $user
+     * @param  Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(User $user)
     {
+        $user = User::create($request->all());
+
         Session::flash('success', "您已經新增了使用者<b>{$user->username}</b>");
 
         return redirect('user');
@@ -66,10 +68,11 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @param  Illuminate\Http\Request $request
      * @param  App\Model\User $user
      * @return \Illuminate\Http\Response
      */
-    public function update( User $user)
+    public function update(Request $request, User $user)
     {
         $user->update($request->all());
 

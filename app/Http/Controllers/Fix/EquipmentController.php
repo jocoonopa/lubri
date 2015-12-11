@@ -54,6 +54,8 @@ class EquipmentController extends Controller
      */
     protected function isWorked($ip, $depth = 0)
     {
+        $output = [];
+        
         exec("ping {$ip} -n 1", $output, $status);
 
         if (!array_key_exists(self::TTL_INDEX, $output)) {

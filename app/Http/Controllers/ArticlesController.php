@@ -71,10 +71,11 @@ class ArticlesController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @param  App\Http\Requests\ArticleRequest
      * @param  App\Model\Article $article
      * @return \Illuminate\Http\Response
      */
-    public function update(Article $article)
+    public function update(ArticleRequest $request, Article $article)
     {
         $article->update($request->all());
 
