@@ -47,7 +47,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
                 ->appendHead()->next()
                 ->initDataHelper()
                 ->appendByIterateErpTelGroups()->prev()        
-                ->appendTotalErpTelGroup()->next()
+                ->appendTotalErpTelGroup()->next()->next()
                 ->appendErpOuttunnel()
                 ->appendByIteratePosGroups()
                 ->appendTotalPosGroup()->next()
@@ -82,26 +82,6 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
         return $this->rowIndex;
     }
 
-    protected function appendTotalPosGroup()
-    {
-        $this->targetSheet->row($this->getIndex(), $this->dataHelper->getBundleTotal($this->dataHelper->posStatistics, '直營門市合計'));
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#D48005')->setFontColor('#ffffff');
-        });
-
-        return $this;
-    }
-
-    protected function appendAllSrcTotal()
-    {
-        $this->targetSheet->row($this->next()->getIndex(), $this->dataHelper->getBundleTotal(array_merge($this->dataHelper->erpStatistics, $this->dataHelper->posStatistics), '公司合計'));
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#088A1E')->setFontColor('#ffffff');
-        });
-
-        return $this;
-    }
-
     protected function appendByIteratePosGroups()
     {
         foreach ($this->dataHelper->posGroups as $groupCode => $group) {
@@ -115,27 +95,73 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
         return $this;
     }
 
-    protected function appendEachPosAgent(array $agent, $groupCode)
+    protected function appendRow(array $data, array $css)
     {
-        $agnetRow = $this->dataHelper->genPosDisplay($agent);
-        $this->targetSheet->row($this->getIndex(), $agnetRow);
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#827F7F')->setFontColor('#ffffff');
+        $this->targetSheet->row($this->getIndex(), $data);
+        $this->targetSheet->cells($this->getCellsRange(), function ($cells) use ($css) {
+            $cells->setBackground(getArrayVal($css, 'backgrounColor'))->setFontColor(getArrayVal($css, 'fontColor'));
         });
-
-        $this->dataHelper->updatePosGroupTotal($agnetRow, $groupCode);
 
         return $this;
     }
 
+    protected function appendTotalPosGroup()
+    {
+        return $this->appendRow($this->dataHelper->getBundleTotal($this->dataHelper->posStatistics, '直營門市合計'), [
+            'backgrounColor' => '#D48005',
+            'fontColor' => '#ffffff'
+        ]);
+    }
+
+    protected function appendAllSrcTotal()
+    {
+        return $this->appendRow($this->dataHelper->getBundleTotal(array_merge($this->dataHelper->erpStatistics, $this->dataHelper->posStatistics), '公司合計'), [
+            'backgrounColor' => '#088A1E',
+            'fontColor' => '#ffffff'
+        ]);
+    }
+
+    protected function appendEachPosAgent(array $agent, $groupCode)
+    {
+        $agnetRow = $this->dataHelper->genPosDisplay($agent);
+        $this->dataHelper->updatePosStatistics($agnetRow, $groupCode);
+
+        return $this->appendRow($agnetRow, [
+            'backgrounColor' => '#827F7F',
+            'fontColor' => '#ffffff'
+        ]);
+    }
+
     protected function appendEachPosStoreStatistics($groupCode)
     {
-        $this->targetSheet->row($this->getIndex(), $this->dataHelper->posStatistics[$groupCode]);
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#CC0606')->setFontColor('#ffffff');
-        });
+        return $this->appendRow($this->dataHelper->posStatistics[$groupCode], [
+            'backgrounColor' => '#CC0606',
+            'fontColor' => '#ffffff'
+        ]);
+    }
 
-        return $this;
+    protected function appendErpOuttunnelStatistics()
+    {
+        return $this->appendRow($this->dataHelper->erpStatistics[DailySaleRecord::ERP_OUTTUNNEL], [
+            'backgrounColor' => '#CC0606',
+            'fontColor' => '#ffffff'
+        ]);
+    }
+
+    protected function appendEachTelGroup($groupCode)
+    {
+        return $this->appendRow($this->dataHelper->erpStatistics[$groupCode], [
+            'backgrounColor' => '#CC0606',
+            'fontColor' => '#ffffff'
+        ]);
+    }
+
+    protected function appendTotalErpTelGroup()
+    {
+        return $this->appendRow($this->dataHelper->getBundleTotal($this->dataHelper->erpStatistics, '直效合計'), [
+            'backgrounColor' => '#D48005',
+            'fontColor' => '#ffffff'
+        ]);
     }
 
     protected function appendHead()
@@ -155,42 +181,9 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
     protected function appendErpOuttunnel()
     {
         if (array_key_exists(DailySaleRecord::ERP_OUTTUNNEL, $this->dataHelper->erpGroups)) {
-            $this->appendByIterateOuttunnel()->next()->appendErpOuttunnelStatistics()->next();
+            $this->appendByIterateOuttunnel()->appendErpOuttunnelStatistics()->next();
         }
  
-        return $this;
-    }
-
-    protected function appendErpOuttunnelStatistics()
-    {
-        $this->targetSheet->row($this->getIndex(), $this->dataHelper->erpStatistics[DailySaleRecord::ERP_OUTTUNNEL]);
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#CC0606')->setFontColor('#ffffff');
-        });
-
-        return $this;
-    }
-
-    protected function setSheetBasicStyle()
-    {
-    	$this->targetSheet
-            ->setAutoSize(true)
-            ->setFontFamily(ExportExcel::FONT_DEFAULT)
-            ->setFontSize(12)
-            ->setColumnFormat([
-                'B' => '@',
-                'F' => '#,##0_);(#,##0)',
-                'G' => '#,##0_);(#,##0)',
-                'H' => '#,##0_);(#,##0)'
-            ])
-            ->setBorder('A1:' . self::BORDER_RIGHT_RANGE .'1', ExportExcel::BOLDER_DEFAULT)
-            ->freezeFirstRow()
-        ; 
-
-        $this->targetSheet->cells('A1:' . self::BORDER_RIGHT_RANGE . '1', function ($cells) {
-            $cells->setBackground('#000000')->setFontColor('#ffffff')->setAlignment('center');
-        });
-
         return $this;
     }
 
@@ -208,7 +201,9 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
             }
 
             foreach ($group as $agent) {
-                $this->appendEachErpAgent($agent, $groupCode)->next();
+                $this->dataHelper->updateErpStatistics($agentRow = $this->dataHelper->genAgentRow($agent), $groupCode);
+                
+                $this->appendEachErpAgent($agentRow)->next();
             }
 
             $this->appendEachTelGroup($groupCode)->next()->next();
@@ -217,63 +212,56 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
         return $this;
     }
 
-    protected function appendEachErpAgent(array $agent, $groupCode)
+    protected function appendEachErpAgent(array $agentRow)
     {
-        $agentRow = $this->dataHelper->genAgentRow($agent);
-
-        $this->dataHelper->updateErpGroupTotal($agentRow, $groupCode);
-        
-        $this->targetSheet->row($this->getIndex(), $agentRow);
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#827F7F')->setFontColor('#ffffff');
-        });
-
-        return $this;
-    }
-
-    protected function appendEachTelGroup($groupCode)
-    {
-        $this->targetSheet->row($this->getIndex(), $this->dataHelper->erpStatistics[$groupCode]);
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#CC0606')->setFontColor('#ffffff');
-        });
-
-        return $this;
-    }
-
-    protected function getCellsRange()
-    {
-    	return "A{$this->getIndex()}:" . self::BORDER_RIGHT_RANGE . "{$this->getIndex()}";
-    }
-
-    protected function appendTotalErpTelGroup()
-    {
-    	$this->targetSheet->row($this->getIndex(), $this->dataHelper->getBundleTotal($this->dataHelper->erpStatistics, '直效合計'));
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#D48005')->setFontColor('#ffffff');
-        });
-
-        return $this;
+        return $this->appendRow($agentRow, [
+            'backgrounColor' => '#827F7F',
+            'fontColor' => '#ffffff'
+        ]);
     }
 
     protected function appendByIterateOuttunnel()
     {
         foreach ($this->dataHelper->erpGroups[DailySaleRecord::ERP_OUTTUNNEL] as $agent) {
-            $this->appendEachOuttunnel($agent);
+            $this->dataHelper->updateErpStatistics($agentRow = $this->dataHelper->genAgentRow($agent), DailySaleRecord::ERP_OUTTUNNEL);
+            
+            $this->appendEachOuttunnel($agentRow)->next();
         }
 
         return $this;
     }
 
-    protected function appendEachOuttunnel(array $agent)
+    protected function appendEachOuttunnel(array $agentRow)
     {
-        $agentRow = $this->dataHelper->genAgentRow($agent, $this->dataHelper->ctiCallLog);
+        return $this->appendRow($agentRow, [
+            'backgrounColor' => '#827F7F',
+            'fontColor' => '#ffffff'
+        ]);
+    }
 
-        $this->dataHelper->updateErpGroupTotal($agentRow, DailySaleRecord::ERP_OUTTUNNEL);
+    protected function getCellsRange()
+    {
+        return "A{$this->getIndex()}:" . self::BORDER_RIGHT_RANGE . "{$this->getIndex()}";
+    }
 
-        $this->targetSheet->row($this->next()->getIndex(), $agentRow);
-        $this->targetSheet->cells($this->getCellsRange(), function ($cells) {
-            $cells->setBackground('#827F7F')->setFontColor('#ffffff');
+    protected function setSheetBasicStyle()
+    {
+        $this->targetSheet
+            ->setAutoSize(true)
+            ->setFontFamily(ExportExcel::FONT_DEFAULT)
+            ->setFontSize(12)
+            ->setColumnFormat([
+                'B' => '@',
+                'F' => '#,##0_);(#,##0)',
+                'G' => '#,##0_);(#,##0)',
+                'H' => '#,##0_);(#,##0)'
+            ])
+            ->setBorder('A1:' . self::BORDER_RIGHT_RANGE .'1', ExportExcel::BOLDER_DEFAULT)
+            ->freezeFirstRow()
+        ; 
+
+        $this->targetSheet->cells('A1:' . self::BORDER_RIGHT_RANGE . '1', function ($cells) {
+            $cells->setBackground('#000000')->setFontColor('#ffffff')->setAlignment('center');
         });
 
         return $this;

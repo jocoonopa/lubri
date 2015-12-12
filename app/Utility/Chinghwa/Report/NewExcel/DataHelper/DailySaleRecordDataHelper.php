@@ -25,49 +25,31 @@ class DailySaleRecordDataHelper
 
     public function fetchPosGroups()
     {
-        $this->posGroups = $this->splitPosDataByGroup(Processor::getArrayResult($this->getPOSQuery(), 'Pos'));
+        $this->posGroups = $this->splitPosDataByGroup(Processor::getArrayResult($this->getQuery('POS'), 'Pos'));
 
         return $this;
     }
 
     public function fetchCtiCallLog()
     {
-        $this->ctiCallLog = Processor::getArrayResult($this->getCtiQuery(), 'Cti');
+        $this->ctiCallLog = Processor::getArrayResult($this->getQuery('CTI'), 'Cti');
 
         return $this;
     }
 
     public function fetchErpGroups()
     {
-        $this->erpGroups = $this->splitErpDataByGroup(Processor::getArrayResult($this->getErpQuery(), 'Erp'));
+        $this->erpGroups = $this->splitErpDataByGroup(Processor::getArrayResult($this->getQuery('ERP'), 'Erp'));
 
         return $this;
     }
 
-    public function getERPQuery()
+    protected function getQuery($db)
     {
         return str_replace(
             ['$startDate', '$endDate'],
             [$this->date->modify('first day of this month')->format('Ymd'), $this->date->modify('last day of this month')->format('Ymd')],
-            file_get_contents(__DIR__ . '/../../../../../../storage/sql/DailySaleRecord/ERP.sql')
-        );
-    }
-
-    public function getPOSQuery()
-    {
-        return str_replace(
-            ['$startDate', '$endDate'],
-            [$this->date->modify('first day of this month')->format('Ymd'), $this->date->modify('last day of this month')->format('Ymd')],
-            file_get_contents(__DIR__ . '/../../../../../../storage/sql/DailySaleRecord/POS.sql')
-        );
-    }
-
-    public function getCTIQuery()
-    {
-        return str_replace(
-            ['$startDate', '$endDate'],
-            [$this->date->modify('first day of this month')->format('Ymd'), $this->date->modify('last day of this month')->format('Ymd')],
-            file_get_contents(__DIR__ . '/../../../../../../storage/sql/DailySaleRecord/CTI.sql')
+            file_get_contents(__DIR__ . "/../../../../../../storage/sql/DailySaleRecord/{$db}.sql")
         );
     }
 
@@ -142,7 +124,7 @@ class DailySaleRecordDataHelper
         return $allGroup;
     }
 
-    public function updateErpGroupTotal(array $agentRow, $groupCode)
+    public function updateErpStatistics(array $agentRow, $groupCode)
     {
         if (!array_key_exists($groupCode, $this->erpStatistics)) {
             $this->erpStatistics[$groupCode]['部門'] = ((DailySaleRecord::ERP_OUTTUNNEL === $groupCode) ? '外部通路' : $agentRow['部門']). '合計';
@@ -162,7 +144,7 @@ class DailySaleRecordDataHelper
         return $this;
     }
 
-    public function updatePosGroupTotal(array $display, $groupCode)
+    public function updatePosStatistics(array $display, $groupCode)
     {
         if (!array_key_exists($groupCode, $this->posStatistics)) {
             $this->posStatistics[$groupCode]['部門'] = $display['部門'];
