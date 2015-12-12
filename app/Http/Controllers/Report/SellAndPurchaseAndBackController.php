@@ -6,11 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
+use App\Utility\Chinghwa\Helper\Temper;
 use Mail;
 use Input;
 
 class SellAndPurchaseAndBackController extends Controller
 {
+    protected $temper;
+
+    public function __construct ()
+    {
+        $this->temper = new Temper;
+        $this->temper->setDate(with(new \DateTime)->modify('-1 month'));
+    }
+
+    protected function getDate()
+    {
+        return $this->temper->getDate();
+    }
+
     public function index()
     {
         $queryString = '<h4>退貨原因</h4><pre>' . $this->getBackReasonQuery() . '</pre>';
@@ -31,14 +45,11 @@ class SellAndPurchaseAndBackController extends Controller
     public function process()
     {
         Excel::create($this->getFileName(), function ($excel) {
-            // Set the title
             $excel->setTitle('進銷退明細');
 
-            // Chain the setters
             $excel->setCreator('mis@chinghwa.com.tw')
                     ->setCompany('chinghwa');
 
-            // Call them separately
             $excel->setDescription(ExportExcel::SPB_FILENAME);
 
             ExcelHelper::genBasicSheet($excel, '退貨原因', array('G' => '@'), 'K', $this->getBackReasonQuery(), $this->getExportHead()['backReason']);
@@ -57,65 +68,45 @@ class SellAndPurchaseAndBackController extends Controller
 
     protected function getBackReasonQuery()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-        $date = $date->format('Ym') . '%';
-
         return str_replace(
             '$date',
-            $date,
+            $this->getDate()->format('Ym') . '%',
             file_get_contents(__DIR__ . '/../../../../storage/sql/BackReason.sql')
         );
     }
 
     protected function getPurchaseQuery()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-        $date = $date->format('Ym') . '%';
-
         return str_replace(
             '$date',
-            $date,
+            $this->getDate()->format('Ym') . '%',
             file_get_contents(__DIR__ . '/../../../../storage/sql/Purchase.sql')
         );
     }
 
     protected function getSampleDispatchQuery()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-        $date = $date->format('Ym') . '%';
-
         return str_replace(
             '$date',
-            $date,
+            $this->getDate()->format('Ym') . '%',
             file_get_contents(__DIR__ . '/../../../../storage/sql/SampleDispatch.sql')
         );
     }
 
     protected function getSampleBackQuery()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-        $date = $date->format('Ym') . '%';
-
         return str_replace(
             '$date',
-            $date,
+            $this->getDate()->format('Ym') . '%',
             file_get_contents(__DIR__ . '/../../../../storage/sql/SampleBack.sql')
         );
     }
 
     protected function getAllocateQuery()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-        $date = $date->format('Ym') . '%';
-
         return str_replace(
             '$date',
-            $date,
+            $this->getDate()->format('Ym') . '%',
             file_get_contents(__DIR__ . '/../../../../storage/sql/Allocate.sql')
         );
 
@@ -124,46 +115,36 @@ class SellAndPurchaseAndBackController extends Controller
 
     protected function getSoldBackQuery()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-        $date = $date->format('Ym') . '%';
-
         return str_replace(
             '$date',
-            $date,
+            $this->getDate()->format('Ym') . '%',
             file_get_contents(__DIR__ . '/../../../../storage/sql/SoldBack.sql')
         );
     }
 
     protected function getSellQuery()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-        $date = $date->format('Ym') . '%';
-
         return str_replace(
             '$date',
-            $date,
+            $this->getDate()->format('Ym') . '%',
             file_get_contents(__DIR__ . '/../../../../storage/sql/Sell.sql')
         );
     }
 
     protected function send()
     {
-        $self = $this;
-
-        Mail::send('emails.creditCard', ['title' => $self->getSubject()], function ($m) use ($self) {
-            foreach ($self->getToList() as $email => $name) {
+        Mail::send('emails.creditCard', ['title' => $this->getSubject()], function ($m) {
+            foreach ($this->getToList() as $email => $name) {
                 $m->to($email, $name);
             }
 
-            foreach ($self->getCCList() as $email => $name) {
+            foreach ($this->getCCList() as $email => $name) {
                 $m->cc($email, $name);
             }
 
             $m
-                ->subject($self->getSubject())
-                ->attach($self->getFilePath());
+                ->subject($this->getSubject())
+                ->attach($this->getFilePath());
             ;
         });
 
@@ -188,10 +169,7 @@ class SellAndPurchaseAndBackController extends Controller
 
     protected function getFileName()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-
-        return ExportExcel::SPB_FILENAME . '_' . $date->format('Ym');
+        return ExportExcel::SPB_FILENAME . '_' . $this->getDate()->format('Ym');
     }
 
     protected function getFilePath()
@@ -201,10 +179,7 @@ class SellAndPurchaseAndBackController extends Controller
 
     protected function getSubject()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-
-        return $date->format('Ym') . '進銷退明細';
+        return $this->getDate()->format('Ym') . '進銷退明細';
     }
 
     protected function getExportHead()

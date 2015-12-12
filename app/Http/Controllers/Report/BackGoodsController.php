@@ -26,8 +26,7 @@ class BackGoodsController extends Controller
             
         Mail::send('emails.creditCard', ['title' => $this->getSubject()], function ($m) {
             $m->subject($this->getSubject())->attach($this->getFilePath());
-            
-            $this->addMailGetter($m, $this->getToList())->addMailGetter($m, $this->getCCList(), 'cc');
+            $m->to($this->getToList())->cc($this->getCCList());
         });
 
         return "{$this->getSubject()} send complete!";
@@ -49,20 +48,11 @@ class BackGoodsController extends Controller
         ];
     }
 
-    protected function addMailGetter(&$m, array $list, $action = 'to')
-    {
-        foreach ($list as $email => $name) {
-            $m->$action($email, $name);
-        }
-
-        return $this;
-    }
-
     protected function getToList()
     {
         return [
             'oliver@chinghwa.com.tw' => '誌遠',
-            'vivian@chinghwa.com.tw' => '玉英'
+            'vivian@chinghwa.com.tw' => '玉英',
         ];
     }
 
