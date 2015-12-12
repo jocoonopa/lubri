@@ -133,9 +133,6 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 
 // 會員比對類的處理都在這裡
 Route::group(['namespace' => 'Compare', 'prefix' => 'compare'], function() {
-	Route::get('/m64', ['uses' => 'Magazine64Controller@index', 'as' => 'compare_m64']);
-	Route::post('/m64', 'Magazine64Controller@process');
-
 	Route::get('/honeybaby', ['uses' => 'HoneyBabyController@index', 'as' => 'compare_honeybaby']);
 	Route::post('/honeybaby', ['uses' => 'HoneyBabyController@process', 'middleware' => 'honeybaby']);
 
