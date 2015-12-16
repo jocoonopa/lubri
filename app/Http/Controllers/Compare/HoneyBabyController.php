@@ -10,7 +10,6 @@ use App\Utility\Chinghwa\Helper\Temper;
 use App\Utility\Chinghwa\Helper\Compare\FileHelper;
 use App\Utility\Chinghwa\Helper\Compare\Handler\MixInfoHandler;
 use Illuminate\Http\Request;
-
 use Input;
 use Response;
 use Maatwebsite\Excel\Facades\Excel;

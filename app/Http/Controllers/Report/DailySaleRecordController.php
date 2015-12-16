@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
-use App\Utility\Chinghwa\Report\NewExcel\DailySaleRecordExport;
+use App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\DailySaleRecordExport;
 use Mail;
 use Carbon\Carbon;
 
@@ -23,9 +23,7 @@ class DailySaleRecordController extends Controller
     {
         $export->handleExport();
 
-        $this->sendMail();
-
-        return '每日業績 send complete!';
+        return $this->sendMail(); 
     }
 
     protected function sendMail()
@@ -44,5 +42,7 @@ class DailySaleRecordController extends Controller
                 ->attach($filePath);
             ;
         });
+
+        return '每日業績 send complete!';
     }
 }

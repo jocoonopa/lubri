@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utility\Chinghwa\Report\NewExcel;
+namespace App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel;
 
 use App\Utility\Chinghwa\ExportExcel;
 

@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Utility\Chinghwa\Report\NewExcel\DataHelper;
+namespace App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\Helper;
 
-use App\Utility\Chinghwa\Report\DailySaleRecord;
-use App\Utility\Chinghwa\Helper\Report\DailySaleRecordHelper;
+use App\Utility\Chinghwa\Report\DailySaleRecord\DailySaleRecord;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
-class DailySaleRecordDataHelper
+class DataHelper
 {
 	public $erpGroups = [];
     public $posGroups = [];
@@ -49,7 +48,7 @@ class DailySaleRecordDataHelper
         return str_replace(
             ['$startDate', '$endDate'],
             [$this->date->modify('first day of this month')->format('Ymd'), $this->date->modify('last day of this month')->format('Ymd')],
-            file_get_contents(__DIR__ . "/../../../../../../storage/sql/DailySaleRecord/{$db}.sql")
+            file_get_contents(__DIR__ . "/../../../../../../../storage/sql/DailySaleRecord/{$db}.sql")
         );
     }
 
@@ -65,7 +64,7 @@ class DailySaleRecordDataHelper
     {
         $groupIndexData = [];
 
-        $list = DailySaleRecordHelper::getErpGroupList();
+        $list = $this->getErpGroupList();
 
         foreach ($erpData as $erp) {
             $groupName = in_array($erp[DailySaleRecord::ERP_CORPCODE_COLUMN], $list) ? $erp[DailySaleRecord::ERP_CORPCODE_COLUMN] : DailySaleRecord::ERP_OUTTUNNEL;
@@ -80,7 +79,7 @@ class DailySaleRecordDataHelper
     {
         $groupIndexData = [];
 
-        $list = DailySaleRecordHelper::getPosGroupList();
+        $list = $this->getPosGroupList();
 
         foreach ($posData as $pos) {
             $groupName = (in_array($pos[DailySaleRecord::POS_CORPCODE_COLUMN], $list)) 
@@ -226,5 +225,39 @@ class DailySaleRecordDataHelper
         $key = array_search(trim($code), array_column($this->ctiCallLog, DailySaleRecord::CTI_JOIN_COLUMN));
 
         return (false !== $key) ? $this->ctiCallLog[$key] : null;
+    }
+
+    /**
+     * 'CH51000' 直效行銷處級辦公室
+     * 'CH53000' 客經1
+     * 'CH54000' 客經2
+     * 'CH54100' 客經3
+     * 'CH54200' 客經4
+     * 
+     * @return array
+     */
+    protected function getErpGroupList()
+    {
+        return [
+            'CH51000', 
+            'CH53000', 
+            'CH54000', 
+            'CH54100', 
+            'CH54200' 
+        ];
+    }
+
+    protected function getPosGroupList()
+    {
+        return [
+            'S008',
+            'S009',
+            'S013',
+            'S014',
+            'S017',
+            'S028',
+            'S049',
+            'S051'
+        ];
     }
 }

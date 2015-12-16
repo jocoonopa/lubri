@@ -148,7 +148,12 @@ return [
          * Extend
          */
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        Illuminate\Html\HtmlServiceProvider::class
+        Illuminate\Html\HtmlServiceProvider::class,
+
+        /**
+         * Chinghwa
+         */
+        App\Providers\ChinghwaServiceProvider::class
     ],
 
     /*
@@ -198,7 +203,9 @@ return [
         'View'      => Illuminate\Support\Facades\View::class,
         'Excel'     => Maatwebsite\Excel\Facades\Excel::class,
         'Form' 		=> Illuminate\Html\FormFacade::class,
-      	'Html' 		=> Illuminate\Html\HtmlFacade::class
+      	'Html' 		=> Illuminate\Html\HtmlFacade::class,
+        
+        'Chinghwa' => App\Facades\Chinghwa::class
     ],
 
 ];

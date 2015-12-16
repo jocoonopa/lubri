@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utility\Chinghwa\Report;
+namespace App\Utility\Chinghwa\Report\DailySaleRecord;
 
 class DailySaleRecord
 {

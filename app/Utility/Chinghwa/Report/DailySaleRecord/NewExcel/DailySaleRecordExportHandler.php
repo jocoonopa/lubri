@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Utility\Chinghwa\Report\NewExcel;
+namespace App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel;
 
 use App\Utility\Chinghwa\ExportExcel;
-use App\Utility\Chinghwa\Report\DailySaleRecord;
-use App\Utility\Chinghwa\Helper\Report\DailySaleRecordHelper;
-use App\Utility\Chinghwa\Report\NewExcel\DailySaleRecordExport;
-use App\Utility\Chinghwa\Report\NewExcel\DataHelper\DailySaleRecordDataHelper;
+use App\Utility\Chinghwa\Report\DailySaleRecord\DailySaleRecord;
+use App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\DailySaleRecordExport;
+use App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\Helper\DataHelper;
 
 class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
@@ -58,7 +57,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
 
     protected function initDataHelper()
     {
-        $this->dataHelper = new DailySaleRecordDataHelper($this->date);
+        $this->dataHelper = new DataHelper($this->date);
 
         return $this;
     }
@@ -166,7 +165,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
 
     protected function appendHead()
     {
-        $this->targetSheet->row($this->getIndex(), DailySaleRecordHelper::getExcelHead());
+        $this->targetSheet->row($this->getIndex(), $this->getExcelHead());
 
         return $this;
     }
@@ -265,5 +264,23 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
         });
 
         return $this;
+    }
+
+    public function getExcelHead()
+    {
+        return [
+            '部門',
+            '人員代碼',
+            '姓名',      
+            '會員數',     
+            '訂單數',     
+            '淨額',      
+            '會員均單',    
+            '訂單均價',    
+            '撥打會員數',   
+            '撥打通數',    
+            '撥打秒數',
+            '工作日' 
+        ];
     }
 }

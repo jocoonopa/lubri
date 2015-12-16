@@ -14,8 +14,14 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'App\Events\SomeEvent' => [
-            'App\Listeners\EventListener',
+            'App\Handlers\Events\EmailSomeEvent',
+            'App\Handlers\Events\LogSomeEvent',
         ],
+
+        'App\Events\Flap\CCS_OrderIndex\PrefixEvent' => [
+            'App\Handlers\Events\Flap\CCS_OrderIndex\PrefixEvent\ModifyOrderEvent',
+            'App\Handlers\Events\Flap\CCS_OrderIndex\PrefixEvent\MailNotifyEvent'
+        ]
     ];
 
     /**
@@ -27,7 +33,5 @@ class EventServiceProvider extends ServiceProvider
     public function boot(DispatcherContract $events)
     {
         parent::boot($events);
-
-        //
     }
 }

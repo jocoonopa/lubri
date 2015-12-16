@@ -15,6 +15,8 @@ Route::get('/', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);
 
+Route::get('/event', ['uses' => 'Event\EventController@index']);
+
 Route::get('/home', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);
@@ -32,6 +34,10 @@ Route::group(['namespace' => 'Pos', 'prefix' => 'pos/store'], function () {
 Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 	Route::get('members', 'MemberController@index');
 	Route::get('members/{code}', 'MemberController@show');
+
+	Route::group(['namespace' => 'CCS_OrderIndex', 'prefix' => 'ccs_order_index'], function () {
+		Route::get('prefix/update', ['uses' => 'PrefixController@update', 'middleware' => 'report']);
+	});
 });
 
 // 使用者資料匯入更新

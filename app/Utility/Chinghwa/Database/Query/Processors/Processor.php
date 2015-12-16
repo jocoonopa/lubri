@@ -4,13 +4,12 @@ namespace App\Utility\Chinghwa\Database\Query\Processors;
 
 use App\Utility\Chinghwa\Database\Connectors\Connector;
 use Illuminate\Database\Query\Builder;
-use DB;
 
 class Processor
 {
     public static function table($name)
     {
-        return DB::table($name);
+        return app()->make('db')->table($name);
     } 
 
 	public static function execute($query, $cnx)

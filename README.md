@@ -24,6 +24,22 @@
     }
 ]
 
+
+Report Basic Component:
+[
+    App\Utility\Chinghwa\Report\NewExcel\SomeExport, 
+    App\Utility\Chinghwa\Report\NewExcel\SomeExportHandler,
+    App\Utility\Chinghwa\Report\NewExcel\DataHelper\SomeDataHelper,
+    App\Utility\Chinghwa\Report\Some
+
+    => 
+
+    App\Utility\Chinghwa\Report\NewExcel\Some\SomeExport, 
+    App\Utility\Chinghwa\Report\NewExcel\Some\SomeExportHandler,
+    App\Utility\Chinghwa\Report\NewExcel\Some\DataHelper\SomeDataHelper,
+    App\Utility\Chinghwa\Report\Some
+]
+
 // 十一月
 // return [
 //     'S009' => [

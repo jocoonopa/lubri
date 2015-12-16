@@ -16,7 +16,8 @@
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~4.0",
         "phpspec/phpspec": "~2.1",
-        "laracasts/integrated": "^0.15.6"
+        "laracasts/integrated": "^0.15.6",
+        "benconstable/phpspec-laravel": "~2.0"
     },
     "autoload": {
         "classmap": [
@@ -51,6 +52,7 @@
         ]
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "bin-dir": "bin"
     }
 }
