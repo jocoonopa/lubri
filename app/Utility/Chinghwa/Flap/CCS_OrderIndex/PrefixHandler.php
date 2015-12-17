@@ -15,9 +15,9 @@ class PrefixHandler
 
 	public function execModifyOrderNos()
 	{
-		$orderNos = array_fetch($this->getNotYetModifyed(), self::SERNO_KEY);
+		$orderNos = array_pluck($this->getNotYetModifyed(), self::SERNO_KEY);
 
-		$indexSerNos = array_fetch($this->getCCSOrderDivIndexNotYetModifyed($orderNos), self::DIVNO_KEY);
+		$indexSerNos = array_pluck($this->getCCSOrderDivIndexNotYetModifyed($orderNos), self::DIVNO_KEY);
 
 		$this
 			->execWithQueryArray($this->genUpdateCCSOrderDivIndexQuery($indexSerNos))
