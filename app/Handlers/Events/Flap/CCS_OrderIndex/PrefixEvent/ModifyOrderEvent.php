@@ -17,6 +17,8 @@ class ModifyOrderEvent
      */
     public function handle(PrefixEvent $prefixEvent)
     {
-        $prefixEvent->setModifyOrders(with(new PrefixHandler)->modifyOrderNos()->getModifyOrders());
+        $modifyOrderNos = with(new PrefixHandler)->execModifyOrderNos()->getModifyOrders();
+        
+        return (!empty($modifyOrderNos)) ? $prefixEvent->setModifyOrders($modifyOrderNos) : false;
     }
 }

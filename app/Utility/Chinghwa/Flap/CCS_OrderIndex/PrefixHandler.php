@@ -13,13 +13,11 @@ class PrefixHandler
 
 	protected $modifyOrders = [];
 
-	public function modifyOrderNos()
+	public function execModifyOrderNos()
 	{
-		$orders = $this->getNotYetModifyed();
-		$orderNos = array_fetch($orders, self::SERNO_KEY);
+		$orderNos = array_fetch($this->getNotYetModifyed(), self::SERNO_KEY);
 
-		$orderDivs = $this->getCCSOrderDivIndexNotYetModifyed($orderNos);
-		$indexSerNos = array_fetch($orderDivs, self::DIVNO_KEY);
+		$indexSerNos = array_fetch($this->getCCSOrderDivIndexNotYetModifyed($orderNos), self::DIVNO_KEY);
 
 		$this
 			->execWithQueryArray($this->genUpdateCCSOrderDivIndexQuery($indexSerNos))
