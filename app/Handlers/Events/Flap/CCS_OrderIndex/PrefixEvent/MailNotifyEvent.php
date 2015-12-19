@@ -24,7 +24,12 @@ class MailNotifyEvent
         'jocoonopa@chinghwa.com.tw'  => '洪小閎'
     ];
 
-    protected $subject = '康萃特單號修改通知' . date('Ymd H:i:s');
+    protected $subject;
+
+    public function __construct()
+    {
+        $this->subject = '康萃特單號修改通知' . date('Y-m-d H:i:s');
+    }
 
     /**
      * Handle the event.

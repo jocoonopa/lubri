@@ -21,6 +21,12 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Flap\CCS_OrderIndex\PrefixEvent' => [
             'App\Handlers\Events\Flap\CCS_OrderIndex\PrefixEvent\ModifyOrderEvent',
             'App\Handlers\Events\Flap\CCS_OrderIndex\PrefixEvent\MailNotifyEvent'
+        ],
+
+        'App\Events\Flap\PIS_Goods\FixCPrefixGoodsEvent' => [
+            'App\Handlers\Events\Flap\PIS_Goods\FixCPrefixGoodsEvent\CheckMassAssignEvent',
+            'App\Handlers\Events\Flap\PIS_Goods\FixCPrefixGoodsEvent\ModifyGoodsEvent',
+            'App\Handlers\Events\Flap\PIS_Goods\FixCPrefixGoodsEvent\MailNotifyEvent'
         ]
     ];
 

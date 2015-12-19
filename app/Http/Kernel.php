@@ -31,5 +31,7 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'report' => \App\Http\Middleware\ReportMiddleware::class,
         'honeybaby' => \App\Http\Middleware\HoneyBabyMiddleware::class,
+        'auth.chinghwa' => \App\Http\Middleware\ChinghwaAuthenticate::class,
+        'auth.it' => \App\Http\Middleware\ITAuthenticate::class
     ];
 }

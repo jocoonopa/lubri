@@ -35,6 +35,12 @@
           </ul> 
         </li>
         <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="flap">輔翼修改 <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="flap">
+            <li><a href="{{ route('pis_goods_fix_cprefix_goods_index') }}">贈品新增BUG處理</a></li>                 
+          </ul> 
+        </li>
+        <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="intro">常用資訊<span class="caret"></span></a>  
           <ul class="dropdown-menu" aria-labelledby="intro">
             <li><a href="{{ route('intro_report') }}">報表一覽</a></li>

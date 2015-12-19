@@ -21,8 +21,10 @@ Route::get('/home', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);
 
-// 使用者
-Route::resource('user', 'User\UserController');
+Route::group(['middleware' => ['auth.it']], function () {
+	// 使用者
+	Route::resource('user', 'User\UserController');
+});
 
 // POS 相關
 Route::group(['namespace' => 'Pos', 'prefix' => 'pos/store'], function () {
@@ -37,6 +39,11 @@ Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 
 	Route::group(['namespace' => 'CCS_OrderIndex', 'prefix' => 'ccs_order_index'], function () {
 		Route::get('prefix/update', ['uses' => 'PrefixController@update', 'middleware' => 'report']);
+	});
+
+	Route::group(['namespace' => 'PIS_Goods', 'prefix' => 'pis_goods'], function () {
+		Route::get('fix_cprefix_goods', ['uses' => 'FixCPrefixGoodsController@index', 'as' => 'pis_goods_fix_cprefix_goods_index', 'middleware' => 'auth.chinghwa']);
+		Route::put('fix_cprefix_goods/update', ['uses' => 'FixCPrefixGoodsController@update', 'as' => 'pis_goods_fix_cprefix_goods_update', 'middleware' => 'auth.chinghwa']);
 	});
 });
 

@@ -69,9 +69,9 @@ class ExistHandler
     protected static function checkByiterateList($exitstMember, $row)
     {
         $list = [
-            'CellPhone' => HoneyBaby::IMPORT_MOBILE_INDEX, 
+            'CellPhone'           => HoneyBaby::IMPORT_MOBILE_INDEX, 
             'HomeAddress_Address' => HoneyBaby::IMPORT_ADDRESS_INDEX, 
-            'HomeTel' => HoneyBaby::IMPORT_HOMETEL_INDEX
+            'HomeTel'             => HoneyBaby::IMPORT_HOMETEL_INDEX
         ];
 
         foreach ($list as $memberKey => $rowKey) {
