@@ -12,7 +12,6 @@ class DataHelper
 
 	public function fetchGoodsesBySerNos(array $serNos)
 	{
-		//dd(Processor::toSql($this->getFetchGoodsesBySerNos($serNos)));
 		return Processor::getArrayResult($this->getFetchGoodsesBySerNos($serNos));
 	}
 

@@ -36,7 +36,7 @@ class ITAuthenticate
      */
     public function handle($request, Closure $next)
     {
-        if ('資訊部' !== $this->auth->user()->corp) {
+        if (self::ALLOW_CORP !== $this->auth->user()->corp) {
            \Session::flash('warning', '您不是資訊部人員，沒有足夠權限瀏覽此頁面');
 
            return response()->view('errors.403', [], 403);

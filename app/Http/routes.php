@@ -43,7 +43,7 @@ Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 
 	Route::group(['namespace' => 'PIS_Goods', 'prefix' => 'pis_goods'], function () {
 		Route::get('fix_cprefix_goods', ['uses' => 'FixCPrefixGoodsController@index', 'as' => 'pis_goods_fix_cprefix_goods_index', 'middleware' => 'auth.chinghwa']);
-		Route::put('fix_cprefix_goods/update', ['uses' => 'FixCPrefixGoodsController@update', 'as' => 'pis_goods_fix_cprefix_goods_update', 'middleware' => 'auth.chinghwa']);
+		Route::put('fix_cprefix_goods', ['uses' => 'FixCPrefixGoodsController@update', 'as' => 'pis_goods_fix_cprefix_goods_update', 'middleware' => 'auth.chinghwa']);
 	});
 });
 

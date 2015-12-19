@@ -12,7 +12,9 @@
 		
 		<div class="col-md-12">
 			<h4>{{ $beforeDays }}日內新建之商品列表 </h4>
-
+			
+			@include ('common.successmsg')
+			
 			{!! Form::open(['method' => 'PUT', 'action' => ['Flap\PIS_Goods\FixCPrefixGoodsController@update']]) !!}	
 				@include('flap.pisgoods.fixcgoods.form', ['goodses' => $goodses])
 			{!! Form::close() !!}

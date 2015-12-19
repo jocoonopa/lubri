@@ -36,11 +36,13 @@ class MailNotifyEvent
      */
     public function handle(FixCPrefixGoodsEvent $event)
     {
+        $converts = with(new DataHelper)->fetchGoodsesBySerNos(array_keys($event->getOriginGoodses()));
+
     	Mail::send(
     		'emails.flap.PIS_Goods.fixCprefix', 
     		[
     			'originGoodses' => $event->getOriginGoodses(),
-    			'convertGoodses' => with(new DataHelper)->fetchGoodsesBySerNos(array_keys($event->getOriginGoodses())), 
+    			'convertGoodses' => $converts, 
     			'masses' => $event->getMassCodesList(), 
     			'title' => $this->subject
     		], 
@@ -48,6 +50,6 @@ class MailNotifyEvent
     			$m->subject($this->subject)->to($this->to)->cc($this->cc);
     	});
 
-    	return $this->subject;
+    	return $converts;
     }
 }

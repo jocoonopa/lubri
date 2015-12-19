@@ -16,7 +16,7 @@
 		@foreach ($goodses as $goods)
 		<tr>
 			<td>
-				{!! Form::checkbox('Codes[]', $goods['Code'], true) !!} 
+				{!! Form::checkbox('Codes[]', $goods['Code'], false) !!} 
 			</td>
 			<td>{{ $goods['Code'] }}</td>
 			<td>{{ $goods['Name'] }}</td>
