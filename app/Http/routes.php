@@ -21,7 +21,7 @@ Route::get('/home', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);
 
-Route::group(['middleware' => ['auth.it']], function () {
+Route::group(['middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '總經理辦公室']], function () {
 	// 使用者
 	Route::resource('user', 'User\UserController');
 });
@@ -34,14 +34,16 @@ Route::group(['namespace' => 'Pos', 'prefix' => 'pos/store'], function () {
 });
 
 Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
-	Route::get('members', 'MemberController@index');
-	Route::get('members/{code}', 'MemberController@show');
+	Route::group(['middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '客戶經營一部', '客戶經營二部', '客戶經營三部', '客戶經營四部']], function () {
+		Route::get('members', 'MemberController@index');
+		Route::get('members/{code}', 'MemberController@show');
+	});
 
 	Route::group(['namespace' => 'CCS_OrderIndex', 'prefix' => 'ccs_order_index'], function () {
 		Route::get('prefix/update', ['uses' => 'PrefixController@update', 'middleware' => 'report']);
 	});
 
-	Route::group(['namespace' => 'PIS_Goods', 'prefix' => 'pis_goods'], function () {
+	Route::group(['namespace' => 'PIS_Goods', 'prefix' => 'pis_goods', 'middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '供應部NEW']], function () {
 		Route::get('fix_cprefix_goods', ['uses' => 'FixCPrefixGoodsController@index', 'as' => 'pis_goods_fix_cprefix_goods_index', 'middleware' => 'auth.chinghwa']);
 		Route::put('fix_cprefix_goods', ['uses' => 'FixCPrefixGoodsController@update', 'as' => 'pis_goods_fix_cprefix_goods_update', 'middleware' => 'auth.chinghwa']);
 	});

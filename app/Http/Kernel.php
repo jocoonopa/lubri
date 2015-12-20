@@ -26,12 +26,13 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'report' => \App\Http\Middleware\ReportMiddleware::class,
-        'honeybaby' => \App\Http\Middleware\HoneyBabyMiddleware::class,
+        'auth'          => \App\Http\Middleware\Authenticate::class,
+        'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'report'        => \App\Http\Middleware\ReportMiddleware::class,
+        'honeybaby'     => \App\Http\Middleware\HoneyBabyMiddleware::class,
         'auth.chinghwa' => \App\Http\Middleware\ChinghwaAuthenticate::class,
-        'auth.it' => \App\Http\Middleware\ITAuthenticate::class
+        'auth.it'       => \App\Http\Middleware\ITAuthenticate::class,
+        'auth.corp'     => \App\Http\Middleware\CorpAuthenticate::class
     ];
 }

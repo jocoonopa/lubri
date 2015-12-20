@@ -4,11 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 
-class ITAuthenticate
+class CorpAuthenticate
 {
-    const ALLOW_CORP = '資訊部';
-
     /**
      * The Guard implementation.
      *
@@ -36,10 +35,26 @@ class ITAuthenticate
      */
     public function handle($request, Closure $next)
     {
-        if (self::ALLOW_CORP !== $this->auth->user()->corp) {
-           return response()->view('errors.403', ['title' => '您不是資訊部人員，沒有足夠權限瀏覽此頁面'], 403);
+        $corps = $this->getCorp($request);
+
+        if (false === array_search($this->auth->user()->corp, $corps)) {
+           return response()->view('errors.403', ['title' => '您不是<strong>' . implode($corps, ',') . '</strong>人員，沒有足夠權限瀏覽此頁面'], 403);
         }
 
         return $next($request);
+    }
+
+    protected function getCorp($request)
+    {
+        $corps = [];
+        $actions = $request->route()->getAction();
+
+        if (is_array($actions['corp'])) {
+            return array_merge($corps, $actions['corp']);
+        }
+
+        $corps[] = $actions['corp'];
+
+        return $corps;
     }
 }

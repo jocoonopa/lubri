@@ -40,6 +40,10 @@ Report Basic Component:
     App\Utility\Chinghwa\Report\Some
 ]
 
+Laravel Simple ACL
+https://gist.github.com/drawmyattention/8cb599ee5dc0af5f4246
+
+
 // 十一月
 // return [
 //     'S009' => [

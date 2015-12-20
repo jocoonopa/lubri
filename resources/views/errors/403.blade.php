@@ -32,16 +32,26 @@
             }
 
             .title {
-                font-size: 72px;
+                font-size: 36px;
                 margin-bottom: 40px;
+            }
+
+            .title strong {
+                color: #000000;
+                font-weight: bold;
             }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="content">
-                <div class="title">您沒有足夠權限</div>
+                <div class="title">{!! $title or '您沒有足夠權限' !!}，五秒後系統將跳轉首頁</div>
             </div>
         </div>
+        <script>
+        setTimeout(function () {
+            window.location.href = '/';
+        }, 5000);
+        </script>
     </body>
 </html>

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Flap\PIS_Goods;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
+use App\Http\Requests\Flap\PIS_Goods\FixCPrefixRequest;
 use App\Http\Controllers\Controller;
 use App\Events\Flap\PIS_Goods\FixCPrefixGoodsEvent;
 use App\Utility\Chinghwa\Helper\Flap\PIS_Goods\FixCPrefixGoods\DataHelper;
@@ -30,12 +28,8 @@ class FixCPrefixGoodsController extends Controller
         ]);
     }
 
-    public function update(Request $request, DataHelper $dataHelper)
+    public function update(FixCPrefixRequest $request)
     {
-        if (empty(Input::get('Codes'))) {
-            return redirect()->route('pis_goods_fix_cprefix_goods_index');
-        }
-
         $event = Event::fire(new FixCPrefixGoodsEvent(self::BEFOREDAYS, Input::get('Codes')));
 
         if (!empty($event[self::MODIFYGOODS_EVENT_INDEX])) {
