@@ -10,30 +10,48 @@ class DataHelper
 {
 	const C_COLOR_SERNO = 'COLOR000000000000000003159';
 
+	/**
+	 * 根據傳入的SerNo 集合而成的陣列，取得 PIS_Goods 的集合陣列
+	 * 
+	 * @param  array  $serNos [array of serno]
+	 * @return array
+	 */
 	public function fetchGoodsesBySerNos(array $serNos)
 	{
-		return Processor::getArrayResult($this->getFetchGoodsesBySerNos($serNos));
+		return Processor::getArrayResult($this->getFetchGoodsesBySerNosQuery($serNos));
 	}
 
-	protected function getFetchGoodsesBySerNos(array $serNos)
+	protected function getFetchGoodsesBySerNosQuery(array $serNos)
 	{
 		return Processor::table('PIS_Goods')
 			->whereIn('SerNo', $serNos)
 		;
 	}
 
-	protected function getFetchGoodsesByCodes(array $codes)
+	/**
+	 * 根據傳入的code 集合而成的陣列，取得 PIS_Goods 的集合陣列
+	 * 
+	 * @param  array  $codes
+	 * @return array
+	 */
+	public function fetchGoodsesByCodes(array $codes)
+	{
+		return Processor::getArrayResult($this->getFetchGoodsesByCodesQuery($codes));
+	}
+
+	protected function getFetchGoodsesByCodesQuery(array $codes)
 	{
 		return Processor::table('PIS_Goods')
 			->whereIn('Code', $codes)
 		;
 	}
 
-	public function fetchGoodsesByCodes(array $codes)
-	{
-		return Processor::getArrayResult($this->getFetchGoodsesByCodes($codes));
-	}
-
+	/**
+	 * 取得 $number 日之內建立的商品清單[ PIS_Goods 的集合陣列 ]
+	 * 
+	 * @param  int $number [幾天之內的天數]
+	 * @return array
+	 */
 	public function getNDaysBeforeCreatedCodes($number)
 	{
 		return Processor::getArrayResult($this->getNDaysBeforeCreatedCodesQuery($number));
@@ -47,6 +65,14 @@ class DataHelper
 		;
 	}
 
+	/**
+	 * 根據 getNDaysBeforeCreatedCodes() 的結果，
+	 * 判斷傳入的 $codes 有無違法修改(mass assign)的意圖
+	 * 
+	 * @param  array  $codes  [PIS_Goods 的 code 集合陣列]
+	 * @param  int 	  $number [幾天之內的天數]
+	 * @return array
+	 */
 	public function getMassAssign(array $codes, $number)
 	{	
 		$nDaysCodes = array_fetch($this->getNDaysBeforeCreatedCodes($number), 'Code');
@@ -54,34 +80,51 @@ class DataHelper
 		return array_diff($codes, $nDaysCodes);
 	}
 
+	/**
+	 * 轉將指定的PIS_Goods(by Code)，轉換為贈品
+	 * 
+	 * @param  array  $codes      [PIS_Goods 的 code 集合陣列]
+	 * @param  int 	  $beforeDays [幾天之內的天數]
+	 * @return array  $map 		  ["originCode" => 'newCode']            
+	 */
 	public function convertToCGoods(array $codes, $beforeDays)
 	{
+		$map = [];
+
 		foreach ($codes as $code) {
-			$newCCode = $this->getNewCCode($beforeDays);
+			Processor::execErp($this->getConvertyQuery($newCCode = $this->getNewCCode(), $code));
 
-			$query = "UPDATE PIS_Goods SET Code='{$newCCode}', Barcode='{$newCCode}', ColorSerNo='{$this->getCColorSerNo()}' WHERE Code='{$code}'";
-
-			Processor::execErp($query);
+			$map[$code] = $newCCode;
 		}
 
-		return $this;
+		return $map;
 	}
 
-	protected function getNewCCode($number)
+	protected function getConvertyQuery($newCCode, $code)
 	{
-		$latestCcode = array_get($this->findLatestCCode($number), '0.Code');
+		return "UPDATE PIS_Goods SET Code='{$newCCode}', Barcode='{$newCCode}', ColorSerNo='{$this->getCColorSerNo()}' WHERE Code='{$code}'";
+	}
+
+	/**
+	 * 取得新的可插入之 Code
+	 * 
+	 * @return string        
+	 */
+	protected function getNewCCode()
+	{
+		$latestCcode = array_get($this->findLatestCCode(), '0.Code');
 
 		$incrementNum = preg_replace('/\D/', '', $latestCcode);
 
 		return substr($latestCcode, 0, 1) . str_pad(++ $incrementNum, 5, 0, STR_PAD_LEFT);
 	}
 
-	protected function findLatestCCode($number)
+	protected function findLatestCCode()
 	{
-		return Processor::getArrayResult($this->getFindLatestCCodeQuery($number));
+		return Processor::getArrayResult($this->getFindLatestCCodeQuery());
 	}
 
-	protected function getFindLatestCCodeQuery($number)
+	protected function getFindLatestCCodeQuery()
 	{
 		return Processor::table('PIS_Goods')
 			->select('TOP 1 Code')

@@ -17,6 +17,13 @@ class ModifyGoodsEvent
      */
     public function handle(FixCPrefixGoodsEvent $event)
     {
-        with(new DataHelper)->convertToCGoods($event->getTargetCodes(), $event->getBeforeDays());
+        $map = with(new DataHelper)->convertToCGoods($event->getTargetCodes(), $event->getBeforeDays());
+
+        return $this->genReturnMsg($map);
+    }
+
+    protected function genReturnMsg(array $map)
+    {
+        return str_replace(['=', '&'],['->', ', '], http_build_query($map));
     }
 }

@@ -35,6 +35,11 @@ class FixCPrefixGoodsEvent extends Event
         return $this;
     }
 
+    /**
+     * 賦值 Mass Assign Codes, 同時也將 targetCodes 中 存在的 mass assign 移除
+     * 
+     * @param array $list [Mass assign list]
+     */
     public function setMassCodesList(array $list)
     {
         $this->massCodesList = $list;

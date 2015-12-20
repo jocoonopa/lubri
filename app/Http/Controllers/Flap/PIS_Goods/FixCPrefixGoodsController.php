@@ -13,8 +13,9 @@ use Input;
 
 class FixCPrefixGoodsController extends Controller
 {
-    const BEFOREDAYS = 40;
-    const MAILNOTIFY_EVENT_INDEX = 2;
+    const BEFOREDAYS              = 10;
+    const MODIFYGOODS_EVENT_INDEX = 1;
+    const MAILNOTIFY_EVENT_INDEX  = 2;
 
     /**
      * Show the form for editing the specified resource.
@@ -31,15 +32,16 @@ class FixCPrefixGoodsController extends Controller
 
     public function update(Request $request, DataHelper $dataHelper)
     {
-        $event = Event::fire(new FixCPrefixGoodsEvent(self::BEFOREDAYS, Input::get('Codes')));
-
-        if (!empty($event[self::MAILNOTIFY_EVENT_INDEX])) {
-            \Session::flash('success', implode(array_fetch($event[self::MAILNOTIFY_EVENT_INDEX], 'Code'), ',') . '  贈品轉換完成!');  
+        if (empty(Input::get('Codes'))) {
+            return redirect()->route('pis_goods_fix_cprefix_goods_index');
         }
 
-        return view('flap.pisgoods.fixcgoods.index', [
-            'goodses' => $dataHelper->getNDaysBeforeCreatedCodes(self::BEFOREDAYS), 
-            'beforeDays' => self::BEFOREDAYS
-        ]);
+        $event = Event::fire(new FixCPrefixGoodsEvent(self::BEFOREDAYS, Input::get('Codes')));
+
+        if (!empty($event[self::MODIFYGOODS_EVENT_INDEX])) {
+            \Session::flash('success', "{$event[self::MODIFYGOODS_EVENT_INDEX]}贈品轉換完成!<br/>{$event[self::MAILNOTIFY_EVENT_INDEX]}");  
+        }
+
+        return redirect()->route('pis_goods_fix_cprefix_goods_index');
     }
 }

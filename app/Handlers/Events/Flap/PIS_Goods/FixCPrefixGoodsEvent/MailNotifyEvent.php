@@ -25,7 +25,7 @@ class MailNotifyEvent
 
 	public function __construct()
 	{
-		$this->subject = '輔翼商品轉贈品修改紀錄通知' . date('Y-m-d H:i:s');
+		$this->subject = '輔翼商品轉贈品修改紀錄通知寄出@' . date('Y-m-d H:i:s');
 	}
 
     /**
@@ -36,13 +36,11 @@ class MailNotifyEvent
      */
     public function handle(FixCPrefixGoodsEvent $event)
     {
-        $converts = with(new DataHelper)->fetchGoodsesBySerNos(array_keys($event->getOriginGoodses()));
-
     	Mail::send(
     		'emails.flap.PIS_Goods.fixCprefix', 
     		[
     			'originGoodses' => $event->getOriginGoodses(),
-    			'convertGoodses' => $converts, 
+    			'convertGoodses' => with(new DataHelper)->fetchGoodsesBySerNos(array_keys($event->getOriginGoodses())), 
     			'masses' => $event->getMassCodesList(), 
     			'title' => $this->subject
     		], 
@@ -50,6 +48,6 @@ class MailNotifyEvent
     			$m->subject($this->subject)->to($this->to)->cc($this->cc);
     	});
 
-    	return $converts;
+    	return $this->subject;
     }
 }

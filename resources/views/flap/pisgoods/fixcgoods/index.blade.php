@@ -31,5 +31,11 @@ $('#check-all').click(function () {
 $('#inverse-check-all').click(function () {
 	$('input[name="Codes[]"]').prop('checked', false);
 });
+
+$('button[type="submit"]').click(function () {
+	(0 < $('input[type="checkbox"]:checked').length) ? $('form').submit() : alert('您沒有勾選任何商品編號!');
+
+	return false;
+});
 </script>
 @stop
