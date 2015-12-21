@@ -31,14 +31,13 @@ class EventServiceProvider extends ServiceProvider
 
         'App\Events\Flap\PIS_Goods\CopyToCometrust\FindEvent' => [
             'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\FindFromErpEvent',
-            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\ResultAssembleEvent'
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\CheckIfCTExistEvent'
         ],
 
         'App\Events\Flap\PIS_Goods\CopyToCometrust\CopyEvent' => [
             'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\FindFromErpEvent',
-            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\ResultAssembleEvent',
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\CheckIfCTExistEvent',
             'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Copy\CopyFromErpEvent',
-            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Copy\ResultAssembleEvent',
             'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Copy\MailNotifyEvent'
         ]
     ];

@@ -2,30 +2,31 @@
 
 namespace App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find;
 
-use App\Events\Flap\PIS_Goods\CopyToCometrust\FindEvent;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Events\Event;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 
 class FindFromErpEvent
 {
-    /**
-     * Create the event listener.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
     /**
      * Handle the event.
      *
      * @param  FindEvent  $event
      * @return void
      */
-    public function handle(FindEvent $event)
+    public function handle(Event $event)
     {
-        //
+        $codes = $event->getCodes();
+
+        return $event->setGoodses(Processor::getArrayResult($this->getQuery($codes)));
+    }
+
+    public function getQuery(array $codes)
+    {
+        return Processor::table('PIS_Goods')
+            ->whereIn('Code', $codes)
+            ->where('Code', 'NOT LIKE', 'CT%')
+        ;
     }
 }

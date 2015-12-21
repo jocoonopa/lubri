@@ -10,23 +10,41 @@ class CopyEvent extends Event
 {
     use SerializesModels;
 
+    protected $codes = [];
+    protected $goodses = [];
+
     /**
      * Create a new event instance.
      *
+     * @param array $codes
      * @return void
      */
-    public function __construct()
+    public function __construct(array $codes)
     {
-        //
+        $this->setCodes($codes);
     }
 
-    /**
-     * Get the channels the event should be broadcast on.
-     *
-     * @return array
-     */
-    public function broadcastOn()
+    public function setCodes(array $codes)
     {
-        return [];
+        $this->codes = $codes;
+
+        return $this;
+    }
+
+    public function getCodes()
+    {
+        return $this->codes;
+    }
+
+    public function setGoodses(array $goodses)
+    {
+        $this->goodses = $goodses;
+
+        return $this;
+    }
+
+    public function getGoodses()
+    {
+        return $this->goodses;
     }
 }

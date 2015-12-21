@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Flap\PIS_Goods;
 
 use App\Http\Requests\Request;
+use Session;
 
 class CopyToCometrustRequest extends Request
 {
@@ -29,12 +30,7 @@ class CopyToCometrustRequest extends Request
     public function rules()
     {
         return [
-            'code' => 'required|min:6'
+            'Codes' => 'required|array|min:1'
         ];
-    }
-
-    public function response(array $errors)
-    {
-       dd($errors);
     }
 }

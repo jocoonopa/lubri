@@ -3,14 +3,28 @@
 namespace App\Utility\Chinghwa\Helper;
 
 use App\Utility\Chinghwa\Database\Query\Grammers\Grammer;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class PISGoodsImportQueryHelper
 {
-	const GOODS_SERNO_LENGTH = 26;
+	const GOODS_SERNO_LENGTH             = 26;
 	const GOODS_SERNO_NUMBER_PART_LENGTH = 21;
-	const GOODS_SERNO_PREFIX = 'GOODS';
+	const GOODS_SERNO_PREFIX             = 'GOODS';
 
 	protected $currentSerNo;
+
+	public function copy(array $codes)
+	{
+		foreach ($codes as $code) {
+			$lastSerNo = array_get(Processor::getArrayResult($this->genFetchLastSerNoQuery()), '0.SerNo');
+
+			$row = Processor::getArrayResult($this->genSelectQuery([$code]));
+
+			Processor::execErp($this->genInsertQuery($row[0], $lastSerNo));
+		}
+
+		return $this;
+	}
 
 	public function setCurrentSerNo($val)
 	{
@@ -24,9 +38,9 @@ class PISGoodsImportQueryHelper
 		return $this->currentSerNo;
 	}
 
-	public function genSelectQuery()
+	public function genSelectQuery($codes = [])
 	{
-		$sql = "SELECT * FROM PIS_Goods WHERE Code IN ({$this->genInPartialQuery($this->getCodeList())}) ORDER BY CRT_TIME DESC";
+		$sql = "SELECT * FROM PIS_Goods WHERE Code IN ({$this->genInPartialQuery($this->getCodeList($codes))}) ORDER BY CRT_TIME DESC";
 
 		return $sql;
 	}
@@ -36,9 +50,9 @@ class PISGoodsImportQueryHelper
 		return Grammer::genInQuery($codes);
 	}
 
-	public function getCodeList()
+	public function getCodeList($codes = [])
 	{
-		return json_decode(file_get_contents(__DIR__ . '/../../../../storage/json/goodslist.json'), true);
+		return !empty($codes) ? $codes : json_decode(file_get_contents(__DIR__ . '/../../../../storage/json/goodslist.json'), true);
 	}
 
 	public function genInsertQuery(array $row, &$lastSerNo)

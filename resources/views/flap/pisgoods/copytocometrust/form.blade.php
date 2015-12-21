@@ -11,18 +11,30 @@
 			<th>對應康萃特代碼</th>
 			<th>商品名稱</th>
 			<th>建立時間</th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
 		@foreach ($goodses as $goods)
-		<tr>
+		<tr data-code="{{ $goods['Code'] }}">
 			<td>
-				{!! Form::checkbox('Codes[]', $goods['Code'], false) !!} 
+				@if (false === $goods['ctCode']) 
+					{!! Form::checkbox('Codes[]', $goods['Code'], false) !!} 
+				@endif
 			</td>
 			<td>{{ $goods['Code'] }}</td>
-			<td>CTxxxxx</td>
+			<td>
+				@if (false !== $goods['ctCode']) 
+					{{ $goods['ctCode'] }}
+				@endif
+			</td>
 			<td>{{ $goods['Name'] }}</td>
 			<td>{{ $goods['CRT_TIME'] }}</td>
+			<td>
+				<button class="jq-remove btn btn-warning btn-xs">
+					<span class="glyphicon glyphicon-remove"></span>
+				</button>
+			</td>
 		</tr>
 		@endforeach 
 	</tbody>
