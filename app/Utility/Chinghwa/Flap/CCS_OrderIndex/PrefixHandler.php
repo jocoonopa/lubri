@@ -6,16 +6,17 @@ use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class PrefixHandler
 {
-	const COMETRUES_PREFIX = 'CT';
-	const ORDERNO_KEY = 'OrderNo';
-	const SERNO_KEY = 'SerNo';
-	const DIVNO_KEY = 'No';
+	const COMETRUES_PREFIX     = 'CT';
+	const ORDERINDEX_TABLENAME = 'CCS_OrderIndex';
+	const ORDERNO_KEY          = 'OrderNo';
+	const SERNO_KEY            = 'SerNo';
+	const DIVNO_KEY            = 'No';
 
 	protected $modifyOrders = [];
 
 	public function execModifyOrderNos()
 	{
-		$orderNos = array_pluck($this->getNotYetModifyed(), self::SERNO_KEY);
+		$orderNos = array_pluck($this->getNotYetModifyed(), self::ORDERNO_KEY);
 
 		$indexSerNos = array_pluck($this->getCCSOrderDivIndexNotYetModifyed($orderNos), self::DIVNO_KEY);
 
@@ -67,6 +68,7 @@ class PrefixHandler
 	{
 		return Processor::table('CCS_OrderIndex')
 			->leftJoin('FAS_Corp', 'CCS_OrderIndex.DeptSerNo', '=', 'FAS_Corp.SerNo')
+			->select('CCS_OrderIndex.SerNo, CCS_OrderIndex.OrderNo')
 			->where('CCS_OrderIndex.OrderNo', 'NOT LIKE', 'CT%')	
 			->where($this->corpConditionCallback())
 		;
@@ -114,7 +116,7 @@ class PrefixHandler
 			$qs[] = "UPDATE CCS_OrderIndex SET OrderNo='{$this->getConvertOrderNo($orderNo)}' WHERE OrderNo='{$orderNo}'";
 		}
 
-		return $qs;
+		return dd($qs);
 	}
 
 	protected function getConvertOrderNo($orderNo)

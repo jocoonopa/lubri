@@ -37,7 +37,8 @@
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="flap">輔翼修改 <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="flap">
-            <li><a href="{{ route('pis_goods_fix_cprefix_goods_index') }}">贈品新增BUG處理</a></li>                 
+            <li><a href="{{ route('pis_goods_fix_cprefix_goods_index') }}">贈品新增BUG處理</a></li> 
+            <li><a href="{{ route('pis_goods_copy_to_cometrust_index') }}">複製景華商品為康萃特商品</a></li>                 
           </ul> 
         </li>
         <li class="dropdown">

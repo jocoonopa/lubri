@@ -15,9 +15,15 @@
 			
 			@include ('common.successmsg')
 			
+			@if (0 < count($goodses))
 			{!! Form::open(['method' => 'PUT', 'action' => ['Flap\PIS_Goods\FixCPrefixGoodsController@update']]) !!}	
 				@include('flap.pisgoods.fixcgoods.form', ['goodses' => $goodses])
 			{!! Form::close() !!}
+			@else
+				<div class="alert alert-info" role="alert">
+					目前沒有可轉換的商品喔!
+				</div>
+			@endif
 		</div>
 	</div>
 @stop

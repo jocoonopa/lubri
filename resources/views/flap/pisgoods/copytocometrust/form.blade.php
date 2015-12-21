@@ -8,18 +8,19 @@
 		<tr>
 			<th>勾選</th>
 			<th>商品代碼</th>
+			<th>對應康萃特代碼</th>
 			<th>商品名稱</th>
 			<th>建立時間</th>
 		</tr>
 	</thead>
 	<tbody>
-
 		@foreach ($goodses as $goods)
 		<tr>
 			<td>
 				{!! Form::checkbox('Codes[]', $goods['Code'], false) !!} 
 			</td>
 			<td>{{ $goods['Code'] }}</td>
+			<td>CTxxxxx</td>
 			<td>{{ $goods['Name'] }}</td>
 			<td>{{ $goods['CRT_TIME'] }}</td>
 		</tr>

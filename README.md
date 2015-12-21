@@ -43,6 +43,8 @@ Report Basic Component:
 Laravel Simple ACL
 https://gist.github.com/drawmyattention/8cb599ee5dc0af5f4246
 
+Laravel Blade Inject Service && Directive
+https://mattstauffer.co/blog/custom-conditionals-with-laravels-blade-directives
 
 // 十一月
 // return [

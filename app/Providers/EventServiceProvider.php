@@ -27,6 +27,19 @@ class EventServiceProvider extends ServiceProvider
             'App\Handlers\Events\Flap\PIS_Goods\FixCPrefixGoodsEvent\CheckMassAssignEvent',
             'App\Handlers\Events\Flap\PIS_Goods\FixCPrefixGoodsEvent\ModifyGoodsEvent',
             'App\Handlers\Events\Flap\PIS_Goods\FixCPrefixGoodsEvent\MailNotifyEvent'
+        ],
+
+        'App\Events\Flap\PIS_Goods\CopyToCometrust\FindEvent' => [
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\FindFromErpEvent',
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\ResultAssembleEvent'
+        ],
+
+        'App\Events\Flap\PIS_Goods\CopyToCometrust\CopyEvent' => [
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\FindFromErpEvent',
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\ResultAssembleEvent',
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Copy\CopyFromErpEvent',
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Copy\ResultAssembleEvent',
+            'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Copy\MailNotifyEvent'
         ]
     ];
 
