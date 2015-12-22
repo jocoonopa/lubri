@@ -41,6 +41,12 @@ Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 
 	Route::group(['namespace' => 'CCS_OrderIndex', 'prefix' => 'ccs_order_index'], function () {
 		Route::get('prefix/update', ['uses' => 'PrefixController@update', 'middleware' => 'report']);
+
+		Route::get('cancelverify', ['uses' => 'CancelVerifyController@index', 'as' => 'ccs_orderindex_cancelverify_index']);
+	});
+
+	Route::group(['namespace' => 'CCS_ReturnGoodsI', 'prefix' => 'ccs_returngoodsi'], function () {
+		Route::get('cancelverify', ['uses' => 'CancelVerifyController@index', 'as' => 'ccs_returngoodsi_cancelverify_index']);
 	});
 
 	Route::group(['namespace' => 'PIS_Goods', 'prefix' => 'pis_goods', 'middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '供應部NEW']], function () {
@@ -146,6 +152,13 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 	Route::group(['prefix' => 'daily_back_goods'], function () {
 		Route::get('/', ['uses' => 'BackGoodsController@index', 'as' => 'daily_back_goods_index']);
 		Route::get('/process', ['uses' => 'BackGoodsController@process', 'as' => 'daily_back_goods_process']);
+	});
+
+	// 客三成效追蹤
+	// DirectSaleCorp3TraceController
+	Route::group(['prefix' => 'directsale_corp3_trace'], function () {
+		Route::get('/', ['uses' => 'DirectSaleCorp3TraceController@index', 'as' => 'directsale_corp3_trace_index']);
+		Route::get('/process', ['uses' => 'DirectSaleCorp3TraceController@process', 'as' => 'directsale_corp3_trace_process', 'middleware' => 'report']);
 	});
 });
 

@@ -17,6 +17,7 @@
             <li><a href="{{ route('report_upbrush') }}">補刷訂單</a></li>
             <li><a href="{{ route('retail_sales_index') }}">門市營業額分析日報表</a></li>
             <li><a href="{{ route('daily_sale_record_index') }}">每日業績</a></li>
+            <li><a href="{{ route('directsale_corp3_trace_index') }}">客經三成效追蹤</a></li>
             <li class="divider"></li>
             <li><a href="{{ route('emppurchase_index') }}">員購銷貨單</a></li>
             <li class="divider"></li>
@@ -38,7 +39,9 @@
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="flap">輔翼修改 <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="flap">
             <li><a href="{{ route('pis_goods_fix_cprefix_goods_index') }}">贈品新增BUG處理</a></li> 
-            <li><a href="{{ route('pis_goods_copy_to_cometrust_index') }}">複製景華商品為康萃特商品</a></li>                 
+            <li><a href="{{ route('pis_goods_copy_to_cometrust_index') }}">複製景華商品為康萃特商品</a></li>   
+            <li><a href="{{ route('ccs_orderindex_cancelverify_index') }}">出貨取消覆核</a></li>              
+            <li><a href="{{ route('ccs_returngoodsi_cancelverify_index') }}">退貨取消覆核</a></li>
           </ul> 
         </li>
         <li class="dropdown">
