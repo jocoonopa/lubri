@@ -9,3 +9,4 @@ storage/logs
 public/web.config
 .phpintel/
 composer.lock
+/bin

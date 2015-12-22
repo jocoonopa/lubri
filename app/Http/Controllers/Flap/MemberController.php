@@ -13,16 +13,7 @@ class MemberController extends Controller
 {
     public function index(Request $request)
     {
-        $listHelper = new PosMemberListHelper;
-        $members = [];
-
-        if ($user = Auth::user()) {
-            $members = $listHelper->get($user);
-        } else {
-            \Session::flash('warning', '檢視口袋名單請先登入系統喔 ♥');
-
-            return redirect('auth/login');
-        }
+        $members = with(new PosMemberListHelper)->get(Auth::user());
 
         return ('mix' === $request->query->get('type')) 
             ? view('flap.members.indexMix', compact('members'))

@@ -130,6 +130,7 @@ class DataHelper
 			->select('TOP 1 Code')
 			->where('Code', 'LIKE', 'C%')
 			->where('Code', 'NOT LIKE', 'CT%')
+			->where('Code', '<>', 'C1470')
 			->orderBy('Code', 'DESC')
 		;
 	}

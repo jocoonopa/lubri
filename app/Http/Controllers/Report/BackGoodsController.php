@@ -14,7 +14,11 @@ class BackGoodsController extends Controller
 {
 	public function index()
     {
-        return $this->getQuery();
+        return view('basic.simple', [
+            'title' => '每日回貨', 
+            'des' => '<h4>每日回貨</h4><pre>' . $this->getQuery() . '</pre>',
+            'res' => ''       
+        ]);
     }
 
     public function process()

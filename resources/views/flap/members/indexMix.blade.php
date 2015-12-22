@@ -136,6 +136,10 @@ function genMixFilterValue() {
 		var isFirst = (0 === arr.length);
 		var $check = $(this).find('input[type="checkbox"]:checked');
 
+		if (0 === $check.length) {
+			return arr = [];
+		}
+
 		$check.each(function () {
 			var $this = $(this);
 
@@ -153,6 +157,7 @@ function genMixFilterValue() {
 			tmp = [];
 		}
 	});
+	console.log(arr.join());
 
 	return arr.join();
 }
