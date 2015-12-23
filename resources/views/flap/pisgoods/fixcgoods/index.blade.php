@@ -7,7 +7,7 @@
 @section('body')
 	<div class="row">		
 		<div class="col-md-12">
-			<h4>{{ $beforeDays }}日內新建之商品列表<small><span class="text-muted">將勾選商品修改為C字頭贈品</span></small></h4><hr>
+			<h4>{{ $beforeDays }}日內新建之商品列表<small><p class="text-muted">將勾選商品修改為C字頭贈品</p></small></h4><hr>
 			@include ('common.successmsg')
 			
 			@if (0 < count($goodses))

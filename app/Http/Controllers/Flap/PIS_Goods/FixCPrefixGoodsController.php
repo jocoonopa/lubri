@@ -11,7 +11,6 @@ use Input;
 
 class FixCPrefixGoodsController extends Controller
 {
-    const BEFOREDAYS              = 80;
     const MODIFYGOODS_EVENT_INDEX = 1;
     const MAILNOTIFY_EVENT_INDEX  = 2;
 
@@ -23,14 +22,14 @@ class FixCPrefixGoodsController extends Controller
     public function index(DataHelper $dataHelper)
     {
         return view('flap.pisgoods.fixcgoods.index', [
-            'goodses' => $dataHelper->getNDaysBeforeCreatedCodes(self::BEFOREDAYS), 
-            'beforeDays' => self::BEFOREDAYS
+            'goodses' => $dataHelper->getNDaysBeforeCreatedCodes(env('FIXCPREFIXGOODS_BEFOREDAYS')), 
+            'beforeDays' => env('FIXCPREFIXGOODS_BEFOREDAYS')
         ]);
     }
 
     public function update(FixCPrefixRequest $request)
     {
-        $event = Event::fire(new FixCPrefixGoodsEvent(self::BEFOREDAYS, Input::get('Codes')));
+        $event = Event::fire(new FixCPrefixGoodsEvent(env('FIXCPREFIXGOODS_BEFOREDAYS'), Input::get('Codes')));
 
         if (!empty($event[self::MODIFYGOODS_EVENT_INDEX])) {
             \Session::flash('success', "{$event[self::MODIFYGOODS_EVENT_INDEX]}贈品轉換完成!<br/>{$event[self::MAILNOTIFY_EVENT_INDEX]}");  

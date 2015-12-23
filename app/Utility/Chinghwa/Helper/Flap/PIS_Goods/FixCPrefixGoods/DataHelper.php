@@ -62,6 +62,7 @@ class DataHelper
 		return Processor::table('PIS_Goods')
 			->where('CRT_TIME', '>=', with(new Carbon)->modify("- {$number} days")->format('Y-m-d H:i:s'))
 			->where('Code', 'NOT LIKE', 'C%')
+			->orderBy('CRT_TIME', 'DESC')
 		;
 	}
 

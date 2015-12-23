@@ -46,6 +46,10 @@ https://gist.github.com/drawmyattention/8cb599ee5dc0af5f4246
 Laravel Blade Inject Service && Directive
 https://mattstauffer.co/blog/custom-conditionals-with-laravels-blade-directives
 
+# Material Guilde
+https://github.com/FezVrasta/bootstrap-material-design
+http://fezvrasta.github.io/bootstrap-material-design/bootstrap-elements.html
+
 // 十一月
 // return [
 //     'S009' => [
