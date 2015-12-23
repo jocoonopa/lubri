@@ -18,11 +18,11 @@
             {!! Form::open(['method' => 'GET', 'action' => ['Flap\PIS_Goods\CopyToCometrustController@index'], 'id' => 'search']) !!}    
                 <div class="form-group label-floating m-b-10">
                     <div class="input-group">
-                        <label for="code" class="control-label">請輸入商品產編搜尋(輸入空白間隔可多筆查詢)</label>
+                        <label for="code" class="control-label">請輸入產編，多筆請用空白間隔</label>
                         <input id="code" type="text" name="code" class="form-control">
                         <p class="help-block">{{'Example: A00049 D00060 A00047'}}</p>
                         <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit">
+                            <button class="btn btn-default" type="submit" disabled>
                                 <span class="glyphicon glyphicon-search"></span>
                             </button>
                         </span>
@@ -50,6 +50,7 @@ $('#search').find('button[type="submit"]').click(function () {
     var inputStr      = $input.val();
 
     if (0 === inputStr.length) {
+        bootbox.alert('您沒有輸入任何商品編號!');
         $input.focus();
 
         return false;
@@ -64,8 +65,15 @@ $('#search').find('button[type="submit"]').click(function () {
     $input.val(inputStr);
     $searchButton.prop('disabled', true);
     $formSearch.submit();
+    $searchButton.prop('disabled', false);
 
     return false;
+});
+
+$('#search').find('input[name="code"]').keyup(function () {
+    var $searchButton = $('#search').find('button[type="submit"]');
+
+    $searchButton.prop('disabled', (0 === $(this).val().length));
 });
 
 $('form#insert').find('input[type="checkbox"]').change(function () {
@@ -74,6 +82,20 @@ $('form#insert').find('input[type="checkbox"]').change(function () {
 
     $formInsert.find('button[type="submit"]').prop('disabled', isDisabled);
 }).change();
+
+$('form#insert').find('button[type="submit"]').click(function () {
+    var $formInsert = $('form#insert');
+    var isEnabled = (0 < $formInsert.find('input[type="checkbox"]:checked').length);
+
+    if (isEnabled) {
+        $(this).prop('disabled', true);
+        $('form').submit();
+    } else {
+        bootbox.alert('您沒有勾選任何商品編號!');
+    }
+
+    return false;
+});
 
 $('.jq-remove').click(function () {
     var $formInsert = $('form#insert');

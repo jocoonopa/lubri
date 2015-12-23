@@ -111,6 +111,7 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 
 	// 每月初發送門市營業額分析-人報表
 	Route::group(['prefix' => 'retail_sales_persontype'], function () {
+		Route::get('', ['uses' => 'RetailSaleByPersonTypeController@index', 'as' => 'retail_sales_persontype_index']);
 		Route::get('/process', ['uses' => 'RetailSaleByPersonTypeController@process', 'as' => 'retail_sales_persontype_process', 'middleware' => 'report']);
 	});
 

@@ -11,7 +11,7 @@ use Input;
 
 class FixCPrefixGoodsController extends Controller
 {
-    const BEFOREDAYS              = 10;
+    const BEFOREDAYS              = 80;
     const MODIFYGOODS_EVENT_INDEX = 1;
     const MAILNOTIFY_EVENT_INDEX  = 2;
 

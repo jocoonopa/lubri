@@ -13,6 +13,15 @@ class RetailSaleByPersonTypeController extends Controller
 	protected $startDate;
 	protected $endDate;
 
+	public function index()
+	{
+		return view('basic.simple', [
+            'title' => '門市月報表-人', 
+            'des' => '<h4>門市月報表-人</h4><pre>' . $this->getQb($this->setStartDate()->getStartDate(), $this->setEndDate()->getEndDate()) . '</pre>',
+            'res' => ''
+        ]);
+	}
+
 	public function process()
 	{
 		$emps = Processor::getArrayResult($this->getQb($this->setStartDate()->getStartDate(), $this->setEndDate()->getEndDate()), 'Pos');

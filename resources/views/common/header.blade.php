@@ -1,7 +1,12 @@
 <div class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-      <a href="/" class="navbar-brand">@if (Auth::check()){{Auth::user()->username}}@endif@景華生技</a>
+      <a href="/" class="navbar-brand">
+        @if (Auth::check())
+          {{ Auth::user()->username . '@' }}
+        @endif
+        景華生技
+      </a>
       <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -12,23 +17,29 @@
       <ul class="nav navbar-nav">
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">報表排程 <span class="caret"></span></a>
-          <ul class="dropdown-menu" aria-labelledby="themes">    
-            <li><a href="#">康萃特訂單單號+CT@1000~1500(每10分鐘)</a></li>
+          <ul class="dropdown-menu" aria-labelledby="themes">  
+            <li class="dropdown-header">Hourly|Much Frequently</li>  
+            <li><a href="#">系統設備檢測<span class="badge">每小時</span> </a></li>
+            <li><a href="#">康萃特訂單單號+CT<span class="badge">1000~1500/每10分鐘</span></a></li>
             <li class="divider"></li>        
-            <li><a href="{{ route('retail_sales_index') }}">門市營業額分析日報表@0900</a></li>
-            <li><a href="{{ route('directsale_corp3_trace_index') }}">客經三成效追蹤@0900</a></li>
-            <li><a href="{{ route('daily_sale_record_index') }}">每日業績@0900</a></li>
-            <li><a href="{{ route('report_credit_card') }}">訂單刷卡成交@1445</a></li>
-            <li><a href="{{ route('daily_back_goods_index') }}">每日回貨@1500</a></li>
-            <li><a href="{{ route('report_upbrush') }}">補刷訂單@1715</a></li>
+            <li class="dropdown-header">Daily</li>
+            <li><a href="{{ route('retail_sales_index') }}">門市營業額分析日報表<span class="badge">0900</span></a></li>
+            <li><a href="{{ route('directsale_corp3_trace_index') }}">客經三成效追蹤<span class="badge">0900</span></a></li>
+            <li><a href="{{ route('daily_sale_record_index') }}">每日業績<span class="badge">0900</span></a></li>
+            <li><a href="{{ route('report_credit_card') }}">訂單刷卡成交<span class="badge">1445</span></a></li>
+            <li><a href="{{ route('daily_back_goods_index') }}">每日回貨<span class="badge">1500</span></a></li>
+            <li><a href="{{ route('report_upbrush') }}">補刷訂單<span class="badge">1715</span></a></li>
             <li class="divider"></li>
-            <li><a href="{{ route('emppurchase_index') }}">員購銷貨單@每周四</a></li>
+            <li class="dropdown-header">Weekly</li>
+            <li><a href="{{ route('emppurchase_index') }}">員購銷貨單 <span class="badge">每周四</span> </a></a></li>
             <li class="divider"></li>
-            <li><a href="{{ route('conce_index') }}">康思特銷退貨@每月初</a></li>
-            <li><a href="{{ route('spb_index') }}">每月進銷退@每月初</a></li>
-            <li><a href="{{ route('promograde_index') }}">促銷模組成效@每月初</a></li>
-            <li class="divider"></li>
-            <li><a href="{{ route('ctilayout_index') }}">偉特CTI Layout</a></li>
+            <li class="dropdown-header">Monthly</li>
+            <li><a href="{{ route('retail_sales_persontype_index') }}">門市月報表<span class="badge">每月初</span></a></li>
+            <li><a href="{{ route('conce_index') }}">康思特銷退貨<span class="badge">每月初</span></a></li>
+            <li><a href="{{ route('spb_index') }}">每月進銷退<span class="badge">每月初</span></a></li>
+            <li><a href="{{ route('promograde_index') }}">促銷模組成效<span class="badge">每月初</span></a></li>
+            {{-- <li class="divider"></li>
+            <li><a href="{{ route('ctilayout_index') }}">偉特CTI Layout</a></li> --}}
           </ul> 
         </li>
         <li class="dropdown">
