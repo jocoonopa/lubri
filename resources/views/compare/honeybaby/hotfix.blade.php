@@ -20,7 +20,7 @@
 		</div>
 
 		<div class="form-group">
-			{!! Form::submit('比對', ['class' => 'btn btn-primary btn-sm']) !!}
+			{!! Form::submit('比對', ['class' => 'btn btn-raised btn-primary btn-sm']) !!}
 		</div>
 		{!! Form::close() !!}
 		</div>

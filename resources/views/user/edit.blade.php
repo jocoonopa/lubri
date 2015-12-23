@@ -7,11 +7,10 @@
 @section('body')
 	<h1>
 		{{ $user->username }}
-		<small>
-			<a class="btn btn-sm btn-default" href="{{ action('User\UserController@index') }}">
-				<i class="glyphicon glyphicon-list"></i> 回到使用者列表
-			</a>
-		</small>
+		
+		<a class="btn btn-sm btn-default" href="{{ action('User\UserController@index') }}">
+			<i class="glyphicon glyphicon-list"></i> 回到使用者列表
+		</a>
 	</h1><hr>
 	
 	{!! Form::model($user, ['method' => 'PATCH', 'action' => ['User\UserController@update', $user->id]]) !!}
@@ -30,7 +29,7 @@
 		@include ('user.profileform')
 
 		<div class="form-group">
-			{!! Form::submit('確認', ['class' => 'btn btn-primary form-control']) !!}
+			{!! Form::submit('確認', ['class' => 'btn btn-raised btn-primary form-control']) !!}
 		</div>
 	{!! Form::close() !!}
 @stop

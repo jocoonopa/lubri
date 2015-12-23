@@ -7,20 +7,20 @@
 @section('body')
     <div class="row">
         <div class="col-md-12">
-            <h2>將指定景華商品複製為康萃特商品</h2><hr>
+            <h4>將選擇商品複製為康萃特商品</h4><hr>
         </div>
         
-        <div class="col-md-12">
-            <h4>請輸入商品產編搜尋(輸入空白間隔可多筆查詢)</h4>
-            
+        <div class="col-md-12">            
             @include ('common.successmsg')
             @include ('common.errormsg')
             @include ('errors.list')
 
             {!! Form::open(['method' => 'GET', 'action' => ['Flap\PIS_Goods\CopyToCometrustController@index'], 'id' => 'search']) !!}    
-                <div class="form-group">
+                <div class="form-group label-floating m-b-10">
                     <div class="input-group">
-                        <input type="text" name="code" class="form-control" placeholder="Search for...">
+                        <label for="code" class="control-label">請輸入商品產編搜尋(輸入空白間隔可多筆查詢)</label>
+                        <input id="code" type="text" name="code" class="form-control">
+                        <p class="help-block">{{'Example: A00049 D00060 A00047'}}</p>
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="submit">
                                 <span class="glyphicon glyphicon-search"></span>
@@ -31,9 +31,9 @@
             {!! Form::close() !!}
             
             @if (0 < count($goodses))
-            {!! Form::open(['method' => 'POST', 'action' => ['Flap\PIS_Goods\CopyToCometrustController@store'], 'id' => 'insert']) !!}    
-                @include('flap.pisgoods.copytocometrust.form', ['goodses' => $goodses])
-            {!! Form::close() !!}
+                {!! Form::open(['method' => 'POST', 'action' => ['Flap\PIS_Goods\CopyToCometrustController@store'], 'id' => 'insert']) !!}    
+                    @include('flap.pisgoods.copytocometrust.form', ['goodses' => $goodses])
+                {!! Form::close() !!}
             @endif
         </div>
     </div>

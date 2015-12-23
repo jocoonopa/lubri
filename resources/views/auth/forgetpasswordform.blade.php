@@ -17,7 +17,7 @@
 
 <div class="form-group">
 	<div class="col-md-6 col-md-offset-4">
-		<button type="submit" class="btn btn-primary" @if(Session::has('success')) disabled @endif>{{ $submitButtonText }}</button>
+		<button type="submit" class="btn btn-raised btn-primary" @if(Session::has('success')) disabled @endif>{{ $submitButtonText }}</button>
 	</div>
 </div>
 

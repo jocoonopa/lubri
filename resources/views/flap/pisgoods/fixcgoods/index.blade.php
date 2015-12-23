@@ -5,14 +5,9 @@
 @stop
 
 @section('body')
-	<div class="row">
+	<div class="row">		
 		<div class="col-md-12">
-			<h2>將勾選商品修改為C字頭贈品</h2><hr>
-		</div>
-		
-		<div class="col-md-12">
-			<h4>{{ $beforeDays }}日內新建之商品列表 </h4>
-			
+			<h4>{{ $beforeDays }}日內新建之商品列表<small><span class="text-muted">將勾選商品修改為C字頭贈品</span></small></h4><hr>
 			@include ('common.successmsg')
 			
 			@if (0 < count($goodses))
@@ -32,16 +27,27 @@
 <script>
 $('#check-all').click(function () {
 	$('input[name="Codes[]"]').prop('checked', true);
+	$('input[type="checkbox"]').change();
 });
 
 $('#inverse-check-all').click(function () {
 	$('input[name="Codes[]"]').prop('checked', false);
+	$('input[type="checkbox"]').change();
 });
 
 $('button[type="submit"]').click(function () {
-	(0 < $('input[type="checkbox"]:checked').length) ? $('form').submit() : alert('您沒有勾選任何商品編號!');
+	if (0 < $('input[type="checkbox"]:checked').length) {
+		$(this).prop('disabled', true);
+		$('form').submit();
+	} else {
+		bootbox.alert('您沒有勾選任何商品編號!');
+	}
 
 	return false;
 });
+
+$('input[type="checkbox"]').change(function () {
+	$('button[type="submit"]').prop('disabled', (0 === $('input[type="checkbox"]:checked').length));
+}).change();
 </script>
 @stop
