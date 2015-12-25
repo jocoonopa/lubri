@@ -62,7 +62,8 @@
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="intro">常用資訊<span class="caret"></span></a>  
           <ul class="dropdown-menu" aria-labelledby="intro">
             <li><a href="{{ route('intro_report') }}">報表一覽</a></li>
-            <li><a href="{{ route('intro_b') }}">廠商一覽</a></li>   
+            <li><a href="{{ route('intro_b') }}">廠商一覽</a></li> 
+            <li><a href="{{ url('scrum/todo') }}">SCRUM待辦清單</a></li>   
             <li><a href="{{ url('user') }}">使用者一覽</a></li>                                 
           </ul> 
           

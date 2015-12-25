@@ -16,9 +16,11 @@ class PrefixHandler
 
 	public function execModifyOrderNos()
 	{
-		$orderNos = array_pluck($this->getNotYetModifyed(), self::ORDERNO_KEY);
+		$orders = $this->getNotYetModifyed();
 
-		$indexSerNos = array_pluck($this->getCCSOrderDivIndexNotYetModifyed($orderNos), self::DIVNO_KEY);
+		$orderNos = array_pluck($orders, self::ORDERNO_KEY);
+
+		$indexSerNos = array_pluck($this->getCCSOrderDivIndexNotYetModifyed(array_pluck($orders, self::SERNO_KEY)), self::DIVNO_KEY);
 
 		$this
 			->execWithQueryArray($this->genUpdateCCSOrderDivIndexQuery($indexSerNos))
@@ -116,7 +118,7 @@ class PrefixHandler
 			$qs[] = "UPDATE CCS_OrderIndex SET OrderNo='{$this->getConvertOrderNo($orderNo)}' WHERE OrderNo='{$orderNo}'";
 		}
 
-		return dd($qs);
+		return $qs;
 	}
 
 	protected function getConvertOrderNo($orderNo)

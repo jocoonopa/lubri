@@ -9,6 +9,8 @@ class Grammer
 	    $str = NULL;
 
 	    foreach ($data as $val) {
+	    	$val = str_replace("'", '', $val);
+	    	
 	        $str .= "'{$val}',";
 	    }
 

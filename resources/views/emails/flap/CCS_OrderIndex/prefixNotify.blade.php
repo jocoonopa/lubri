@@ -16,8 +16,8 @@
 			<tbody>
 				@foreach ($modifyOrders as $order)
 				<tr>
-					<td>{{ str_replace('T', '', $order) }}</td>
 					<td>{{ $order }}</td>
+					<td>{{ str_replace('C', 'CT', $order) }}</td>
 				</tr>
 				@endforeach
 			</tbody>	

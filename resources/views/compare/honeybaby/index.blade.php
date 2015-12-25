@@ -70,6 +70,10 @@
 <script>
 $('form').find('input[type="submit"]').click(function () {
 	$blockUI(); 
+
+	$('form').submit();
+
+	return false;
 });
 </script>
 @stop

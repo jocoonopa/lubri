@@ -24,6 +24,6 @@ class ModifyGoodsEvent
 
     protected function genReturnMsg(array $map)
     {
-        return str_replace(['=', '&'],['->', ', '], http_build_query($map));
+        return str_replace(['=', '&'], ['->', ', '], http_build_query($map));
     }
 }

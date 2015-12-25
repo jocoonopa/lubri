@@ -26,6 +26,11 @@ Route::group(['middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '�
 	Route::resource('user', 'User\UserController');
 });
 
+//Scrum
+Route::group(['namespace' => 'Scrum', 'prefix' => 'scrum'], function () {
+	Route::resource('todo', 'TodoController');
+});
+
 // POS 相關
 Route::group(['namespace' => 'Pos', 'prefix' => 'pos/store'], function () {
 	Route::resource('store', 'Store\StoreController');
