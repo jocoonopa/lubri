@@ -28,8 +28,10 @@ class MixInfoHandler
     }
 
     /**
-     * 
      * 擴充 data 陣列內容
+     *
+     * 首先從資料庫根據整個chunk 的 result 取得可能名單，
+     * 再逐個 row iterate 一一比對是否確實存在。
      * 
      * @param  object   $result [load src excel result]
      * @param  array    $data 
@@ -37,8 +39,10 @@ class MixInfoHandler
      */
     public function extendData($result, array $data)
     {
+        $existMemberOrFalse = ExistHandler::fetchMightExistMembers($result);
+
         foreach ($result as $row) {
-            if (false !== ($member = ExistHandler::isExist(ExistHandler::fetchMightExistMembers($result), $row))) {
+            if (false !== ($member = ExistHandler::isExist($existMemberOrFalse, $row))) {
                 $data['update'][] = (array) $this->buildUpdateAppendRow($member, $row);
             } else if ($this->isRowhasName($row)) {
                 $data['insert'][] = (array) $this->buildInsertAppendRow($row);

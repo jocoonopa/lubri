@@ -3,7 +3,7 @@ function $blockUI (message, css) {
 	var css = css || { 
         border: 'none', 
         padding: '15px', 
-        backgroundColor: '#bf3e11', 
+        backgroundColor: '#009688', 
         '-webkit-border-radius': '10px', 
         '-moz-border-radius': '10px', 
         opacity: 1, 

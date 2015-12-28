@@ -85,6 +85,7 @@ class EquipmentController extends Controller
      *
      * 'GateWay2' => '192.168.172.254', 這台是台中宏遠的，已經停用囉
      * '門禁系統' => '192.168.100.97' 暫時停用
+     * 'CTI拋檔Y槽' => '192.168.100.5' 停用，已經掛掉了
      * 
      * @return array
      */
@@ -93,7 +94,6 @@ class EquipmentController extends Controller
         return [
             '防火牆1' => '192.168.10.36',
             '防火牆2' => '192.168.100.36',
-            'CTI拋檔Y槽' => '192.168.100.5',
             'CTIDB' => '192.168.100.3',
             '神奇錄音系統' => '192.168.100.72',
             'AESServer' => '192.168.100.79',
