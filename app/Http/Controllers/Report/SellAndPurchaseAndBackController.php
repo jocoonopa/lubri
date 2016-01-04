@@ -154,7 +154,8 @@ class SellAndPurchaseAndBackController extends Controller
     protected function getToList()
     {
         return [
-            'vivian@chinghwa.com.tw' => '謝玉英'
+            'vivian@chinghwa.com.tw' => '謝玉英',
+            'pyeh@chinghwa.com.tw' => '葉晴慧'
         ];
     }
 
