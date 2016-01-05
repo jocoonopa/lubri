@@ -76,15 +76,7 @@ class RetailSalesController extends Controller
         $self = $this;
 
         Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $filePath, $self) {
-            $m->subject($subject)->attach($filePath);
-
-            foreach ($self->getToList() as $email => $name) {
-                $m->to($email, $name);
-            }
-
-            foreach ($self->getCCList() as $email => $name) { 
-                $m->cc($email, $name);
-            }
+            $m->subject($subject)->to($self->getToList())->cc($self->getCCList())->attach($filePath);
         });
 
         return '門市營業額分析日報表 Send Complete!';
@@ -228,11 +220,6 @@ class RetailSalesController extends Controller
     	return $this->groupAreaData($container, $this->getNorthGroup());
     }
 
-    protected function packageData(array $data)
-    {
-    	return new Row($data);
-    }
-
     protected function genFile($container)
     {
     	$self = $this;
@@ -269,7 +256,6 @@ class RetailSalesController extends Controller
                 $config = $this->getConfig();
 
                 foreach ($container as $store) {
-                    //$this->pr($store);
                     $row[ExcelHelper::rmi('A')] = array_key_exists($store['STOCK_NO'], $config)
                         ? $store['STOCK_NO'] . $config[$store['STOCK_NO']]['name']
                         : $store['STOCK_NO'];
@@ -305,16 +291,11 @@ class RetailSalesController extends Controller
 
                 foreach ($this->colorIndex as $index) {
                 	$sheet->cells('B' . ($index + 3) . ':Y' . ($index + 3), function ($cells) use ($sheet) {
-	                    $cells
-	                        //->setBackground('#F9EDB0')
-	                        ->setFontSize(11)
-	                        //->setBorder('thin', 'thin')
-	                    ;
+	                    $cells->setFontSize(11);
 	                });
 
 	                $sheet->cells('A' . ($index + 3) . ':A' . ($index + 3), function ($cells) {
 	                	$cells->setFontWeight('bold');
-	                	//->setAlignment('center');
 	                });
                 }
 

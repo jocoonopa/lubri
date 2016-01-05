@@ -29,7 +29,7 @@ class DailySaleRecordController extends Controller
     protected function sendMail()
     {
         $date = new Carbon;
-        $subject = '每日業績' . $date->format('Ymd');
+        $subject = '每日業績' . $date->modify('-1 Days')->format('Ymd');
         $filename = ExportExcel::DSR_FILENAME . $date->format('Ymd');
         $filePath = __DIR__ . '/../../../../storage/excel/exports/' . $filename .  '.xlsx';
         

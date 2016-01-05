@@ -10,7 +10,7 @@ class DailySaleRecordExport extends \Maatwebsite\Excel\Files\NewExcelFile
 
     public function getFilename()
     {
-        $this->date = new \DateTime();
+        $this->date = with(new \DateTime())->modify('-1 Days');
 
         return ExportExcel::DSR_FILENAME . $this->date->format('Ymd');
     }
