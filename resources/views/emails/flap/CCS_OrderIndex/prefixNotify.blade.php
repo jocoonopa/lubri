@@ -11,13 +11,21 @@
 				<tr>
 					<th>原單號</th>
 					<th>修改後單號</th>
+					<th>修改後子單號</th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach ($modifyOrders as $order)
 				<tr>
-					<td>{{ $order }}</td>
-					<td>{{ str_replace('C', 'CT', $order) }}</td>
+					<td>{{ $order->getOriginFirstName() }}</td>
+					<td>{{ $order->getFirstName() }}</td>
+					<td>	
+						<ul>
+							@foreach ($order->getChildren() as $child)	
+								<li>{{ $child }}</li>		
+							@endforeach
+						</ul>
+					</td>
 				</tr>
 				@endforeach
 			</tbody>	

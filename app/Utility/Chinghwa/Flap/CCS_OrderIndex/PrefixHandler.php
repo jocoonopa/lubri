@@ -16,27 +16,39 @@ class PrefixHandler
 
 	public function execModifyOrderNos()
 	{
-		$orders = $this->getNotYetModifyed();
+		$orderNoTrees = $this->genOrderNoTrees($this->getNotYetModifyed());
 
-		$orderNos = array_pluck($orders, self::ORDERNO_KEY);
+		$this->genUpdateCCSOrderIndexQuerysByIterateOrderNosAndExecute($orderNoTrees);
 
-		$indexSerNos = array_pluck($this->getCCSOrderDivIndexNotYetModifyed(array_pluck($orders, self::SERNO_KEY)), self::DIVNO_KEY);
-
-		$this
-			->execWithQueryArray($this->genUpdateCCSOrderDivIndexQuery($indexSerNos))
-			->execWithQueryArray($this->genUpdateCCSOrderIndexQuerysByIterateOrderNos($orderNos))
-		;
-
-		return $this->setModifyOrders($orderNos);
+		return $this->setModifyOrders($orderNoTrees);
 	}
 
-	protected function execWithQueryArray(array $qs)
+	protected function genOrderNoTrees(array $orderDivs)
 	{
-		foreach ($qs as $query) {
-			Processor::execErp($query);
+		$orders = [];
+
+		foreach ($orderDivs as $orderDiv) {
+			$indexSerNo = array_get($orderDiv, self::SERNO_KEY);
+
+			if (!array_key_exists($indexSerNo, $orders)) {
+				$orders[array_get($orderDiv, self::SERNO_KEY)] = [];
+			}
+
+			$orders[array_get($orderDiv, self::SERNO_KEY)][] = $orderDiv;
 		}
 
-		return $this;
+		return $this->createTrees($orders);
+	}
+
+	protected function createTrees(array $orders)
+	{
+		$trees = [];
+
+		foreach ($orders as $serNo => $orderDiv) {
+			$trees[] = new OrderNoTree($serNo, array_get($orderDiv, '0.' . self::ORDERNO_KEY), array_pluck($orderDiv, self::DIVNO_KEY));
+		}
+
+		return $trees;
 	}
 
 	public function getModifyOrders()
@@ -51,14 +63,16 @@ class PrefixHandler
 		return $this;
 	}
 
+	public function addModifyOrders($key, $value)
+	{
+		$this->modifyOrders[$key] = $value;
+
+		return $this;
+	}
+
 	public function getNotYetModifyed()
 	{
 		return Processor::getArrayResult($this->getNotYetModifyedQuery());
-	}
-
-	protected function getCCSOrderDivIndexNotYetModifyed(array $serNos)
-	{
-		return Processor::getArrayResult($this->getCCSOrderDivIndexNotYetModifyedQuery($serNos));
 	}
 
 	/**
@@ -68,9 +82,10 @@ class PrefixHandler
 	 */
 	protected function getNotYetModifyedQuery()
 	{
-		return Processor::table('CCS_OrderIndex')
+		return Processor::table('CCS_OrderDivIndex')
+			->leftJoin('CCS_OrderIndex', 'CCS_OrderIndex.SerNo', '=', 'CCS_OrderDivIndex.IndexSerNo')
 			->leftJoin('FAS_Corp', 'CCS_OrderIndex.DeptSerNo', '=', 'FAS_Corp.SerNo')
-			->select('CCS_OrderIndex.SerNo, CCS_OrderIndex.OrderNo')
+			->select('CCS_OrderIndex.SerNo, CCS_OrderIndex.OrderNo', 'CCS_OrderDivIndex.No')
 			->where('CCS_OrderIndex.OrderNo', 'NOT LIKE', 'CT%')	
 			->where($this->corpConditionCallback())
 		;
@@ -86,39 +101,30 @@ class PrefixHandler
 			};
 	}
 
-	protected function getCCSOrderDivIndexNotYetModifyedQuery(array $serNos)
-	{
-		return Processor::table('CCS_OrderDivIndex')
-			->whereIn('IndexSerNo', $serNos)	
-		;
-	}
-
-	public function genUpdateCCSOrderDivIndexQuery(array $nos)
-	{
-		$qs = [];
-
-		foreach ($nos as $no) {
-			$qs[] = "UPDATE CCS_OrderDivIndex SET No='{$this->getConvertOrderNo($no)}' WHERE No='{$no}'";
-		} 
-
-		return $qs;
-	}
-
 	/**
 	 * genUpdateCCSOrderIndexQuerysByIterateOrderNos
 	 * 
-	 * @param  array  $orderNos
+	 * @param  array  $orders
 	 * @return array        
 	 */
-	public function genUpdateCCSOrderIndexQuerysByIterateOrderNos(array $orderNos)
+	public function genUpdateCCSOrderIndexQuerysByIterateOrderNosAndExecute(array &$orderNoTrees)
 	{
-		$qs = [];
+		foreach ($orderNoTrees as $orderNoTree) {
+			$orderNo = $orderNoTree->getFirstName();
+			$newOrderNo = $this->getNewInsertCTOrderNo($this->getConvertOrderNo($orderNo));
 
-		foreach ($orderNos as $orderNo) {
-			$qs[] = "UPDATE CCS_OrderIndex SET OrderNo='{$this->getConvertOrderNo($orderNo)}' WHERE OrderNo='{$orderNo}'";
+			Processor::execErp("UPDATE CCS_OrderIndex SET OrderNo='{$newOrderNo}' WHERE OrderNo='{$orderNo}'");
+
+			foreach ($orderNoTree->getChildren() as $child) {
+				$newNo = $newOrderNo . $orderNoTree->fetchTailOfChild($child);
+
+				Processor::execErp("UPDATE CCS_OrderDivIndex SET No='{$newNo}' WHERE No='{$child}'");
+			}
+
+			$orderNoTree->setFirstName($newOrderNo);			
 		}
 
-		return $qs;
+		return $this;
 	}
 
 	protected function getConvertOrderNo($orderNo)
@@ -126,5 +132,26 @@ class PrefixHandler
 		$orderNo = str_replace(['C', 'T'], ['', ''], $orderNo);
 
 		return self::COMETRUES_PREFIX . $orderNo;
+	}
+
+	protected function getNewInsertCTOrderNo($ctOrderNo)
+	{
+		return ($this->isCTOrderNoExist($ctOrderNo)) ? $this->getNewInsertCTOrderNo($this->getNextCTOrderNo($ctOrderNo)) : $ctOrderNo;
+	}
+
+	protected function isCTOrderNoExist($ctOrderNo)
+	{
+		$res = Processor::getArrayResult("SELECT * FROM CCS_OrderIndex WHERE OrderNo='{$ctOrderNo}'");
+
+		return !empty($res);
+	}
+
+	protected function getNextCTOrderNo($ctOrderNo)
+	{
+		$res = Processor::getArrayResult("SELECT TOP 1 * FROM CCS_OrderIndex WHERE OrderNo='{$ctOrderNo}' ORDER BY SerNo DESC");
+
+		$numPart = substr(array_get($res, '0.OrderNo'), 2);
+
+		return 'CT' . (++ $numPart);
 	}
 }

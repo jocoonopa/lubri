@@ -10,10 +10,12 @@ use Carbon\Carbon;
 
 class DailySaleRecordController extends Controller
 {
+    const REPORT_NAME = '每日業績';
+
     public function index()
     {   
         return view('basic.simple', [
-            'title' => '每日業績[to副總]', 
+            'title' => self::REPORT_NAME . '[to副總]', 
             'des' => NULL,
             'res' => NULL
         ]);
@@ -23,14 +25,13 @@ class DailySaleRecordController extends Controller
     {
         $export->handleExport();
 
-        return $this->sendMail(); 
+        return $this->sendMail($export); 
     }
 
-    protected function sendMail()
+    protected function sendMail(DailySaleRecordExport $export)
     {
-        $date = new Carbon;
-        $subject = '每日業績' . $date->modify('-1 Days')->format('Ymd');
-        $filename = ExportExcel::DSR_FILENAME . $date->format('Ymd');
+        $subject = self::REPORT_NAME . $export->getDate()->format('Ymd');
+        $filename = $export->getFilename();
         $filePath = __DIR__ . '/../../../../storage/excel/exports/' . $filename .  '.xlsx';
         
         Mail::send('emails.dears', ['title' => $subject], function ($m) use ($subject, $filePath) {
@@ -43,6 +44,6 @@ class DailySaleRecordController extends Controller
             ;
         });
 
-        return '每日業績 send complete!';
+        return self::REPORT_NAME . ' send complete!';
     }
 }
