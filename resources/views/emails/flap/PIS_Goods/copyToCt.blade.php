@@ -10,7 +10,7 @@
             <thead>
                 <tr>
                     <th>原產編</th>
-                    <th>新單號</th>
+                    <th>新產編</th>
                     <th>修改人員</th>
                     <th>修改時間</th>
                 </tr>

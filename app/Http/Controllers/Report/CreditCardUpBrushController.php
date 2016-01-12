@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
+use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+
 use Mail;
 use Input;
 
@@ -72,9 +74,7 @@ class CreditCardUpBrushController extends Controller
 
     protected function genCreditCardDealReport($filename)
     {
-        $self = $this;
-
-        return Excel::create($filename, function($excel) use ($self) {
+        return Excel::create($filename, function ($excel) {
             $formatArr = [
                 'J' => ExportExcel::STRING_FORMAT,
                 'K' => ExportExcel::STRING_FORMAT,
@@ -97,13 +97,13 @@ class CreditCardUpBrushController extends Controller
                 'H' => ExportExcel::NUMBER_FORMAT
             ];
 
-            $self->genBasicSheet(
+            ExcelHelper::genBasicSheet(
                 $excel, 
                 ExportExcel::SHEET_DEFAULT_NAME, 
                 $formatArr, 
                 'W', 
-                $self->getCreditCardDealQuery(), 
-                $self->genCreditCardDealHead()
+                $this->getCreditCardDealQuery(), 
+                $this->genCreditCardDealHead()
             );
         });
     }
