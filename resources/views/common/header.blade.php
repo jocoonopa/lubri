@@ -28,6 +28,7 @@
             <li><a href="{{ route('daily_sale_record_index') }}">每日業績<span class="badge">0900</span></a></li>
             <li><a href="{{ route('report_credit_card') }}">訂單刷卡成交<span class="badge">1445</span></a></li>
             <li><a href="{{ route('daily_back_goods_index') }}">每日回貨<span class="badge">1500</span></a></li>
+            <li><a href="https://gist.github.com/jocoonopa/691e1dfff67e49b18509" target="_blank">供應處百及FTP檔案<span class="badge">1515</span></a></li>
             <li><a href="{{ route('report_upbrush') }}">補刷訂單<span class="badge">1715</span></a></li>
             <li class="divider"></li>
             <li class="dropdown-header">Weekly</li>
