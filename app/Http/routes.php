@@ -39,6 +39,8 @@ Route::group(['namespace' => 'Pos', 'prefix' => 'pos/store'], function () {
 });
 
 Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
+	Route::get('db', 'DBController@find');
+
 	Route::group(['middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '客戶經營一部', '客戶經營二部', '客戶經營三部', '客戶經營四部']], function () {
 		Route::get('members', 'MemberController@index');
 		Route::get('members/{code}', 'MemberController@show');
