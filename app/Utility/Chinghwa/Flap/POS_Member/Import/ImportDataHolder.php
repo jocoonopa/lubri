@@ -19,6 +19,7 @@ class ImportDataHolder
     protected $memo;
     protected $isExist;
     protected $flags;
+    protected $status;
 
     /**
      * Gets the value of address.
@@ -376,6 +377,30 @@ class ImportDataHolder
     public function setFlags($flags)
     {
         $this->flags = $flags;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of status.
+     *
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Sets the value of status.
+     *
+     * @param mixed $status the status
+     *
+     * @return self
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
 
         return $this;
     }

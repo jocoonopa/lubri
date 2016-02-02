@@ -39,20 +39,19 @@ class Import extends \Maatwebsite\Excel\Files\ExcelFile
      */
     const MINLENGTH_CELLPHONE = 9; 
 
-    const FILE_EXT = '.xls';
+    const DEAFULT_ZIPCODE       = '000';
+    const DEFAULT_CITYSTATE     = '台灣省';
 
-    const CHUNK_SIZE = 200;
-
-    const EIGHT_LENGTH_TELCODE = '02';
-    
-    const EXT_PREFIX = '-';
-
-    const STORAGE_PATH = __DIR__ . '/../../../../../../storage/json/';
-
-    const OPTIONS_DISTINCTION = 'distinction';
-    const OPTIONS_CATEGORY    = 'category';
-    const OPTIONS_INSERTFLAG  = 'insertFlagString';
-    const OPTIONS_UPDATEFLAG  = 'updateFlagString';
+    const FILE_EXT             = '.xls';
+    const CHUNK_SIZE           = 200;
+    const TELCODE_HEAD         = '0';
+    const EIGHT_LENGTH_TELCODE = self::TELCODE_HEAD . '2';
+    const EXT_PREFIX           = '-';
+    const STORAGE_PATH         = __DIR__ . '/../../../../../../storage/json/';
+    const OPTIONS_DISTINCTION  = 'distinction';
+    const OPTIONS_CATEGORY     = 'category';
+    const OPTIONS_INSERTFLAG   = 'insertFlagString';
+    const OPTIONS_UPDATEFLAG   = 'updateFlagString';
 
     protected $fileName;
     protected $destinationPath;

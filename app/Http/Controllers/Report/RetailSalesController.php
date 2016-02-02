@@ -412,12 +412,12 @@ class RetailSalesController extends Controller
         return [
             'S009' => [
                 'name' => '大直門市部',
-                'goal' => 310000,
+                'goal' => 350000,
                 'pl' => 0 
             ],
             'S013' => [
                 'name' => '新光站前',
-                'goal' => 460000,
+                'goal' => 450000,
                 'pl' => 0 
             ],
             'S049' => [
@@ -427,12 +427,12 @@ class RetailSalesController extends Controller
             ],
             'S008' => [
                 'name' => '高雄SOGO門市部',
-                'goal' => 260000,
+                'goal' => 290000,
                 'pl' => 0 
             ],
             'S014' => [
                 'name' => '新光台中',
-                'goal' => 750000,
+                'goal' => 710000,
                 'pl' => 0 
             ],
             'S017' => [
@@ -442,12 +442,12 @@ class RetailSalesController extends Controller
             ],
             'S028' => [
                 'name' => '台南新天地',
-                'goal' => 380000,
+                'goal' => 490000,
                 'pl' => 0 
             ],
             'S051' => [
                 'name' => '漢神巨蛋',
-                'goal' => 430000,
+                'goal' => 410000,
                 'pl' => 0
             ]
         ];

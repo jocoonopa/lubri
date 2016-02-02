@@ -104,8 +104,8 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
             }
 
             $this->task->error = json_encode($error);
-            $this->task->insert_count = PosMemberImportTaskContent::isNotExist($this->task->id);
-            $this->task->update_count = PosMemberImportTaskContent::isExist($this->task->id);
+            $this->task->insert_count = PosMemberImportTaskContent::isNotExist($this->task->id)->count();
+            $this->task->update_count = PosMemberImportTaskContent::isExist($this->task->id)->count();
             $this->task->save();
         };
     }

@@ -3,6 +3,8 @@
 namespace App\Utility\Chinghwa\Flap\POS_Member\Import;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use App\Model\State;
+use App\Model\City;
 
 class ImportColumnAdapter
 {
@@ -10,8 +12,6 @@ class ImportColumnAdapter
     protected $options;
     protected $validator;
     protected $dataHolder;
-    protected $zipcodeMap;
-    protected $telCodeMap;
     protected $memberListFlagMap;
     protected $periodFlagMap;
     protected $insertFlagPairs = [];
@@ -27,8 +27,6 @@ class ImportColumnAdapter
 
         $this->validator         = new ImportColumnValidator;
         $this->dataHolder        = new ImportDataHolder;
-        $this->zipcodeMap        = $this->getJsonSrcArrayResult('zipcode');
-        $this->telCodeMap        = $this->getJsonSrcArrayResult('telcode');
         $this->memberListFlagMap = $this->getJsonSrcArrayResult('memberlistFlagMap');
         $this->periodFlagMap     = $this->getJsonSrcArrayResult('periodFlagMap');
 
@@ -60,8 +58,9 @@ class ImportColumnAdapter
             ->setName($this->getFilteredName())
             ->setBirthday($this->getFilteredBirthday())
             ->setZipcode($this->getFilteredZipcode())
-            ->setCity($this->getFilteredCity())
             ->setState($this->getFilteredState())
+            ->setCity($this->getFilteredCity())
+            ->setStatus($this->getFilteredStatus())
             ->setAddress($this->getFilteredAddress())    
             ->setCellphone($this->getFilteredCellphone())
             ->setHometel($this->getFilteredHometel())
@@ -82,8 +81,6 @@ class ImportColumnAdapter
      */
     protected function getFilteredName()
     {
-        echo $this->getColumn(Import::I_NAME);
-
         return keepOnlyChineseWord($this->getColumn(Import::I_NAME));
     }
 
@@ -111,44 +108,116 @@ class ImportColumnAdapter
     {
         $filteredDate = keepOnlyNumber(nfTowf($this->getColumn($index), 0));
 
-        return validateDate($filteredDate) ? $filteredDate : NULL;
+        return validateDate($filteredDate,'Ymd') ? $filteredDate : NULL;
     }
 
     protected function getFilteredZipcode()
     {
-        return keepOnlyNumber(nfTowf($this->getColumn(Import::I_ZIPCODE), 0));
+        $zipcode = keepOnlyNumber(nfTowf($this->getColumn(Import::I_ZIPCODE), 0));
+
+        return (0 === strlen($zipcode) || empty(State::findByZipcode()->first())) ? Import::DEAFULT_ZIPCODE : $zipcode;
     }
 
     protected function getFilteredCity()
     {
-        return array_search($this->getDataHolder()->getZipcode(), $this->zipcodeMap);
+        $zipcode = $this->getDataHolder()->getZipcode();
+
+        return (Import::DEAFULT_ZIPCODE === $zipcode) 
+            ? Import::DEAFULT_CITYSTATE
+            : State::findByZipcode()->firstOrFail()->city->name
+        ;
     }
 
     protected function getFilteredState()
     {
-        return array_search($this->getDataHolder()->getCity(), $this->zipcodeMap);
+        $zipcode = $this->getDataHolder()->getZipcode();
+
+        return (Import::DEAFULT_ZIPCODE === $zipcode) 
+            ? Import::DEAFULT_CITYSTATE
+            : State::findByZipcode($zipcode)->firstOrFail()->name
+        ;
     }
 
     protected function getFilteredAddress()
     {        
+        $address = $this->getFilteredOriginAddress();
+        
+        // if (false === strpos($address, $zipcode)) {
+        //     $status = decbin(bindec($status)|bindec('000100'));
+        // }
+
+        // if (false === strpos($address, $state->name) && false === strpos($address, $state->pastname)) {
+        //     $status = decbin(bindec($status)|bindec('001000'));
+        // }
+
+        // if (false === strpos($address, $city->name) && false === strpos($address, $city->pastname)) {
+        //     $status = decbin(bindec($status)|bindec('010000'));
+        // }
+    }
+
+    protected function getFilteredOriginAddress()
+    {        
         return str_replace(['F', '-'], ['樓', '之'], trim(nfTowf($this->getColumn(Import::I_ADDRESS))));
+    }
+
+    protected function getFilteredStatus()
+    {
+        $zipcode = $this->getDataHolder()->getZipcode();
+        $address = $this->getFilteredOriginAddress();
+        $status = '000000';
+
+        if (Import::DEAFULT_ZIPCODE === $zipcode) {
+            return 0 === mb_strlen($address, 'utf-8') ? $status : $status && decbin(bindec($status)|bindec('000001'));
+        }
+        
+        $state = State::findByZipcode($zipcode)->firstOrFail();
+
+        $city = $state->city;
+
+        if (0 === mb_strlen($address, 'utf-8')) {
+            $status = decbin(bindec($status)|bindec('000001'));
+        }
+
+        if (Import::DEAFULT_ZIPCODE === $zipcode) {
+            $status = decbin(bindec($status)|bindec('000010'));
+        }
+
+        if (false === strpos($address, $zipcode)) {
+            $status = decbin(bindec($status)|bindec('000100'));
+        }
+
+        if (false === strpos($address, $state->name) && false === strpos($address, $state->pastname)) {
+            $status = decbin(bindec($status)|bindec('001000'));
+        }
+
+        if (false === strpos($address, $city->name) && false === strpos($address, $city->pastname)) {
+            $status = decbin(bindec($status)|bindec('010000'));
+        }
+
+        return $status;
     }
 
     protected function getFilteredTel($tel)
     {
         $tel = keepOnlyNumber(nfTowf($tel));
-        echo 'tel:' . $tel;
-        $telCode = array_get($this->telCodeMap, $this->getDataHolder()->getCity(), NULL);
-        echo ', telcode:' . $telCode;
+
+        $telCode = State::findByZipcode($this->getDataHolder()->getZipcode())
+            ->firstOrFail()->city->telcode;
+
+        // 台北,新北,基隆主碼部分8碼，其他7碼(02 === 02)
+        $telBodyLength = (Import::EIGHT_LENGTH_TELCODE === $telCode) ? Import::MINLENGTH_TEL + 1: Import::MINLENGTH_TEL;
+        $telWithoutExtLength = $telBodyLength + strlen($telCode);
+
+        // 若長度比估計長度少1 且第一個數字不為 0, 表示電話其實有區碼，但因為Excel 判斷為數字把0拿掉了,
+        // 因此則自動幫其補0
+        if (strlen($tel) === $telWithoutExtLength - 1 && Import::TELCODE_HEAD === substr($tel, 0, 1)) {
+            $tel = Import::TELCODE_HEAD . $tel;
+        }
+
         // 補區碼
         // 是否已經存在區碼，若已經存在則不補
         $tel = (substr($tel, 0, strlen($telCode)) === $telCode) ? $tel : $telCode . $tel;
-        echo 'realTel:' . $tel . "<br />";
-        // 分機前面補-
-        // 台北,新北,基隆主碼部分8碼，其他7碼
-        $telBodyLength = (Import::EIGHT_LENGTH_TELCODE === $telCode) ? Import::MINLENGTH_TEL + 1: Import::MINLENGTH_TEL;
-        $telWithoutExtLength = $telBodyLength + strlen($telCode);
-        
+
         // 若號碼包含分機, 前面補上 '-'
         return $tel = (strlen($tel) > $telWithoutExtLength) 
             ? substr($tel, 0, $telWithoutExtLength) . Import::EXT_PREFIX . substr($tel, $telWithoutExtLength)
@@ -225,7 +294,6 @@ class ImportColumnAdapter
 
     protected function getFlag12()
     {
-        pr($this->insertFlagPairs);
         return array_get($this->insertFlagPairs, 12);
     }
 
