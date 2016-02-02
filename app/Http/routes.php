@@ -63,6 +63,11 @@ Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 		Route::get('copy_to_cometrust', ['uses' => 'CopyToCometrustController@index', 'as' => 'pis_goods_copy_to_cometrust_index']);
 		Route::post('copy_to_cometrust', ['uses' => 'CopyToCometrustController@store', 'as' => 'pis_goods_copy_to_cometrust_store']);
 	});
+
+	Route::group(['namespace' => 'POS_Member', 'prefix' => 'pos_member'], function () {
+		Route::get('/import', ['uses' => 'ImportController@index', 'as' => 'pos_member_import_index']);
+		Route::post('/import', ['uses' => 'ImportController@process', 'as' => 'pos_member_import_process']);
+	});
 });
 
 // 使用者資料匯入更新

@@ -133,3 +133,73 @@ function array_declare(array $a, $assign = NULL)
 
     return $tmp;
 }
+
+function keepOnlyNumber($number)
+{
+    return preg_replace_callback(
+        '/\D/',
+        function ($v) {
+            $v = str_replace($v, '', $v);
+            
+            return $v[0];
+        },
+        $number
+    );
+}
+
+function keepOnlyChineseWord($str)
+{
+    preg_match_all('/[\x{4e00}-\x{9fff}]+/u', $str, $matches);
+    
+    return join('', $matches[0]);
+}
+
+function validateDate($date, $dateType = 'Y-m-d')
+{
+    $newDate = \DateTime::createFromFormat($dateType, $date);
+    
+    return $newDate && ($date === $newDate->format($dateType));
+}
+
+/**
+ * 來源: http://help.i2yes.com/?q=node/236
+ * 全形半形轉換
+ *
+ * @param  string $strs  
+ * @param  mixed $types 1: 轉全形, 其他為轉半形
+ * @return string
+ */
+function nfTowf($strs, $types = 0)
+{  
+    $nft = [
+        "(", ")", "[", "]", "{", "}", ".", ",", ";", ":",
+        "-", "?", "!", "@", "#", "$", "%", "&", "|", "\\",
+        "/", "+", "=", "*", "~", "`", "'", "\"", "<", ">",
+        "^", "_",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+        "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+        "u", "v", "w", "x", "y", "z",
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+        "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+        "U", "V", "W", "X", "Y", "Z",
+        " "
+    ];
+
+    $wft = [
+        "（", "）", "〔", "〕", "｛", "｝", "﹒", "，", "；", "：",
+        "－", "？", "！", "＠", "＃", "＄", "％", "＆", "｜", "＼",
+        "／", "＋", "＝", "＊", "～", "、", "、", "＂", "＜", "＞",
+        "︿", "＿",
+        "０", "１", "２", "３", "４", "５", "６", "７", "８", "９",
+        "ａ", "ｂ", "ｃ", "ｄ", "ｅ", "ｆ", "ｇ", "ｈ", "ｉ", "ｊ",
+        "ｋ", "ｌ", "ｍ", "ｎ", "ｏ", "ｐ", "ｑ", "ｒ", "ｓ", "ｔ",
+        "ｕ", "ｖ", "ｗ", "ｘ", "ｙ", "ｚ",
+        "Ａ", "Ｂ", "Ｃ", "Ｄ", "Ｅ", "Ｆ", "Ｇ", "Ｈ", "Ｉ", "Ｊ",
+        "Ｋ", "Ｌ", "Ｍ", "Ｎ", "Ｏ", "Ｐ", "Ｑ", "Ｒ", "Ｓ", "Ｔ",
+        "Ｕ", "Ｖ", "Ｗ", "Ｘ", "Ｙ", "Ｚ",
+        "　"
+    ];
+ 
+    return (1 === $types) ? str_replace($nft, $wft, $strs) : str_replace($wft, $nft, $strs);
+}

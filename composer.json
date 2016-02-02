@@ -17,7 +17,8 @@
         "phpunit/phpunit": "~4.0",
         "phpspec/phpspec": "~2.1",
         "laracasts/integrated": "^0.15.6",
-        "benconstable/phpspec-laravel": "~2.0"
+        "benconstable/phpspec-laravel": "~2.0",
+        "symfony/options-resolver": "~3.0.1"
     },
     "autoload": {
         "classmap": [

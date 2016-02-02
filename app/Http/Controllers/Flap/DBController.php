@@ -39,11 +39,30 @@ class DBController extends Controller
 
         $serNo = array_get($c, '0.' . $columnName, null);
 
-        if ('CHR' === substr($serNo, 0, 3) || 'RR' === substr($serNo, 0, 2)) {
+        if ($this->isTarget($serNo)) {
             echo $serNo . ':';
             echo $columnName . ':';
             echo $tableName . "<br />";
         }
+    }
+
+    protected function getTargetList()
+    {
+        return [
+            'RCVTT',
+            'FRVID'
+        ];
+    }
+
+    protected function isTarget($serNo)
+    {
+        foreach ($this->getTargetList() as $targetString) {
+            if ($targetString === substr($serNo, 0, strlen($targetString))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function getQuery()

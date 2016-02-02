@@ -226,3 +226,10 @@ http://fezvrasta.github.io/bootstrap-material-design/bootstrap-elements.html
         //         'pl' => 145600
         //     ]
         // ];
+
+C:\inetpub\wwwroot\C_lubri\lubri_dev\vendor\maatwebsite\excel\src\Maatwebsite\Excel\Readers\LaravelExcelReader.php
+
+// if(!in_array('chunk', $this->filters['enabled']))
+//     throw new \Exception("The chunk filter is not enabled, do so with ->filter('chunk')");
+
+Laravel excel bug= =
