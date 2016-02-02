@@ -422,7 +422,7 @@ class RetailSalesController extends Controller
             ],
             'S049' => [
                 'name' => '新光A8館',
-                'goal' => 470000,
+                'goal' => 560000,
                 'pl' => 0 
             ],
             'S008' => [
