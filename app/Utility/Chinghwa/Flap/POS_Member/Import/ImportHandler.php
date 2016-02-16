@@ -30,6 +30,20 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
     protected $task;
 
     /**
+     * Current excel row number
+     * 
+     * @var integer
+     */
+    protected $currentRowNum;
+
+    /**
+     * Error msg of current import row
+     * 
+     * @var array
+     */
+    protected $error;
+
+    /**
      * Handle the result properly, and then return it to controller
      * 
      * 1. Check import columns 
@@ -67,66 +81,118 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
     {
         $this->adapter = new ImportColumnAdapter(
             [
-                Import::OPTIONS_DISTINCTION => Input::get(Import::OPTIONS_DISTINCTION),
-                Import::OPTIONS_CATEGORY    => Input::get(Import::OPTIONS_CATEGORY),
+                Import::OPTIONS_DISTINCTION => $this->_getBDSerNo(Input::get(Import::OPTIONS_DISTINCTION)),
+                Import::OPTIONS_CATEGORY    => $this->_getCategorySerNo(Input::get(Import::OPTIONS_CATEGORY)),
                 Import::OPTIONS_INSERTFLAG  => Input::get(Import::OPTIONS_INSERTFLAG),
                 Import::OPTIONS_UPDATEFLAG  => Input::get(Import::OPTIONS_UPDATEFLAG)
             ]
         );
 
         $this->modelFactory = new ImportModelFactory;
+        $this->task = $this->createNewTask();
 
-        $this->task = new PosMemberImportTask;
-        $this->task->user_id = Auth::user()->id;
-        $this->task->save();
+        $import->calculate(false)->chunk(Import::CHUNK_SIZE, $this->getChunkCallback());
 
-        $import->skip(1)->chunk(Import::CHUNK_SIZE, $this->getChunkCallback());
+        return $this->_removeDuplicate()->_saveTaskStatic();
     }
 
-    protected function getChunkCallback() {
-        return function ($sheets) {
-            $currentRowNum = 0;
-            $error = [];
+    protected function createNewTask()
+    {
+        $task = new PosMemberImportTask;
+        $task->user_id = Auth::user()->id;
+        $task->update_flags = json_encode($this->adapter->getUpdateFlagPairs());
+        $task->insert_flags = json_encode($this->adapter->getInsertFlagPairs());
+        $task->save();
 
-            foreach ($sheets[0] as $row){
-                if (false === $this->adapter->inject($row)) {
-                    $error[$currentRowNum] = json_encode($row);
-                } else {
-                    /**
-                     * @var App\Model\Flap\PosMemberImportTaskContent
-                     */
-                    $content = $this->modelFactory->create($this->adapter);
-                    $content->posmember_import_task_id = $this->task->id;
-                    $content->save();
-                }
-                
-                $currentRowNum ++;
-            }
+        return $task;
+    }
 
-            $this->task->error = json_encode($error);
-            $this->task->insert_count = PosMemberImportTaskContent::isNotExist($this->task->id)->count();
-            $this->task->update_count = PosMemberImportTaskContent::isExist($this->task->id)->count();
-            $this->task->save();
-        };
+    private function _getBDSerNo($str)
+    {
+        $q = Processor::table('BasicDataDef')
+            ->select('TOP 1 BDSerNo')
+            ->where('BDCode', '=', $str)
+        ;
+
+        return array_get(Processor::getArrayResult($q), '0.BDSerNo');
+    }
+
+    private function _getCategorySerNo($str)
+    {
+        $q = Processor::table('POS_MemberCategory')
+            ->select('TOP 1 SerNo')
+            ->where('Code', '=', $str)
+        ;
+
+        return array_get(Processor::getArrayResult($q), '0.SerNo');
     }
 
     /**
-     * @deprecated 
-     * @return array
+     * 上傳檔案時須先把多餘的工作表刪除，否則 chunk 會有問題
+     * 
+     * @return mixed
      */
-    protected function getImportHeadColumns()
+    protected function getChunkCallback() {
+        return function ($sheet) {
+            foreach ($sheet as $row) {                    
+                $this->_iterateProcess($row);
+
+                $this->currentRowNum ++;
+            }             
+        };
+    }
+
+    private function _iterateProcess($row)
     {
-        return [
-            '會員',
-            '生日',
-            '地址',
-            '郵遞區號',
-            '住家電話',
-            '辦公電話',
-            '行動電話',
-            '預產期',
-            'email',
-            '生產醫院',
-        ];
+        return (false === $this->adapter->inject($row)) 
+            ? $this->_addError($row) 
+            : $this->_saveNewContentModel()
+        ;
+    }
+
+    private function _addError($row)
+    {
+        $this->error[$this->currentRowNum] = json_encode($row);
+
+        return $this;
+    }
+
+    private function _saveNewContentModel()
+    {
+        /**
+         * @var App\Model\Flap\PosMemberImportTaskContent
+         */
+        $content = $this->modelFactory->create($this->adapter);
+        $content->pos_member_import_task_id = $this->task->id;
+        $content->save();
+
+        return $this;
+    }
+
+    private function _removeDuplicate()
+    {
+        $colNames = ['cellphone', 'hometel', 'homeaddress'];
+
+        foreach ($colNames as $colName) {
+            $duplicateContents = $this->task->content()->isDuplicate($colName)->get();
+
+            foreach ($duplicateContents as $duplicateContent) {
+                $this->task->content()->duplicateWithThis($colName, $duplicateContent)->get()->each(function ($toBeRemoveContent) {
+                    $toBeRemoveContent->delete();
+                });
+            }
+        }
+
+        return $this;
+    }
+
+    private function _saveTaskStatic()
+    {
+        $this->task->error = json_encode($this->error);
+        $this->task->insert_count = PosMemberImportTaskContent::isNotExist($this->task->id)->count();
+        $this->task->update_count = PosMemberImportTaskContent::isExist($this->task->id)->count();
+        $this->task->save();
+
+        return $this->task;
     }
 } 

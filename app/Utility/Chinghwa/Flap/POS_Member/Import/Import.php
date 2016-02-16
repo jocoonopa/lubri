@@ -19,6 +19,8 @@ class Import extends \Maatwebsite\Excel\Files\ExcelFile
 
     const FEMALE_SEX_CODE = 0;
 
+    const FEMALE_SEX_TEXT = 'female';
+
     /**
      * @example '張三' 
      */
@@ -34,14 +36,38 @@ class Import extends \Maatwebsite\Excel\Files\ExcelFile
      */
     const MINLENGTH_TEL = 7;  
 
+    const WRONG_TELCODE = 'WRONG_CODE_';
+
     /**
      * @example '939123456' 
      */
     const MINLENGTH_CELLPHONE = 9; 
 
-    const DEAFULT_ZIPCODE       = '000';
-    const DEFAULT_CITYSTATE     = '台灣省';
+    /**
+     * @example '0987654321'
+     */
+    const CELLPHONE_VALIDLENGTH = 10;
 
+    /**
+     * @example '231'
+     */
+    const MINLENGTH_ZIPCODE = 3;
+
+    /**
+     * 手機需替換開頭
+     */
+    const CELLPHONE_ALTERHEAD = '886';
+    
+    /**
+     * 手機開頭第一個字元
+     */
+    const CELLPHONE_HEADCHAR  = '0';
+
+    const DOC_ENCODE = 'utf-8';
+
+    const DEFAULT_ZIPCODE      = '000';
+    const DEFAULT_CITYSTATE    = '台灣省';
+    
     const FILE_EXT             = '.xls';
     const CHUNK_SIZE           = 200;
     const TELCODE_HEAD         = '0';

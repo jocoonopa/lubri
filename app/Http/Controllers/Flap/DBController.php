@@ -39,7 +39,7 @@ class DBController extends Controller
 
         $serNo = array_get($c, '0.' . $columnName, null);
 
-        if ($this->isTarget($serNo)) {
+        if ($this->isTarget($columnName, $serNo)) {
             echo $serNo . ':';
             echo $columnName . ':';
             echo $tableName . "<br />";
@@ -49,15 +49,14 @@ class DBController extends Controller
     protected function getTargetList()
     {
         return [
-            'RCVTT',
-            'FRVID'
+            'MDT_TIME'
         ];
     }
 
-    protected function isTarget($serNo)
+    protected function isTarget($columnName, $serNo)
     {
         foreach ($this->getTargetList() as $targetString) {
-            if ($targetString === substr($serNo, 0, strlen($targetString))) {
+            if ($targetString === $columnName && substr($serNo, 0, 7) >= '2015-08') {
                 return true;
             }
         }
@@ -70,8 +69,8 @@ class DBController extends Controller
         return Processor::table('INFORMATION_SCHEMA.COLUMNS')
             ->select('INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME, INFORMATION_SCHEMA.COLUMNS.TABLE_NAME')
             ->leftJoin('information_schema.tables', 'information_schema.tables.TABLE_NAME', '=', 'INFORMATION_SCHEMA.COLUMNS.TABLE_NAME')
-            ->where('INFORMATION_SCHEMA.COLUMNS.ordinal_position', '<=', 20)
-            ->where('INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME', 'NOT LIKE', '%time%')
+            //->where('INFORMATION_SCHEMA.COLUMNS.ordinal_position', '<=', 20)
+            //->where('INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME', 'NOT LIKE', '%time%')
             ->whereNotIn('INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME', ['uid', 'Key', 'Open'])
             ->where('INFORMATION_SCHEMA.tables.TABLE_TYPE', '=', 'BASE TABLE')
             ->where('INFORMATION_SCHEMA.tables.TABLE_NAME', 'NOT LIKE', '%BAK_%')

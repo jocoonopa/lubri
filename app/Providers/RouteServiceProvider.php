@@ -29,6 +29,8 @@ class RouteServiceProvider extends ServiceProvider
         $router->model('store', 'App\Model\Pos\Store\Store');
         $router->model('user', 'App\Model\User');
         $router->model('article', 'App\Model\Article');
+        $router->model('import_task', 'App\Model\Flap\PosMemberImportTask');
+        $router->model('import_content', 'App\Model\Flap\PosMemberImportTaskContent');
     }
 
     /**

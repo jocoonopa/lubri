@@ -21,8 +21,10 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
                 ->on('users')
                 ->onDelete('cascade')
             ;
-
+            
             $table->json('error')->nullable();
+            $table->integer('import_cost_time')->default(0);
+            $table->integer('execute_cost_time')->default(0);
             $table->timestamp('executed_at')->nullable();
             $table->integer('update_count')->default(0);
             $table->integer('insert_count')->default(0);
@@ -32,9 +34,9 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
 
         Schema::create('posmember_import_task_content', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('posmember_import_task_id')->unsigned()->index();
+            $table->integer('pos_member_import_task_id')->unsigned()->index();
             $table
-                ->foreign('posmember_import_task_id')
+                ->foreign('pos_member_import_task_id')
                 ->references('id')
                 ->on('posmember_import_task')
                 ->onDelete('cascade')
@@ -44,6 +46,7 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
             $table->string('name')->nullable();
             $table->string('code')->nullable();
             $table->string('sernoi')->nullable();
+            $table->string('email')->nullable();
             $table->string('cellphone')->nullable();
             $table->string('hometel')->nullable();
             $table->string('officetel')->nullable();
@@ -52,7 +55,6 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
             $table->string('city')->default('台灣省');
             $table->string('state')->default('台灣省');
             $table->string('homeaddress')->nullable();
-            $table->string('member_class_serno')->default('MCDTP000000000000000001317');
             $table->string('salepoint_serno')->default('POSCF000000000000000001464');
             $table->string('employee_serno')->default('EMPLY000000000000000001000');
             $table->string('distinction')->nullable();
@@ -61,7 +63,7 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
             $table->string('member_level_ec')->nullable();
             $table->string('employ_code')->nullable();
             $table->string('category');
-            $table->date('period_at');
+            $table->date('period_at')->nullable();
             $table->string('hospital');
             $table->text('memo')->nullable();
             $table->enum('sex', ['male', 'female'])->nullable();

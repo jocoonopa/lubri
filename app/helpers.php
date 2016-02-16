@@ -150,8 +150,8 @@ function keepOnlyNumber($number)
 function keepOnlyChineseWord($str)
 {
     preg_match_all('/[\x{4e00}-\x{9fff}]+/u', $str, $matches);
-    
-    return join('', $matches[0]);
+
+    return strFilter(join('', $matches[0]));
 }
 
 function validateDate($date, $dateType = 'Y-m-d')
@@ -202,4 +202,60 @@ function nfTowf($strs, $types = 0)
     ];
  
     return (1 === $types) ? str_replace($nft, $wft, $strs) : str_replace($wft, $nft, $strs);
+}
+
+function strFilter ($str) {
+    $str = str_replace('`', '', $str);
+    $str = str_replace('·', '', $str);
+    $str = str_replace('~', '', $str);
+    $str = str_replace('!', '', $str);
+    $str = str_replace('！', '', $str);
+    $str = str_replace('@', '', $str);
+    $str = str_replace('#', '', $str);
+    $str = str_replace('$', '', $str);
+    $str = str_replace('￥', '', $str);
+    $str = str_replace('%', '', $str);
+    $str = str_replace('^', '', $str);
+    $str = str_replace('……', '', $str);
+    $str = str_replace('&', '', $str);
+    $str = str_replace('*', '', $str);
+    $str = str_replace('(', '', $str);
+    $str = str_replace(')', '', $str);
+    $str = str_replace('（', '', $str);
+    $str = str_replace('）', '', $str);
+    $str = str_replace('-', '', $str);
+    $str = str_replace('_', '', $str);
+    $str = str_replace('——', '', $str);
+    $str = str_replace('+', '', $str);
+    $str = str_replace('=', '', $str);
+    $str = str_replace('|', '', $str);
+    $str = str_replace('\\', '', $str);
+    $str = str_replace('[', '', $str);
+    $str = str_replace(']', '', $str);
+    $str = str_replace('【', '', $str);
+    $str = str_replace('】', '', $str);
+    $str = str_replace('{', '', $str);
+    $str = str_replace('}', '', $str);
+    $str = str_replace(';', '', $str);
+    $str = str_replace('；', '', $str);
+    $str = str_replace(':', '', $str);
+    $str = str_replace('：', '', $str);
+    $str = str_replace('\'', '', $str);
+    $str = str_replace('"', '', $str);
+    $str = str_replace('「', '', $str);
+    $str = str_replace('」', '', $str);
+    $str = str_replace(',', '', $str);
+    $str = str_replace('，', '', $str);
+    $str = str_replace('<', '', $str);
+    $str = str_replace('>', '', $str);
+    $str = str_replace('《', '', $str);
+    $str = str_replace('》', '', $str);
+    $str = str_replace('.', '', $str);
+    $str = str_replace('。', '', $str);
+    $str = str_replace('/', '', $str);
+    $str = str_replace('、', '', $str);
+    $str = str_replace('?', '', $str);
+    $str = str_replace('？', '', $str);
+    
+    return trim($str);
 }

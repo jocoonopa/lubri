@@ -31,6 +31,9 @@ class Kernel extends HttpKernel
         'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'report'        => \App\Http\Middleware\ReportMiddleware::class,
         'honeybaby'     => \App\Http\Middleware\HoneyBabyMiddleware::class,
+        'import.task'   => \App\Http\Middleware\ImportTaskMiddleware::class,
+        'import.push'   => \App\Http\Middleware\ImportPushMiddleware::class,
+        'import.content'=> \App\Http\Middleware\ImportContentMiddleware::class,
         'auth.chinghwa' => \App\Http\Middleware\ChinghwaAuthenticate::class,
         'auth.it'       => \App\Http\Middleware\ITAuthenticate::class,
         'auth.corp'     => \App\Http\Middleware\CorpAuthenticate::class

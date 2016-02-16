@@ -35,4 +35,9 @@ class City extends Model
     {
         return $this->hasMany('App\Model\State');
     }
+
+    public function scopeFindByName($query, $cityName)
+    {
+        $query->where('name', '=', $cityName)->orWhere('pastname', '=', $cityName);
+    }
 }

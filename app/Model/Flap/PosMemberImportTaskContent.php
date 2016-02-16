@@ -3,6 +3,7 @@
 namespace App\Model\Flap;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class PosMemberImportTaskContent extends Model
 {
@@ -13,7 +14,7 @@ class PosMemberImportTaskContent extends Model
      */
     protected $table = 'posmember_import_task_content';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -34,7 +35,6 @@ class PosMemberImportTaskContent extends Model
         'state',
         'homeaddress',
         'birthday',
-        'member_class_serno',
         'salepoint_serno',
         'employee_serno',
         'distinction',
@@ -48,7 +48,13 @@ class PosMemberImportTaskContent extends Model
         'memo',
         'sex',
         'flags',
-        'is_exist'
+        'is_exist',
+        'pushed_at',
+        'status'
+    ];
+
+    protected $casts = [
+        'is_exist' => 'boolean'
     ];
 
     /**
@@ -58,7 +64,7 @@ class PosMemberImportTaskContent extends Model
      */
     public function scopeIsExist($query, $taskId)
     {
-        $query->where('is_exist', '=', true)->where('posmember_import_task_id', '=', $taskId);
+        $query->where('is_exist', '=', true)->where('pos_member_import_task_id', '=', $taskId);
     }
 
     /**
@@ -68,6 +74,163 @@ class PosMemberImportTaskContent extends Model
      */
     public function scopeIsNotExist($query, $taskId)
     {
-        $query->where('is_exist', '=', false)->where('posmember_import_task_id', '=', $taskId);
+        $query->where('is_exist', '=', false)->where('pos_member_import_task_id', '=', $taskId);
+    }
+
+    /**
+     * 32 = 100000
+     * @param  [type] $query [description]
+     * @return [type]        [description]
+     */
+    public function scopeIsNotExecuted($query)
+    {
+        $query->where(DB::raw('32&Status'), '!=', 32);
+    }
+
+    /**
+     * @param  [type] $query [description]
+     * @return [type]        [description]
+     */
+    public function scopeIsExecuted($query)
+    {
+        $query->where(DB::raw('32&Status'), '=', 32);
+    }
+
+    public function scopeIsBelong($query, $taskId)
+    {
+        $query->where('pos_member_import_task_id', '=', $taskId);
+    }
+
+    public function scopeIsDuplicate($query, $colName = 'id')
+    {
+        $query               
+            ->whereNotNull($colName)
+            ->where($colName, '<>', '')
+            ->groupBy(['name', $colName])
+            ->orderBy('id', 'DESC')
+            ->having(DB::raw('COUNT(*)'), '>', 1)
+        ;
+    }
+
+    public function scopeDuplicateWithThis($query, $colName, $duplicateContent)
+    {
+        $query
+            ->where('name', '=', $duplicateContent->name)
+            ->where($colName, '=', $duplicateContent->$colName)
+            ->where($colName, '<>', '')
+            ->skip(1)->take(20)
+        ;
+    }
+
+    /**
+     * An article is owned by a user
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function pos_member_import_task()
+    {
+        return $this->belongsTo('App\Model\Flap\PosMemberImportTask');
+    }
+
+    public function setIsExist($member)
+    {
+        $boolean = !empty($member);
+        $this->is_exist = $boolean;
+
+        $this->code = (true === $boolean) ? $member['Code'] : NULL;
+        $this->serno = (true === $boolean) ? $member['SerNo'] : NULL;
+        $this->sernoi = (true === $boolean) ? $member['MemberSerNoI'] : NULL;
+
+        $desFlags = (true === $boolean) ? $this->pos_member_import_task->update_flags : $this->pos_member_import_task->insert_flags;
+        $diffFlags = (true === $boolean) ? $this->pos_member_import_task->insert_flags : $this->pos_member_import_task->update_flags;
+
+        $this->flags = json_encode((object) array_diff((array) json_decode($this->flags), (array) json_decode($diffFlags)));
+        $this->flags = json_encode((object) array_merge((array) json_decode($this->flags), (array) json_decode($desFlags)));
+        
+        return $this;
+    }
+
+    public function getFlagVal()
+    {
+        $flags =(array) json_decode($this->flags);
+
+        return array_key_exists(12, $flags) ? array_get($flags, 12): array_get($flags, 38, 'N');
+    }
+
+    public function getPeriodAt()
+    {
+        return (is_object($this->period_at)) ? $this->period_at : new \DateTime($this->period_at);
+    }
+
+    public function genMemo()
+    {
+        return array_get(self::getMemberListFlagMap(), $this->getFlagVal(), '--') . ';' 
+            . $this->name . ';' 
+            . $this->cellphone . ';' 
+            . $this->city . $this->state . $this->homeaddress . ';' 
+            . "預產期:{$this->getPeriodAt()->format('Ym')}" . ';' 
+            . "生產醫院:{$this->hospital}";
+    }
+
+    /**
+     * FLAG 23
+     * 
+     * @return array
+     */
+    public static function getPeriodFlagMap()
+    {
+        return [
+            '201504' => 'B',
+            '201505' => 'C',
+            '201506' => 'D',
+            '201507' => 'E',
+            '201508' => 'F',
+            '201509' => 'G',
+            '201510' => 'H',
+            '201511' => 'I',
+            '201512' => 'J',
+            '201601' => 'K',
+            '201602' => 'L',
+            '201603' => 'M',
+            '201604' => 'O',
+            '201605' => 'P',
+            '201606' => 'Q',
+            '201607' => 'R',
+            '201608' => 'S',
+            '201609' => 'T',
+            '201610' => 'U',
+            '201611' => 'V',
+            '201612' => 'W',
+        ];
+    }
+
+    public static function getMemberListFlagMap()
+    {
+        return [
+            'A' => '1月上',
+            'B' => '1月下',
+            'C' => '2月上',
+            'D' => '2月下',
+            'E' => '3月上',
+            'F' => '3月下',
+            'G' => '4月上',
+            'H' => '4月下',
+            'I' => '5月上',
+            'J' => '5月下',
+            'K' => '6月上',
+            'L' => '6月下',
+            'M' => '7月上',
+            'O' => '7月下',
+            'P' => '8月上',
+            'Q' => '8月下',
+            'R' => '9月上',
+            'S' => '9月下',
+            'T' => '10月上',
+            'U' => '10月下',
+            'V' => '11月上',
+            'W' => '11月下',
+            'X' => '12月上',
+            'Y' => '12月下'
+        ];
     }
 }

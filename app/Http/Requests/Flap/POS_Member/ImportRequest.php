@@ -50,6 +50,6 @@ class ImportRequest extends Request
      */
     public function response(array $errors)
     {
-        return redirect()->route('pos_member_import_index')->withErrors($errors, $this->errorBag);
+        return redirect()->action('Flap\POS_Member\ImportTaskController@create')->withErrors($errors, $this->errorBag);
     }
 }

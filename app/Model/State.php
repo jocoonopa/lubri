@@ -31,6 +31,11 @@ class State extends Model
         return $this->belongsTo('App\Model\City');
     }
 
+    public function isBelong($address)
+    {
+        return false !== strpos($address, $this->name) || false !== strpos($address, $this->pastname);
+    }
+
     public function scopeFindByZipcode($query, $zipcode)
     {
         $query->where('zipcode', '=', $zipcode);

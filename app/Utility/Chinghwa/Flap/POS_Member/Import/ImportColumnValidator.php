@@ -18,22 +18,22 @@ class ImportColumnValidator
 
     protected function isNameLengthEnough($columns)
     {
-        return (Import::MINLENGTH_NAME <= mb_strlen(keepOnlyChineseWord($columns[Import::I_NAME]), 'utf-8'));
+        return (Import::MINLENGTH_NAME <= mb_strlen(keepOnlyChineseWord($columns[Import::I_NAME]), Import::DOC_ENCODE));
     }
 
     protected function isAddressLengthEnough($columns)
     {
-        return (Import::MINLENGTH_ADDRESS <= mb_strlen(keepOnlyChineseWord($columns[Import::I_ADDRESS]), 'utf-8'));
+        return (Import::MINLENGTH_ADDRESS <= mb_strlen(keepOnlyChineseWord($columns[Import::I_ADDRESS]), Import::DOC_ENCODE));
     }
 
     protected function isHometelLengthEnough($columns)
     {
-        return (Import::MINLENGTH_CELLPHONE < strlen(keepOnlyNumber(nfTowf($columns[Import::I_HOMETEL], 0)), 'utf-8'));
+        return (Import::MINLENGTH_CELLPHONE < strlen(keepOnlyNumber(nfTowf($columns[Import::I_HOMETEL], 0))));
     }
 
     protected function isCellPhoneLengthEnough($columns)
     {
-        return (Import::MINLENGTH_TEL < mb_strlen(keepOnlyNumber(nfTowf($columns[Import::I_CELLPHONE], 0)), 'utf-8'));
+        return (Import::MINLENGTH_TEL < strlen(keepOnlyNumber(nfTowf($columns[Import::I_CELLPHONE], 0))));
     }
 
     protected function isEmailValid($columns)
