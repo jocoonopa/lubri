@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Flap\POS_Member;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
-use App\Http\Requests\Flap\POS_Member\ImportContentRequest;
 use App\Model\Flap\PosMemberImportTask;
 use App\Model\Flap\PosMemberImportTaskContent;
 use Illuminate\Http\Request;
@@ -90,7 +89,7 @@ class ImportContentController extends Controller
      * @param  \App\Model\Flap\PosMemberImportTaskContent
      * @return \Illuminate\Http\Response
      */
-    public function update(ImportContentRequest $request, PosMemberImportTask $task, PosMemberImportTaskContent $content)
+    public function update(Request $request, PosMemberImportTask $task, PosMemberImportTaskContent $content)
     {
         $content->update($request->all());
 
