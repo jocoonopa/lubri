@@ -80,7 +80,23 @@ $('.import-task-delete').click(function () {
 	return false;
 });
 
+$('.import-task-push').click(function () {
+	var $this = $(this);
 
+	bootbox.confirm({
+		size: 'small',
+		message: '確定執行任務' + $this.data('task-id') + '嗎?', 
+		buttons: {
+			"confirm": {
+				className: 'btn btn-raised btn-primary'
+			}
+		}, 
+		callback: function(result) {
+			return (true === result) ? window.location.href=$this.attr('href') : this.modal('hide');
+		}}); 
+
+	return false;
+});
 </script>
 @stop
 

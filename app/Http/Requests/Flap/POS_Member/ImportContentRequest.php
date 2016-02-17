@@ -4,7 +4,7 @@ namespace App\Http\Requests\Flap\POS_Member;
 
 use App\Http\Requests\Request;
 
-class ImportRequest extends Request
+class ImportContentRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,11 +16,6 @@ class ImportRequest extends Request
         return true;
     }
 
-    public function forbiddenResponse()
-    {
-        return response()->view('errors.403', [], 403);
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -29,9 +24,15 @@ class ImportRequest extends Request
     public function rules()
     {
         return [
-            'category'    => 'required',
-            'distinction' => 'required',
-            'file'        => 'required|max:5000|mimes:xls' //a required, max 5000kb, xls
+            'email'       => 'email',
+            'name'        => 'required|min:2|max:6',
+            'zipcode'     => 'zipcode',
+            'cellphone'   => 'cellphone|required_without_all:hometel,homeaddress',
+            'hometel'     => 'tel|required_without_all:cellphone,homeaddress',
+            'officetel'   => 'tel',
+            'homeaddress' => 'min:6|max:255|required_without_all:cellphone,hometel',
+            'period_at'   => 'date',
+            'hospital'    => 'min:2|max:20'
         ];
     }
 
@@ -50,6 +51,6 @@ class ImportRequest extends Request
      */
     public function response(array $errors)
     {
-        return redirect()->action('Flap\POS_Member\ImportTaskController@create')->withErrors($errors, $this->errorBag);
+        return redirect()->back()->withErrors($errors, $this->errorBag);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Flap\POS_Member;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
-use App\Http\Requests\Flap\POS_Member\ImportRequest;
+use App\Http\Requests\Flap\POS_Member\ImportTaskRequest;
 use App\Model\Flap\PosMemberImportTask;
 use App\Model\Flap\PosMemberImportTaskContent;
 use App\Utility\Chinghwa\Database\Connectors\Connector;
@@ -55,11 +55,11 @@ class ImportTaskController extends Controller
     /**
      * The inject priority must be corrected, otherwise the validation will be failed
      *
-     * @param  ImportRequest   $request
+     * @param  ImportTaskRequest   $request
      * @param  PosMemberImport $import 
      * @return \Illuminate\Http\Response                  
      */
-    public function store(ImportRequest $request, Import $import)
+    public function store(ImportTaskRequest $request, Import $import)
     {
         set_time_limit(0);
         

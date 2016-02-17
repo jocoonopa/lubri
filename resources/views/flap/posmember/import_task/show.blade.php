@@ -77,7 +77,7 @@
                         <td>{{ $content->updated_at->format('Y-m-d H:i')}}</td>
                         <td>    
                             @if(32 !== ($content->status&32))
-                            <a href="/flap/pos_member/import_push/{{ $task->id }}/content/{{ $content->id }}" class="pull-left btn btn-xs btn-raised btn-primary import-content-push" data-task-id="{{$task->id}}">
+                            <a href="/flap/pos_member/import_push/{{ $task->id }}/content/{{ $content->id }}" class="pull-left btn btn-xs btn-raised btn-primary import-content-push" data-content-name="{{$content->name}}">
                                     <i class="glyphicon glyphicon-play"></i>                                
                             </a>   
                             @endif    
@@ -119,6 +119,24 @@ $('.import-content-delete').click(function () {
         }, 
         callback: function(result) {
             return (true === result) ? $this.closest('form').submit() : this.modal('hide');
+        }}); 
+
+    return false;
+});
+
+$('.import-content-push').click(function () {
+    var $this = $(this);
+
+    bootbox.confirm({
+        size: 'small',
+        message: '確定推送項目' + $this.data('content-name') + '嗎?', 
+        buttons: {
+            "confirm": {
+                className: 'btn btn-raised btn-primary'
+            }
+        }, 
+        callback: function(result) {
+            return (true === result) ? window.location.href=$this.attr('href') : this.modal('hide');
         }}); 
 
     return false;

@@ -245,14 +245,14 @@ class ImportFilter
      */
     public function getTel($tel, $state)
     {
-        $tel = keepOnlyNumber(nfTowf($tel));
-        
-        if (NULL === $state) {
-            return $tel;
+        if ($this->isTelLengthValid($tel)) {
+            return NULL;
         }
 
-        if (Import::MINLENGTH_TEL > strlen($tel)) {
-            return NULL;
+        $tel = keepOnlyNumber(nfTowf($tel));
+    
+        if (NULL === $state) {
+            return $tel;
         }
 
         $params = $this->_getTelCodeRelateParams($state);
@@ -260,6 +260,11 @@ class ImportFilter
         $tel = $this->_getTelCodeAttachedTel($tel, $params);
 
         return $this->_getExtDelimeterAttachTel($tel, array_get($params, 3, 0));
+    }
+
+    public function isTelLengthValid($tel)
+    {
+        return Import::MINLENGTH_TEL <= strlen(keepOnlyNumber(nfTowf($tel)));
     }
 
     /**
@@ -353,6 +358,13 @@ class ImportFilter
      */
     public function getCellphone($val)
     {
+        $cellPhone = $this->genProperFormatCellphone($val);
+
+        return $this->isCellphoneLengthValid($cellPhone) ? $cellPhone : NULL;
+    }
+
+    public function genProperFormatCellphone($val)
+    {
         $cellPhone = keepOnlyNumber(nfTowf($val));
 
         if (Import::CELLPHONE_ALTERHEAD === substr($cellPhone, 0, strlen(Import::CELLPHONE_ALTERHEAD))) {
@@ -363,19 +375,24 @@ class ImportFilter
             $cellPhone = Import::CELLPHONE_HEADCHAR . $cellPhone;
         }
 
+        return $cellPhone;
+    }
+
+    public function isCellphoneLengthValid($cellPhone)
+    {
         if (Import::MINLENGTH_CELLPHONE > strlen($cellPhone)) {
-            return NULL;
+            return false;
         }
 
         if (Import::CELLPHONE_VALIDLENGTH === strlen($cellPhone) && Import::CELLPHONE_HEADCHAR !== substr($cellPhone, 0, 1)) {
-            return NULL;
+            return false;
         }
 
         if (Import::CELLPHONE_VALIDLENGTH < strlen($cellPhone)) {
-            return NULL;
+            return false;
         }
 
-        return $cellPhone;
+        return true;
     }
 
     public function getHometel($val)

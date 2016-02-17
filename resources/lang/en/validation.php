@@ -74,6 +74,9 @@ return [
     'timezone'             => 'The :attribute must be a valid zone.',
     'unique'               => 'The :attribute has already been taken.',
     'url'                  => 'The :attribute format is invalid.',
+    'zipcode'   => ':attribute 不存在或不合法.',
+    'cellphone' => ':attribute 不正確.',
+    'tel'       => ':attribute 不正確.',
 
     /*
     |--------------------------------------------------------------------------

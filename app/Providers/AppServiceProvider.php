@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Validator::extend('zipcode', 'App\Http\Validator\ImportContentValidator@zipcode');
+        Validator::extend('cellphone', 'App\Http\Validator\ImportContentValidator@cellphone');
+        Validator::extend('tel', 'App\Http\Validator\ImportContentValidator@tel');
     }
 
     /**

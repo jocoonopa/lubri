@@ -1,7 +1,9 @@
 @if ($errors->any())
-	<ul class="alert alert-danger">
-		@foreach ($errors->all() as $error)
-			<li>{{ $error }}</li>
-		@endforeach
-	</ul>
+	<div class="alert alert-danger" role="alert">
+        @foreach ($errors->all() as $error)<span>{{ $error . '   ' }}</span>@endforeach
+
+        <button type="button" class="close pull-right" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+	</div>
 @endif

@@ -6,3 +6,5 @@
 		</button>
     </div>
 @endif
+
+@include ('errors.list')

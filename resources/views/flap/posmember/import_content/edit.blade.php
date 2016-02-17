@@ -11,6 +11,8 @@
            <h1>{{ $content->name . '資料修改'}} 
             <div class="ripple-container"></div></a>
             <small><a href="/flap/pos_member/import_task/{{$task->id}}/content" class="btn btn-raised btn-sm btn-default"><i class="glyphicon glyphicon-list"></i>回到列表</a></small></h1>
+                
+            @include('common.errormsg')
 
            {!! Form::model($content, [
                 'method' => 'PUT',
@@ -95,15 +97,26 @@
                 <div class="form-group">
                     {!! Form::label(
                         'zipcode', 
-                        '郵遞區號', 
+                        '郵遞區號/縣市/區', 
                         ['class' => 'control-label']) 
                     !!}
                     
-                    <div class="input-group">
-                        {!! Form::input('number', 'zipcode', NULL, ['id'=>'zipcode', 'class' => 'form-control', 'placeholder' => '請選擇會員郵遞區號']);
-                        !!}
-                        <div class="input-group-addon"><span class="label label-info">{{ $content->city }}{{ $content->state }}</span> </div>
-                    </div>
+                    <div class="row">
+                        <div class="col-md-4">{!! Form::input('number', 'zipcode', NULL, ['id'=>'zipcode', 'class' => 'form-control', 'placeholder' => '請選擇會員郵遞區號']);
+                        !!}</div>
+                        
+                        <div class="col-md-4">
+                            <select id="city" class="form-control">
+                                <option value="1">{{ $content->city }}</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <select id="state" class="form-control">
+                                <option value="1">{{ $content->state }}</option>
+                            </select>
+                        </div>      
+                    </div>                            
 
                     <p class="help-block">{{'Example: 235'}}</p>
                 </div>
