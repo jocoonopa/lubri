@@ -26,14 +26,17 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li class="list-group-item">匯入耗時: <b>{{ $task->import_cost_time . '秒' }}</b></li>
-                        <li class="list-group-item">匯入成功筆數: <b>{{ ($task->insert_count + $task->update_count) . '筆' }}</b></li>
-                        <li class="list-group-item">匯入失敗筆數: <b>{{ $task->error_count . '筆'}}</b></li>
-                           <li class="list-group-item">建立時間:  <b>{{$task->created_at->format('Y-m-d H:i:s')}}</b></li>
-                        <li class="list-group-item">更新時間:  <b>{{$task->updated_at->format('Y-m-d H:i:s')}}</b></li>
-                        <li class="list-group-item">推送完成時間: @if($task->executed_at) <span class="label label-success">{{$task->executed_at }}</span> @else <span class="label label-default">NOT YET</span> @endif</li>
-                        <li class="list-group-item">建立人員: <b>{{ $task->user->username }}</b></li>
+                        <li class="list-group-item">{{'匯入耗時:&nbsp;'}}<b>{{ $task->import_cost_time . '秒' }}</b></li>
+                        <li class="list-group-item">{{ '匯入成功筆數:&nbsp;'}} <b>{{ ($task->insert_count + $task->update_count) . '筆' }}</b></li>
+                        <li class="list-group-item">{{ '匯入失敗筆數:&nbsp;'}} <b>{{ $task->error_count . '筆'}}</b></li>
+                           <li class="list-group-item">{{ '建立時間:&nbsp;&nbsp;'}}  <b>{{$task->created_at->format('Y-m-d H:i:s')}}</b></li>
+                        <li class="list-group-item">{{ '更新時間:&nbsp;&nbsp;'}}  <b>{{$task->updated_at->format('Y-m-d H:i:s')}}</b></li>
+                        <li class="list-group-item">{{ '推送完成時間:&nbsp;&nbsp;'}} @if($task->executed_at) <span class="label label-success">{{$task->executed_at }}</span> @else <span class="label label-default">NOT YET</span> @endif</li>
+                        <li class="list-group-item">{{ '建立人員:   '}} <b>{{ $task->user->username }}</b></li>
                     </ul>
+
+                    <span class="label label-primary">{{ '新會員 ' . $task->content()->where('is_exist', '=', false)->count() . ' 位'}}</span>
+                    <span class="label label-default">{{ '舊會員 ' . $task->content()->where('is_exist', '=', true)->count() . ' 位'}}</span>
                 </div>
             </div>
             
