@@ -71,7 +71,7 @@ class PosMemberImportTaskContentObserver
     protected function fixStatus()
     {
         if (NULL === $this->content->pushed_at) {
-            $this->content->status = $this->filter->getStatus($this->content->status, $this->filter->getInnerState());
+            $this->content->status = $this->filter->getStatus($this->content->status, $this->filter->getCacheState());
         }
 
         return $this;

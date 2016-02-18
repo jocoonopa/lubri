@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Flap\POS_Member;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
+use App\Http\Requests\Flap\POS_Member\ImportContentRequest;
 use App\Model\Flap\PosMemberImportTask;
 use App\Model\Flap\PosMemberImportTaskContent;
-use Illuminate\Http\Request;
+use App\Model\State;
 use Session;
 
 class ImportContentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('import.content', ['only' => ['destroy', 'update']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -84,14 +89,14 @@ class ImportContentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request
+     * @param  \Illuminate\Http\ImportContentRequest
      * @param  \App\Model\Flap\PosMemberImportTask
      * @param  \App\Model\Flap\PosMemberImportTaskContent
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PosMemberImportTask $task, PosMemberImportTaskContent $content)
+    public function update(ImportContentRequest $request, PosMemberImportTask $task, PosMemberImportTaskContent $content)
     {
-        $content->update($request->all());
+        $this->_prevSetContentState($content, $request);
 
         Session::flash('success', "項目 <b>{$content->name}</b> 更新完成!");
 
@@ -102,14 +107,29 @@ class ImportContentController extends Controller
         ]); 
     }
 
+    private function _prevSetContentState(&$content, ImportContentRequest $request)
+    {
+        $state = State::where('zipcode', '=', $request->get('zipcode'))->where(function ($q) use ($request) {
+            $q->where('name', '=', $request->get('district'))->orWhere('pastname', '=', $request->get('district'));
+        })->first();
+
+        $content->state_id = (NULL === $state) ? NULL : $state->id;
+        $content->update($request->all());
+    }
+
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Model\Flap\PosMemberImportTaskContent
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PosMemberImportTaskContent $content)
+    public function destroy(PosMemberImportTask $task, PosMemberImportTaskContent $content)
     {
-        echo 123;
+        Session::flash('success', "項目 <b>{$content->name}</b> 已經移除!");
+
+        $content->delete();
+        $task->updateStat()->save();
+
+        return redirect("/flap/pos_member/import_task/{$task->id}/content");
     }
 }

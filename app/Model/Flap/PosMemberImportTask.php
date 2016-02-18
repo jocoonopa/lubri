@@ -49,4 +49,12 @@ class PosMemberImportTask extends Model
     {
         return $this->belongsTo('App\Model\User');
     }
+
+    public function updateStat()
+    {
+        $this->insert_count = $this->content()->where('is_exist', '=', false)->count();
+        $this->update_count = $this->content()->where('is_exist', '=', true)->count();
+
+        return $this;
+    }
 }

@@ -172,7 +172,7 @@ class ImportFilter
 
     public function _guessAddressTypeB($address)
     {
-        $city = City::findByName(mb_substr($address, 0, 3, Import::DOC_ENCODE))->get()->first();
+        $city = City::findByName(mb_substr($address, 0, 3, Import::DOC_ENCODE))->first();
 
         return NULL !== $city ? $this->_findBelongState($city->states, $address) : NULL;
     }
@@ -183,6 +183,8 @@ class ImportFilter
 
         foreach ($states as $state) {
             if ($state->isBelong($address3To9)) {
+                $this->setCacheState($state);
+
                 return $state;
             }
         }

@@ -189,9 +189,7 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
     private function _saveTaskStatic()
     {
         $this->task->error = json_encode($this->error);
-        $this->task->insert_count = PosMemberImportTaskContent::isNotExist($this->task->id)->count();
-        $this->task->update_count = PosMemberImportTaskContent::isExist($this->task->id)->count();
-        $this->task->save();
+        $this->task->updateStat()->save();
 
         return $this->task;
     }

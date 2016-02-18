@@ -101,22 +101,11 @@
                         ['class' => 'control-label']) 
                     !!}
                     
-                    <div class="row">
-                        <div class="col-md-4">{!! Form::input('number', 'zipcode', NULL, ['id'=>'zipcode', 'class' => 'form-control', 'placeholder' => '請選擇會員郵遞區號']);
-                        !!}</div>
-                        
-                        <div class="col-md-4">
-                            <select id="city" class="form-control">
-                                <option value="1">{{ $content->city }}</option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <select id="state" class="form-control">
-                                <option value="1">{{ $content->state }}</option>
-                            </select>
-                        </div>      
-                    </div>                            
+                    <div id="twzipcode">
+                        <div data-role="county" data-style="form-control" data-value="{{$content->getCityName()}}"></div>
+                        <div data-role="district" data-style="form-control" data-value="{{$content->getStateName()}}"></div>
+                        <div data-role="zipcode" data-style="form-control" data-value="{{$content->getZipcode()}}"></div>
+                    </div>                             
 
                     <p class="help-block">{{'Example: 235'}}</p>
                 </div>
@@ -177,8 +166,10 @@
 @section('js')
 <script src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
 <script src="/assets/bootstrap-material-datetimepicker-gh-pages/js/bootstrap-material-datetimepicker.js"></script>
+<script src="/assets/jQuery-TWzipcode-master/jquery.twzipcode.min.js"></script>
 <script>
 moment.locale('zh-tw');
 $('#period_at').bootstrapMaterialDatePicker({'time': false});
+$('#twzipcode').twzipcode();
 </script>
 @stop
