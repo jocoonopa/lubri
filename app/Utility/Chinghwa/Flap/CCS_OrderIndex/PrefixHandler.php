@@ -114,6 +114,7 @@ class PrefixHandler
 			$newOrderNo = $this->getNewInsertCTOrderNo($this->getConvertOrderNo($orderNo));
 
 			Processor::execErp("UPDATE CCS_OrderIndex SET OrderNo='{$newOrderNo}' WHERE OrderNo='{$orderNo}'");
+			Processor::execErp("UPDATE CCS_SellIndex SET OrderNo='{$newOrderNo}' WHERE OrderNo='{$orderNo}'");
 
 			foreach ($orderNoTree->getChildren() as $child) {
 				$newNo = $newOrderNo . $orderNoTree->fetchTailOfChild($child);
