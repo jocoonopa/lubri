@@ -23,9 +23,6 @@ class PosMemberImportTaskContentObserver
         $this->content = $content;
 
         $this
-            ->fixZipcode()
-            ->fixStateAndCity()
-            ->fixAddress()
             ->fixCellphone()
             ->fixHometel()
             ->fixOfficetel()
@@ -34,28 +31,6 @@ class PosMemberImportTaskContentObserver
             ->fixMemo()
             ->save()
         ;
-    }
-
-    protected function fixZipcode()
-    {
-        $this->content->zipcode = $this->filter->getZipcode($this->content->zipcode, $this->content->homeaddress);
-
-        return $this;
-    }
-
-    protected function fixStateAndCity()
-    {
-        $this->content->state = $this->filter->getState($this->content->zipcode);
-        $this->content->city = $this->filter->getCity($this->filter->getInnerState());
-
-        return $this;
-    }
-
-    protected function fixAddress()
-    {
-        $this->content->homeaddress = $this->filter->getAddress($this->filter->getInnerState(), $this->content->homeaddress);
-
-        return $this;
     }
 
     protected function fixFlag23WithPeriodAt()

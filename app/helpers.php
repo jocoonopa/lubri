@@ -259,3 +259,8 @@ function strFilter ($str) {
     
     return trim($str);
 }
+
+function isWrongCodeTel($content)
+{
+    return false === strpos($content->hometel, App\Utility\Chinghwa\Flap\POS_Member\Import\Import::WRONG_TELCODE);
+}

@@ -106,10 +106,11 @@ class ImportModelFactory
         $model->hometel            = $dataHolder->getHometel();
         $model->officetel          = $dataHolder->getOfficetel();
         $model->birthday           = $dataHolder->getBirthday();
-        $model->zipcode            = $dataHolder->getZipcode();
-        $model->city               = $dataHolder->getCity();
-        $model->state              = $dataHolder->getState();
         $model->homeaddress        = $dataHolder->getAddress();
+
+        $state = $dataHolder->getState();
+
+        $model->state_id           = (NULL === $state) ? $state : $state->id;
         $model->distinction        = $adapter->getOptions()[Import::OPTIONS_DISTINCTION];
         $model->category           = $adapter->getOptions()[Import::OPTIONS_CATEGORY];
         $model->period_at          = (empty($dataHolder->getPeriod())) ? NULL : new \DateTime($dataHolder->getPeriod());

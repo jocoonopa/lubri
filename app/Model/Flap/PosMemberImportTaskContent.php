@@ -2,8 +2,9 @@
 
 namespace App\Model\Flap;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Utility\Chinghwa\Flap\POS_Member\Import\Import;
 use DB;
+use Illuminate\Database\Eloquent\Model;
 
 class PosMemberImportTaskContent extends Model
 {
@@ -30,9 +31,7 @@ class PosMemberImportTaskContent extends Model
         'hometel',
         'officetel',
         'birthday',
-        'zipcode',
-        'city',
-        'state',
+        'state_id',
         'homeaddress',
         'birthday',
         'salepoint_serno',
@@ -132,6 +131,16 @@ class PosMemberImportTaskContent extends Model
         return $this->belongsTo('App\Model\Flap\PosMemberImportTask');
     }
 
+    /**
+     * An article is owned by a user
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function state()
+    {
+        return $this->belongsTo('App\Model\State');
+    }
+
     public function setIsExist($member)
     {
         $boolean = !empty($member);
@@ -170,6 +179,21 @@ class PosMemberImportTaskContent extends Model
             . $this->city . $this->state . $this->homeaddress . ';' 
             . "預產期:{$this->getPeriodAt()->format('Ym')}" . ';' 
             . "生產醫院:{$this->hospital}";
+    }
+
+    public function getZipcode()
+    {
+        return (NULL === $this->state) ? Import::DEFAULT_ZIPCODE : $this->state->zipcode;
+    }
+
+    public function getCityName()
+    {
+        return (NULL === $this->state) ? Import::DEFAULT_CITYSTATE : $this->state->city->name;
+    }
+
+    public function getStateName()
+    {
+        return (NULL === $this->state) ? Import::DEFAULT_CITYSTATE : $this->state->name;
     }
 
     /**

@@ -5,19 +5,20 @@ namespace App\Utility\Chinghwa\Flap\POS_Member\Import;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\Import;
 use App\Model\State;
 use App\Model\City;
+use Illuminate\Database\Eloquent\Collection;
 
 class ImportFilter
 {
-    protected $innerState;
+    protected $cacheState;
 
     /**
      * Gets the value of state.
      *
      * @return mixed
      */
-    public function getInnerState()
+    public function getCacheState()
     {
-        return $this->innerState;
+        return $this->cacheState;
     }
 
     /**
@@ -27,16 +28,16 @@ class ImportFilter
      *
      * @return self
      */
-    public function setInnerState(State $state)
+    public function setCacheState(State $state)
     {
-        $this->innerState = $state;
+        $this->cacheState = $state;
 
         return $this;
     }
 
-    public function clearInnerState()
+    public function clearCacheState()
     {
-        $this->innerState = NULL;
+        $this->cacheState = NULL;
 
         return $this;
     }
@@ -78,11 +79,11 @@ class ImportFilter
         return validateDate($filteredDate,'Ymd') ? $filteredDate : NULL;
     }
 
-    public function getZipcode($val, $address)
+    public function getState($zipcode, $address)
     {
-        $zipcode = $this->_getZipcode($val);
+        $zipcode = $this->_getZipcode($zipcode);
 
-        return $this->_isValidZipcode($zipcode) ? $zipcode : $this->_getZipcodeByGuessAddress($address);
+        return $this->_isValidZipcode($zipcode, $address) ? $this->getCacheState() : $this->_getZipcodeByGuessAddress($address);
     }
 
     public function _getZipcode($val)
@@ -108,14 +109,16 @@ class ImportFilter
      * @param  string  $zipcode
      * @return boolean          
      */
-    public function _isValidZipcode($zipcode)
+    public function _isValidZipcode($zipcode, $address)
     {
         if (Import::MINLENGTH_ZIPCODE !== strlen($zipcode)) {
             return false;
         }
 
-        if (NULL !== ($state = State::findByZipcode($zipcode)->first())) {
-            $this->setInnerState($state);
+        $states = State::findByZipcode($zipcode)->get();
+
+        if (0 !== $states->count()) {
+            $this->setCacheStateFromStates($states, $address);
 
             return true;
         }
@@ -123,6 +126,20 @@ class ImportFilter
         return false;
     }
 
+    public function setCacheStateFromStates(Collection $states, $address)
+    {
+        $state = $this->_findBelongState($states, $address);
+
+        return $this->setCacheState((NULL === $state ? $states->first() : $state));
+    }
+
+    /**
+     * TypeA: zipcode exist in (0,3) or (3,6)
+     * TypeB: cityName and stateName exist
+     * 
+     * @param  string $address
+     * @return string         
+     */
     public function _getZipcodeByGuessAddress($address)
     {
         $address = $this->getOriginAddress($address);
@@ -135,9 +152,9 @@ class ImportFilter
             return $typeB;
         }  
 
-        $this->clearInnerState();
+        $this->clearCacheState();
 
-        return Import::DEFAULT_ZIPCODE;
+        return NULL;
     }
 
     public function _guessAddressTypeA($address)
@@ -145,8 +162,8 @@ class ImportFilter
         for ($i = 0; $i < 2; $i ++) {
             $addressPartial = keepOnlyNumber(mb_substr($address, $i * 3, 3, Import::DOC_ENCODE));
 
-            if ($this->_isValidZipcode($addressPartial)) {
-                return $addressPartial;
+            if ($this->_isValidZipcode($addressPartial, $address)) {
+                return $this->getCacheState();
             }
         }
 
@@ -157,15 +174,16 @@ class ImportFilter
     {
         $city = City::findByName(mb_substr($address, 0, 3, Import::DOC_ENCODE))->get()->first();
 
-        if ($city) {
-            $address3To9 = mb_substr($address, 3, 9, Import::DOC_ENCODE);
+        return NULL !== $city ? $this->_findBelongState($city->states, $address) : NULL;
+    }
 
-            foreach ($city->states as $state) {
-                if ($state->isBelong($address3To9)) {
-                    $this->setInnerState($state);
+    private function _findBelongState(Collection $states, $address)
+    {
+        $address3To9 = mb_substr($address, 3, 9, Import::DOC_ENCODE);
 
-                    return $state->zipcode;
-                }
+        foreach ($states as $state) {
+            if ($state->isBelong($address3To9)) {
+                return $state;
             }
         }
 
@@ -190,24 +208,6 @@ class ImportFilter
     public function getOriginAddress($val)
     {        
         return strFilter(str_replace(['F', '-', "'", '"'], ['樓', '之', '', ''], trim(nfTowf($val))));
-    }
-
-    public function getCity($state)
-    {
-        return (NULL === $state) 
-            ? Import::DEFAULT_CITYSTATE
-            : $state->city->name
-        ;
-    }
-
-    public function getState($zipcode)
-    {
-        $state = State::findByZipcode($zipcode)->first();
-
-        return (NULL === $state) 
-            ? Import::DEFAULT_CITYSTATE
-            : $state->name
-        ;
     }
 
     public function getStatus($address, $state)
@@ -241,11 +241,12 @@ class ImportFilter
      * 2. 若電話長度過短，直接回傳NULL
      * 
      * @param  string $tel
+     * @param  mixed $state
      * @return string     
      */
     public function getTel($tel, $state)
     {
-        if ($this->isTelLengthValid($tel)) {
+        if (!$this->isTelLengthValid($tel)) {
             return NULL;
         }
 
@@ -397,12 +398,12 @@ class ImportFilter
 
     public function getHometel($val)
     {
-        return $this->getTel($val, $this->getInnerState());
+        return $this->getTel($val, $this->getCacheState());
     }
 
     public function getOfficetel($val)
     {
-        return $this->getTel($val, $this->getInnerState());
+        return $this->getTel($val, $this->getCacheState());
     }
 
     public function getEmail($val)

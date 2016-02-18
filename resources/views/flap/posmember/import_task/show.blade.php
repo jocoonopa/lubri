@@ -69,10 +69,16 @@
                         </td>
                         <td>{{ $content->email }}</td>
                         <td>{{ $content->cellphone }}</td>
-                        <td>{{ $content->hometel }}</td>
-                        <td>{{ $content->zipcode }}</td>
-                        <td>{{ $content->city }}</td>
-                        <td>{{ $content->state }}</td>
+                        <td>
+                            @if(isWrongCodeTel($content)) 
+                                {{ $content->hometel }}
+                            @else 
+                                <span class="label label-warning">{{ $content->hometel }}</span> 
+                            @endif                            
+                        </td>
+                        <td>{{ $content->getZipcode() }}</td>
+                        <td>{{ $content->getCityName() }}</td>
+                        <td>{{ $content->getStateName() }}</td>
                         <td>{{ $content->homeaddress }}</td>
                         <td>{{ $content->updated_at->format('Y-m-d H:i')}}</td>
                         <td>    

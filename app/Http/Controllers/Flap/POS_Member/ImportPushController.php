@@ -100,7 +100,7 @@ class ImportPushController extends Controller
             echo "EXEC dbo.sp_DeleteHBMember '{$member['SerNo']}'<br/>";
         }
 
-        dd($members);
+        return '<hr>請將畫面上的SQL語句貼在欲直行的資料庫進行還原~';
     }
 
     protected function _pushProcess(PosMemberImportTaskContent $content)
@@ -172,9 +172,9 @@ class ImportPushController extends Controller
         $sql.= ",{$this->_getPropertyOrNull($content->officetel)}";
         $sql.= ",{$this->_getPropertyOrNull($content->cellphone)}";
         $sql.= ",{$this->_getPropertyOrNull($content->email)}";
-        $sql.= ",{$this->_getPropertyOrNull($content->zipcode)}";
-        $sql.= ",{$this->_getPropertyOrNull($content->city)}";
-        $sql.= ",{$this->_getPropertyOrNull($content->state)}";
+        $sql.= ",{$this->_getPropertyOrNull($content->getZipcode())}";
+        $sql.= ",{$this->_getPropertyOrNull($content->getCityName())}";
+        $sql.= ",{$this->_getPropertyOrNull($content->getStateName())}";
         $sql.= ",{$this->_getPropertyOrNull($content->homeaddress)}";
         $sql.= ",{$this->_getPropertyOrNull($content->category)}";
         $sql.= ",{$this->_getPropertyOrNull($content->salepoint_serno)}";

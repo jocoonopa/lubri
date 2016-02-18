@@ -31,6 +31,16 @@ class State extends Model
         return $this->belongsTo('App\Model\City');
     }
 
+    /**
+     * A user can have many articles
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function content()
+    {
+        return $this->hasMany('App\Model\Flap\PosMemberImportTaskContent');
+    }
+
     public function isBelong($address)
     {
         return false !== strpos($address, $this->name) || false !== strpos($address, $this->pastname);

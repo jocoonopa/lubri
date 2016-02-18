@@ -7,8 +7,6 @@ class ImportDataHolder
     protected $name;
     protected $birthday;
     protected $address;
-    protected $zipcode;
-    protected $city;
     protected $state;
     protected $cellphone;
     protected $hometel;
@@ -41,54 +39,6 @@ class ImportDataHolder
     public function setAddress($address)
     {
         $this->address = $address;
-
-        return $this;
-    }
-
-    /**
-     * Gets the value of zipcode.
-     *
-     * @return mixed
-     */
-    public function getZipcode()
-    {
-        return $this->zipcode;
-    }
-
-    /**
-     * Sets the value of zipcode.
-     *
-     * @param mixed $zipcode the zipcode
-     *
-     * @return self
-     */
-    public function setZipcode($zipcode)
-    {
-        $this->zipcode = $zipcode;
-
-        return $this;
-    }
-
-    /**
-     * Gets the value of city.
-     *
-     * @return mixed
-     */
-    public function getCity()
-    {
-        return $this->city;
-    }
-
-    /**
-     * Sets the value of city.
-     *
-     * @param mixed $city the city
-     *
-     * @return self
-     */
-    public function setCity($city)
-    {
-        $this->city = $city;
 
         return $this;
     }
