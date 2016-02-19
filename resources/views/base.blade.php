@@ -23,6 +23,7 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/bootstrap-material-design.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/bootstrap-material-design.min.css.map">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/ripples.min.css">
+	<link rel='stylesheet' href='{!! URL::asset('/assets/nprogress-master/nprogress-master/nprogress.css') !!}'/>
   @yield('css')
 </head>
 
@@ -45,7 +46,12 @@
 	<script src="{!! URL::asset('/assets/js/helper.js') !!}"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/js/material.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/js/ripples.min.js"></script>
-	<script>$.material.init();</script>
+	<script src='{!! URL::asset('/assets/nprogress-master/nprogress-master/nprogress.js') !!}'></script>
+	<script>
+		$.material.init();
+		NProgress.start();
+    	setTimeout(function() { NProgress.done(); }, Math.floor(Math.random() * 2) + 1);
+	</script>
 	@yield('js')
 </body>
 </html>

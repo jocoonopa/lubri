@@ -2,6 +2,7 @@
 
 namespace App\Utility\Chinghwa\Flap\POS_Member\Import;
 
+use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ImportColumnAdapter
@@ -92,7 +93,7 @@ class ImportColumnAdapter
 
             $pair = explode(':', $pairString);
 
-            $container[array_get($pair, 0)] = array_get($pair, 1);
+            $container[Flater::genKey(array_get($pair, 0))] = array_get($pair, 1);
         }
 
         return $container;

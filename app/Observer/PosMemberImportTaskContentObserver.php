@@ -29,6 +29,7 @@ class PosMemberImportTaskContentObserver
             ->fixStatus()
             ->fixFlag23WithPeriodAt()
             ->fixMemo()
+            ->fixAddress()
             ->save()
         ;
     }
@@ -80,6 +81,13 @@ class PosMemberImportTaskContentObserver
     protected function fixMemo()
     {
         $this->content->memo = $this->content->genMemo();
+
+        return $this;
+    }
+
+    protected function fixAddress()
+    {
+        $this->content->homeaddress = $this->filter->getAddress($this->content->state, $this->content->homeaddress);
 
         return $this;
     }

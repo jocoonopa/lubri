@@ -19,7 +19,7 @@
                 </div>
             @endif
 
-            {!! Form::open(array('url' => 'flap/pos_member/import_task', 'files' => true)) !!}
+            {!! Form::open(['url' => 'flap/pos_member/import_task', 'files' => true, 'id' => 'import-task']) !!}
             
             <div class="form-group has-warning">
                 {!! Form::label('file', '*選擇匯入檔案', ['class' => 'control-label']) !!}
@@ -112,44 +112,5 @@
 @section('js')
 <script src="/assets/js/jquery.blockui.js"></script>
 <script src="/assets/js/facade.js"></script>
-<script>
-(function () {
-var initMsg = '(請勿關閉視窗) 檔案上傳中，請稍後...';
-
-$('form').find('input[type="submit"]').click(function () {
-    $blockUI(); 
-
-    $('form').submit();
-
-    ImportTask_loadProgress_init();
-
-    return false;
-});
-
-function ImportTask_loadProgress_init() {
-    $('.blockMsg').text(initMsg);
-            
-    return ImportTask_loadProgress(2000);
-}
-
-function ImportTask_loadProgress(timedistance) {
-    return setTimeout(function () {
-        var nextTimeDis = 1500;
-        
-        $.get('/flap/pos_member/import_task', function(importedCount){
-            if (0 === parseInt(importedCount)) {
-                $('.blockMsg').text(initMsg);
-                nextTimeDis = 5000;
-            } else {
-                $('.blockMsg').text('(請勿關閉視窗) 已匯入' + importedCount + '筆');
-                nextTimeDis = 1500;
-            }
-        })
-
-        return ImportTask_loadProgress(nextTimeDis);
-    }, timedistance);
-}
-})();
-
-</script>
+<script src="/assets/js/importtask.js"></script>
 @stop

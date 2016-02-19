@@ -161,9 +161,23 @@ class PosMemberImportTaskContent extends Model
 
     public function getFlagVal()
     {
-        $flags =(array) json_decode($this->flags);
+        $flags = json_decode($this->flags, true);
 
-        return array_key_exists(12, $flags) ? array_get($flags, 12): array_get($flags, 38, 'N');
+        $targets = [11, 12, 37, 38];
+
+        foreach ($targets as $target) {
+            if (array_key_exists("_{$target}_" . '', $flags)) {
+                $targetFlag = array_get($flags, "_{$target}_", 'N');
+                
+                if (false !== array_search($targetFlag, ['N', ''])) {
+                    continue;
+                }
+
+                return $targetFlag;
+            }
+        }
+
+        return 'N';
     }
 
     public function getPeriodAt()
@@ -176,7 +190,7 @@ class PosMemberImportTaskContent extends Model
         return array_get(self::getMemberListFlagMap(), $this->getFlagVal(), '--') . ';' 
             . $this->name . ';' 
             . $this->cellphone . ';' 
-            . $this->city . $this->state . $this->homeaddress . ';' 
+            . $this->getCityName() . $this->getStateName() . $this->homeaddress . ';' 
             . "預產期:{$this->getPeriodAt()->format('Ym')}" . ';' 
             . "生產醫院:{$this->hospital}";
     }

@@ -4,6 +4,7 @@ namespace App\Utility\Chinghwa\Flap\POS_Member\Import;
 
 use App\Model\Flap\PosMemberImportTaskContent;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
 
 class ImportModelFactory
 {
@@ -126,11 +127,22 @@ class ImportModelFactory
 
     private function _getFlags(ImportColumnAdapter $adapter, PosMemberImportTaskContent $model)
     {
-        $flags = empty($model->serno) ? $adapter->getInsertFlagPairs() : $adapter->getUpdateFlagPairs();
-        $flags['4'] = 'N';
-        $flags['5'] = 'N';
-        $flags['8'] = 'Y';
-        $flags['23'] = ($model->period_at) ? array_get(PosMemberImportTaskContent::getPeriodFlagMap(), $model->period_at->format('Ym'), 'B') : 'A';
+        $flags = $this->_genFlagPrototype();
+
+        $flags = empty($model->serno) ? array_merge($flags, $adapter->getInsertFlagPairs()) : $adapter->getUpdateFlagPairs();
+        $flags[Flater::genKey(8)] = 'Y';
+        $flags[Flater::genKey(23)] = ($model->period_at) ? array_get(PosMemberImportTaskContent::getPeriodFlagMap(), $model->period_at->format('Ym'), 'B') : 'A';
+
+        return $flags;
+    }
+
+    private function _genFlagPrototype()
+    {
+        $flags = [];
+
+        for ($i = 1; $i <= 40; $i ++) {
+            $flags[Flater::genKey($i)] = 'N';
+        }
 
         return $flags;
     }

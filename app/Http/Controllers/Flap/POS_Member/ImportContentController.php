@@ -39,8 +39,7 @@ class ImportContentController extends Controller
      */
     public function create(PosMemberImportTask $task)
     {
-        echo __METHOD__;
-        dd($task);
+        return view('flap.posmember.import_content.create');
     }
 
     /**
@@ -100,11 +99,7 @@ class ImportContentController extends Controller
 
         Session::flash('success', "項目 <b>{$content->name}</b> 更新完成!");
 
-        return view('flap.posmember.import_task.show', [
-            'task' => $task,
-            'contents' => $task->content()->orderBy('status')->paginate(20),
-            'title' => '任務檢視'
-        ]); 
+        return redirect("/flap/pos_member/import_task/{$task_id}/content");
     }
 
     private function _prevSetContentState(&$content, ImportContentRequest $request)

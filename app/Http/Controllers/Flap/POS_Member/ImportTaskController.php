@@ -20,6 +20,7 @@ class ImportTaskController extends Controller
     public function __construct()
     {
         $this->middleware('import.task', ['only' => ['destroy']]);
+        $this->middleware('ajax', ['only' => ['pushProgress', 'pullProgress', 'importProgress']]);
     }
 
     public function create(Request $reqeust)
@@ -31,12 +32,6 @@ class ImportTaskController extends Controller
 
     public function index(Request $request)
     {
-        new ImportFilter;
-        
-        if ($request->ajax()) {
-            return PosMemberImportTask::latest()->first()->content->count();
-        }
-
         return view('flap.posmember.import_task.index', [
             'tasks' => PosMemberImportTask::latest()->paginate(20),
             'title' => '任務列表'
@@ -79,15 +74,34 @@ class ImportTaskController extends Controller
 
         Session::flash('success', "成功新增任務{$task->id}!");
 
+        if (0 === $task->content->count()) {
+            Session::flash('error', "任務裡面沒有任何內容，請確認上傳 xls 檔案僅有一個工作表");
+        }
+
         return $task;
     }
 
-    public function destroy(PosMemberImportTask $task)
+    public function destroy(Request $request, PosMemberImportTask $task)
     {
         $task->delete();
 
         Session::flash('success', "成功移除任務{$task->id}!");
 
         return redirect()->action('Flap\POS_Member\ImportTaskController@index');
+    }
+
+    public function importProgress()
+    {
+        return PosMemberImportTask::latest()->first()->content->count();
+    }
+
+    public function pullProgress(PosMemberImportTask $task)
+    {
+        return $task->content()->isNotExecuted()->where('updated_at', '>=', $task->updated_at->format('Y-m-d H:i:s'))->count();
+    }
+
+    public function pushProgress(PosMemberImportTask $task)
+    {
+        return $task->content()->where(DB::raw('32&Status'), '=', 32)->count();        
     }
 }
