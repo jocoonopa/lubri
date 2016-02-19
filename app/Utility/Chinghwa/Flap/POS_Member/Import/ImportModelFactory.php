@@ -26,7 +26,7 @@ class ImportModelFactory
 
     private function _getExistOrEmptyQuery(ImportDataHolder $dataHolder)
     {
-        return $this->getExistOrEmptyQuery($dataHolder->getName(), $dataHolder->getCellphone(), $dataHolder->getHometel(), $dataHolder->getAddress());
+        return self::_getExistOrEmptyQueryStatic($dataHolder->getName(), $dataHolder->getCellphone(), $dataHolder->getHometel(), $dataHolder->getAddress());
     }
 
     private static function _getExistOrEmptyQueryStatic($name, $cellphone, $hometel, $address)
@@ -51,39 +51,8 @@ class ImportModelFactory
                     })
                     ->orWhere(function($q) use ($address) {
                         $q
-                            ->where('LEN(HomeAddress)', '>', Import::MINLENGTH_ADDRESS)
-                            ->where('HomeAddress', '=', $address)
-                        ;
-                    })
-                ;
-            })
-            ->orderBy('SerNo', 'DESC');
-    }
-
-    public function getExistOrEmptyQuery($name, $cellphone, $hometel, $address)
-    {
-        return Processor::table('POS_Member')
-            ->select('TOP 1 SerNo, Code, MemberSerNoI')
-            ->where('Name', '=', $name)
-            ->where('Code', 'NOT LIKE', 'CT%')
-            ->where(function ($q) use ($cellphone, $hometel, $address) {
-                $q
-                    ->orWhere(function($q) use ($cellphone) {
-                        $q
-                            ->where('LEN(Cellphone)', '>', Import::MINLENGTH_CELLPHONE)
-                            ->where('Cellphone', '=', $cellphone)
-                        ;
-                    })
-                    ->orWhere(function($q) use ($hometel) {
-                        $q
-                            ->where('LEN(HomeTel)', '>', Import::MINLENGTH_TEL)
-                            ->where('HomeTel', '=', $hometel)
-                        ;
-                    })
-                    ->orWhere(function($q) use ($address) {
-                        $q
-                            ->where('LEN(HomeAddress)', '>', Import::MINLENGTH_ADDRESS)
-                            ->where('HomeAddress', '=', $address)
+                            ->where('LEN(HomeAddress_Address)', '>', Import::MINLENGTH_ADDRESS)
+                            ->where('HomeAddress_Address', '=', $address)
                         ;
                     })
                 ;
