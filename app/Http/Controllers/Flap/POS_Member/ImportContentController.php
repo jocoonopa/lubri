@@ -13,7 +13,7 @@ class ImportContentController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('import.content', ['only' => ['destroy', 'update']]);
+        $this->middleware('import.content', ['only' => ['destroy', 'update', 'edit']]);
     }
 
     /**

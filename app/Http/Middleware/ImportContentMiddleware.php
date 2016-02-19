@@ -26,7 +26,7 @@ class ImportContentMiddleware
         if (32 === ($content->status&32)) {
             Session::flash('error', "由於同步已經完成，此項目無法修改或刪除!");
 
-            return redirect()->url("/flap/pos_member/{$task->id}/content"); 
+            return redirect("/flap/pos_member/{$task->id}/content"); 
         }
 
         return $next($request);

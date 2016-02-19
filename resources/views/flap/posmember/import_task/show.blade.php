@@ -75,8 +75,7 @@
                         data-content="{{$content->memo}}"
                     >
                         <td>
-                            <a href="/flap/pos_member/import_task/{{$content->pos_member_import_task_id}}/content/{{$content->id}}" target="_blank">{{ $content->name }}                              
-                            </a> 
+                            {{ $content->name }}                              
                             @if (true === $content->is_exist)<br><p class="label label-warning">舊會員</p>@endif
                             @if (NULL !== $content->code)<a class="label label-default" href="jocoonopaieopen://192.168.100.68/chinghwa/iDCS/Member/viewmember.fl?memberSerNo:{{$content->sernoi}}">{{$content->code}}</a>@endif 
                         </td>
