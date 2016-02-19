@@ -9,15 +9,7 @@
                 回到任務列表
             </a></small></h1><hr>
 
-            @if (count($errors) > 0)
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            @include('common.errormsg')
 
             {!! Form::open(['url' => 'flap/pos_member/import_task', 'files' => true, 'id' => 'import-task']) !!}
             
