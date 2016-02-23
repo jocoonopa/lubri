@@ -1,5 +1,9 @@
 @extends('base')
 
+@section('css')
+<link rel="stylesheet" type="text/css" href="/assets/css/snackbar.css">
+@stop
+
 @section('body')
 <div class="bs-docs-section clearfix">
     <div class="row">
@@ -36,17 +40,34 @@
             @include('common.successmsg')
             @include('common.errormsg')                                    
             @include('flap.posmember.import_task._detail')
-            @include('flap.posmember.import_task._searchnull')            
+            @include('flap.posmember.import_task._searchnull') 
+            
+            {!! $contents->appends(\Input::all())->render() !!}           
             @include('flap.posmember.import_task._listcontent')
         </div>
-
-        {!! $contents->appends(\Input::all())->render() !!}
     </div>  
 </div>
+<span class="hide my-snackbar" data-toggle=snackbar data-content="資料載入完成!">&nbsp;</span>
 @stop
 
 @section('js')
 <script src="/assets/js/jquery.blockui.js"></script>
 <script src="/assets/js/facade.js"></script>
 <script src="/assets/js/importtask.js"></script>
+<script src="/assets/js/snackbar.js"></script>
+<script>
+@if (!empty(\Input::all()))
+var options =  {
+    style: "toast", // add a custom class to your snackbar
+    timeout: 100 // time in milliseconds after the snackbar autohides, 0 is disabled
+};
+
+$.snackbar(options);
+
+setTimeout(function () {
+    $('.my-snackbar').snackbar('show');
+}, 1000);
+@endif
+</script>
+
 @stop
