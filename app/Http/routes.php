@@ -76,7 +76,8 @@ Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 			Route::put('{import_task}/content/{import_content}', ['uses' => 'ImportContentController@update', 'middleware' => ['import.content']]);
 			Route::get('{import_task}/push_progress', ['uses' => 'ImportTaskController@pushProgress'])->where(['import_task' => '[0-9]+']);
 			Route::get('{import_task}/pull_progress', ['uses' => 'ImportTaskController@pullProgress'])->where(['import_task' => '[0-9]+']);
-			
+			Route::get('{import_task}/export', ['uses' => 'ImportTaskController@export'])->where(['import_task' => '[0-9]+']);			
+
 			/**
 			 * 必須擺在最後面, 否則會發生路徑衝突問題
 			 */

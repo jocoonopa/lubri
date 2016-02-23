@@ -14,7 +14,7 @@
 			<table class="table">
 				<thead>
 					<tr>
-						<th>編號</th>
+						<th>任務</th>
 						<th>匯入費時</th>
 						<th>推送費時</th>
 						<th>待推送</th>
@@ -28,7 +28,7 @@
 				<tbody>
 					@foreach($tasks as $task)
 					<tr class=@if(NULL !== $task->executed_at)"success"@endif>
-						<td><a href="/flap/pos_member/import_task/{{ $task->id }}">{{ $task->id }}</a></td>
+						<td><a href="/flap/pos_member/import_task/{{ $task->id }}">{{ $task->name }}</a></td>
 						<td>{{ $task->import_cost_time . '秒'}}</td>
 						<td>@if(NULL !== $task->executed_at){{ $task->execute_cost_time . '秒'}}@else <span class="label label-default">NOT YET</span>	 @endif</td>
 						<td>{{ ($task->insert_count + $task->update_count) . '筆' }}</td>
@@ -40,11 +40,11 @@
 						<td>							
 							{!! Form::open(['method' => 'DELETE', 'action' => ['Flap\POS_Member\ImportTaskController@destroy', $task->id]]) !!}
 
-							<a href="/flap/pos_member/import_push/{{ $task->id }}" class="btn btn-xs btn-raised btn-primary import-task-push" data-task-id="{{$task->id}}">
+							<a href="/flap/pos_member/import_push/{{ $task->id }}" class="btn btn-xs btn-raised btn-primary import-task-push" data-task-id="{{$task->id}}" data-task-name="{{$task->name}}">
 								<i class="glyphicon glyphicon-play"></i>
 								
 							</a>
-								<button type="submit" class="btn btn-raised btn-xs btn-danger import-task-delete" data-task-id="{{$task->id}}">
+								<button type="submit" class="btn btn-raised btn-xs btn-danger import-task-delete" data-task-id="{{$task->id}}" data-task-name="{{$task->name}}">
 									<i class="glyphicon glyphicon-remove"></i>
 									
 								</button>

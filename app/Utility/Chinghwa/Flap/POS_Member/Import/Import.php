@@ -21,6 +21,10 @@ class Import extends \Maatwebsite\Excel\Files\ExcelFile
 
     const FEMALE_SEX_TEXT = 'female';
 
+    const DEFAULT_FLAG_VALUE = 'N';
+
+    const TARGET_FLAGS = '["11", "12", "37", "38"]';
+
     /**
      * @example '張三' 
      */
@@ -81,6 +85,21 @@ class Import extends \Maatwebsite\Excel\Files\ExcelFile
 
     protected $fileName;
     protected $destinationPath;
+
+    public static function getNullColumns()
+    {
+        return [
+            'homeaddress' => '住址', 
+            'state_id'    => '郵遞區號', 
+            'cellphone'   => '手機', 
+            'hometel'     => '住家電話', 
+            'pushed_at'   => '尚未推送', 
+            'birthday'    => '生日', 
+            'period_at'   => '預產期', 
+            'hospital'    => '醫院', 
+            'email'       => '電子信箱'
+        ];
+    }
 
     public function getFile()
     {

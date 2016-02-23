@@ -212,12 +212,27 @@ class ImportFilter
         return strFilter(str_replace(['F', '-', "'", '"'], ['樓', '之', '', ''], trim(nfTowf($val))));
     }
 
+    /**
+     * 狀態定義:(由左而右)
+     *
+     * 00000001: 有地址
+     * 00000010: 有對應到的區
+     * 00000100: 有手機
+     * 00001000: 有住家電話
+     * 00010000: 有生日
+     * 00100000: 有成功推送
+     * 01000000: 有預產期
+     * 10000000: 有醫院
+     * 
+     * @param  string $address 
+     * @param  App\Model\State $state   
+     * @return integer
+     */
     public function getStatus($address, $state)
     {
-        $address = $this->getOriginAddress($address);
         $status = bindec('000000');
         
-        if (0 !== mb_strlen($address, Import::DOC_ENCODE)) {
+        if (0 !== mb_strlen($this->getOriginAddress($address), Import::DOC_ENCODE)) {
             $status = $this->_editStatus($status, bindec('000001'));
         }
 

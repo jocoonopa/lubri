@@ -7,6 +7,9 @@ use App\Http\Requests\Flap\POS_Member\ImportContentRequest;
 use App\Model\Flap\PosMemberImportTask;
 use App\Model\Flap\PosMemberImportTaskContent;
 use App\Model\State;
+use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportModelFactory;
+use Illuminate\Http\Request;
+use Input;
 use Session;
 
 class ImportContentController extends Controller
@@ -22,13 +25,9 @@ class ImportContentController extends Controller
      * @param  \App\Model\Flap\PosMemberImportTask
      * @return \Illuminate\Http\Response
      */
-    public function index(PosMemberImportTask $task)
+    public function index(Request $request, PosMemberImportTask $task)
     {
-        return view('flap.posmember.import_task.show', [
-            'task' => $task,
-            'contents' => $task->content()->orderBy('status')->paginate(20),
-            'title' => '任務檢視'
-        ]);
+        return redirect("/flap/pos_member/import_task/{$task->id}?" . http_build_query(Input::all()));
     }
 
     /**
@@ -39,7 +38,11 @@ class ImportContentController extends Controller
      */
     public function create(PosMemberImportTask $task)
     {
-        return view('flap.posmember.import_content.create');
+        return view('flap.posmember.import_content.create', [
+            'title' => "{$task->name}項目新增",
+            'task' => $task, 
+            'content' => with(new PosMemberImportTaskContent)
+        ]);
     }
 
     /**
@@ -48,9 +51,20 @@ class ImportContentController extends Controller
      * @param  \App\Model\Flap\PosMemberImportTaskContent
      * @return \Illuminate\Http\Response
      */
-    public function store(PosMemberImportTaskContent $content)
+    public function store(ImportContentRequest $request, PosMemberImportTask $task)
     {
-        echo __METHOD__;
+        $content = PosMemberImportTaskContent::create($request->all());
+        
+        $this->_prevSetContentState($content, $request);
+
+        $content->setIsExist(ImportModelFactory::getExistOrNotByContent($content));
+        $content->flags = $content->getFlags();
+        $content->memo = $content->genMemo();
+        $content->save();
+
+        Session::flash('success', "項目 <a href=\"/flap/pos_member/import_task/{$task->id}/content/{$content->id}/edit\"><b>{$content->name}</b></a> 新增完成!");
+
+        return redirect("/flap/pos_member/import_task/{$task->id}");
     }
 
     /**
@@ -96,10 +110,12 @@ class ImportContentController extends Controller
     public function update(ImportContentRequest $request, PosMemberImportTask $task, PosMemberImportTaskContent $content)
     {
         $this->_prevSetContentState($content, $request);
+        
+        $content->update($request->all());
 
-        Session::flash('success', "項目 <b>{$content->name}</b> 更新完成!");
+        Session::flash('success', "項目 <a href=\"/flap/pos_member/import_task/{$task->id}/content/{$content->id}/edit\"><b>{$content->name}</b></a> 更新完成!");
 
-        return redirect("/flap/pos_member/import_task/{$task_id}/content");
+        return redirect("/flap/pos_member/import_task/{$task->id}");
     }
 
     private function _prevSetContentState(&$content, ImportContentRequest $request)
@@ -108,8 +124,7 @@ class ImportContentController extends Controller
             $q->where('name', '=', $request->get('district'))->orWhere('pastname', '=', $request->get('district'));
         })->first();
 
-        $content->state_id = (NULL === $state) ? NULL : $state->id;
-        $content->update($request->all());
+        $content->state_id = (NULL === $state) ? NULL : $state->id;        
     }
 
     /**
@@ -125,6 +140,6 @@ class ImportContentController extends Controller
         $content->delete();
         $task->updateStat()->save();
 
-        return redirect("/flap/pos_member/import_task/{$task->id}/content");
+        return redirect("/flap/pos_member/import_task/{$task->id}");
     }
 }

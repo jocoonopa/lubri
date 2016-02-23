@@ -30,7 +30,8 @@ class ImportContentRequest extends Request
             'hometel'     => 'tel|required_without_all:cellphone,homeaddress',
             'officetel'   => 'tel',
             'homeaddress' => 'min:6|max:255|required_without_all:cellphone,hometel',
-            'period_at'   => 'date',
+            'period_at'   => 'size:8|date_format:Ymd',
+            'birthday'    => 'size:8|date_format:Ymd',
             'hospital'    => 'min:2|max:20'
         ];
     }
@@ -50,6 +51,6 @@ class ImportContentRequest extends Request
      */
     public function response(array $errors)
     {
-        return redirect()->back()->withErrors($errors, $this->errorBag);
+        return redirect()->back()->withErrors($errors, $this->errorBag)->withInput();
     }
 }

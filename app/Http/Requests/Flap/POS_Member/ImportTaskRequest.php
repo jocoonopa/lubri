@@ -6,6 +6,13 @@ use App\Http\Requests\Request;
 
 class ImportTaskRequest extends Request
 {
+    protected $rules = [
+        'name'        => 'required|max:100|unique:pos_member_import_task',
+        'category'    => 'required',
+        'distinction' => 'required',
+        'file'        => 'required|max:5000|mimes:xls' //a required, max 5000kb, xls
+    ];
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -28,11 +35,13 @@ class ImportTaskRequest extends Request
      */
     public function rules()
     {
-        return [
-            'category'    => 'required',
-            'distinction' => 'required',
-            'file'        => 'required|max:5000|mimes:xls' //a required, max 5000kb, xls
-        ];
+        if ($this->isMethod('put')) {
+            unset($this->rules['file']);
+
+            $this->rules['name'] = 'required|max:100|unique:pos_member_import_task,id,' . $this->route('import_task')->id;
+        }
+
+        return $this->rules;
     }
 
     /**
@@ -50,6 +59,6 @@ class ImportTaskRequest extends Request
      */
     public function response(array $errors)
     {
-        return redirect()->action('Flap\POS_Member\ImportTaskController@create')->withErrors($errors, $this->errorBag);
+        return redirect()->back()->withErrors($errors, $this->errorBag)->withInput();
     }
 }

@@ -4,7 +4,7 @@
 .env
 vendor/
 storage/excel/exports/*
-storage/excel/exports/posmember/*
+storage/excel/exports/posmember/
 storage/excel/import
 storage/logs
 public/web.config

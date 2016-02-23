@@ -2,9 +2,13 @@
 
 namespace App\Model\Flap;
 
+use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\Import;
+use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportContent\StatusHandler;
+use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportContent\StatusRequest;
 use DB;
 use Illuminate\Database\Eloquent\Model;
+
 
 class PosMemberImportTaskContent extends Model
 {
@@ -13,9 +17,11 @@ class PosMemberImportTaskContent extends Model
      *
      * @var string
      */
-    protected $table = 'posmember_import_task_content';
+    protected $table = 'pos_member_import_task_content';
 
     public $timestamps = true;
+
+    protected $attributes = ['sex' => 'female'];
 
     /**
      * The attributes that are mass assignable.
@@ -27,10 +33,11 @@ class PosMemberImportTaskContent extends Model
         'name', 
         'code', 
         'sernoi', 
+        'email',
+        'pos_member_import_task_id',
         'cellphone',
         'hometel',
         'officetel',
-        'birthday',
         'state_id',
         'homeaddress',
         'birthday',
@@ -53,7 +60,8 @@ class PosMemberImportTaskContent extends Model
     ];
 
     protected $casts = [
-        'is_exist' => 'boolean'
+        'is_exist' => 'boolean',
+        'flags' => 'array'
     ];
 
     /**
@@ -121,6 +129,15 @@ class PosMemberImportTaskContent extends Model
         ;
     }
 
+    public function scopeNullColumnFilter($query, $columns)
+    {
+        $query->where(function ($q) use ($columns) {
+            foreach ($columns as $key => $column) {
+                $q->orWhereNull($key);
+            }  
+        });            
+    }
+
     /**
      * An article is owned by a user
      * 
@@ -153,31 +170,35 @@ class PosMemberImportTaskContent extends Model
         $desFlags = (true === $boolean) ? $this->pos_member_import_task->update_flags : $this->pos_member_import_task->insert_flags;
         $diffFlags = (true === $boolean) ? $this->pos_member_import_task->insert_flags : $this->pos_member_import_task->update_flags;
 
-        $this->flags = json_encode((object) array_diff((array) json_decode($this->flags), (array) json_decode($diffFlags)));
-        $this->flags = json_encode((object) array_merge((array) json_decode($this->flags), (array) json_decode($desFlags)));
+        if (!is_array($this->flags)) {
+            $this->flags = [];
+        }
+
+        $this->flags = array_diff($this->flags, $diffFlags);
+        $this->flags = array_merge($this->flags, $desFlags);
         
         return $this;
     }
 
     public function getFlagVal()
     {
-        $flags = json_decode($this->flags, true);
+        $flags = $this->flags;
 
-        $targets = [11, 12, 37, 38];
-
-        foreach ($targets as $target) {
-            if (array_key_exists("_{$target}_" . '', $flags)) {
-                $targetFlag = array_get($flags, "_{$target}_", 'N');
-                
-                if (false !== array_search($targetFlag, ['N', ''])) {
-                    continue;
-                }
-
-                return $targetFlag;
+        foreach (json_decode(Import::TARGET_FLAGS) as $target) {
+            if (!array_key_exists(Flater::genKey($target), $flags)) {
+                continue;
             }
+
+            $targetFlag = array_get($flags, Flater::genKey($target), Import::DEFAULT_FLAG_VALUE);
+                
+            if (false !== array_search($targetFlag, [Import::DEFAULT_FLAG_VALUE])) {
+                continue;
+            }
+
+            return $targetFlag;
         }
 
-        return 'N';
+        return Import::DEFAULT_FLAG_VALUE;
     }
 
     public function getPeriodAt()
@@ -208,6 +229,68 @@ class PosMemberImportTaskContent extends Model
     public function getStateName()
     {
         return (NULL === $this->state) ? Import::DEFAULT_CITYSTATE : $this->state->name;
+    }
+
+    public function fixFlag23WithPeriodAt()
+    {
+        $periodAt = $this->getPeriodAt();
+        $flags = $this->flags;
+        $flags[Flater::genKey(23)] = ($this->period_at) 
+            ? array_get(self::getPeriodFlagMap(), $periodAt->format('Ym'), 'B') 
+            : 'A'
+        ;
+
+        $this->flags = $flags;
+
+        return $this;
+    }
+
+    public function fixStatus()
+    {
+        $this->status = with(new StatusHandler(new StatusRequest($this)))->getRequest()->getStatus();
+
+        return $this;
+    }
+
+    public function getOpacity()
+    {
+        $status = ($this->status&bindec('111011111'));
+        $index = 8;
+
+        for ($i = 0; $i < strlen(decbin($status)); $i ++) {
+            if ('1' == decbin($status)[$i]) {
+                $index --;
+            }
+        }
+
+        return 0 >= $index ? 0 : (1 * $index)/8;
+    }
+
+    public function getFlags()
+    {
+        $flags = $this->getFlagPrototype();
+
+        $flags = empty($this->serno) 
+            ? array_merge($flags, $this->pos_member_import_task->insert_flags) 
+            : $this->pos_member_import_task->update_flags
+        ;
+
+        $periodAtKey = substr(str_replace('-', '', $this->period_at), 0, 6);
+        $flags[Flater::genKey(8)] = 'Y';
+        $flags[Flater::genKey(23)] = (NULL !== $this->period_at) ? array_get(self::getPeriodFlagMap(), $periodAtKey, 'B') : 'A';
+
+        return $flags;
+    }
+
+    public function getFlagPrototype()
+    {
+        $flags = [];
+
+        for ($i = 1; $i <= 40; $i ++) {
+            $flags[Flater::genKey($i)] = Import::DEFAULT_FLAG_VALUE;
+        }
+
+        return $flags;
     }
 
     /**

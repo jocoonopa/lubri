@@ -46,34 +46,6 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
     /**
      * Handle the result properly, and then return it to controller
      * 
-     * 1. Check import columns 
-     * 2. Iterate results
-     *     2-1. Valid each column
-     *     2-2. Convert each column data and compose it into our table format
-     *     2-3. Post data to 66
-     *         2-3-1. Check whether is Insert process or Update process(return {serNo, code}, if not exist, return empty)
-     *             2-3-1-i-1. 
-     *                 -- Fetch the last POS_Member.SerNo by cursor
-     *                     SET @serNo = dbo.chinghwa_fnGetNewMemberSerNo()
-     *
-     *                 -- Fetch the last T Code of POS_Member by cursor
-     *                     SET @code = dbo.chinghwa_fnGetNewMemberTCode()
-     *
-     *                 -- Fetch the last POS_Member.MemberSerNoI by cursor
-     *                     SET @serNoI = dbo.chinghwa_fnGetNewMemberSerNoI()
-     *             2-3-1-i-2.
-     *                 Exec sp_InsertHBMember
-     *                  
-     *             2-3-1-u-1. 
-     *                 Exex CCS_CRMFields[CRMNote1, newCustomerMemo] update and MemberFlag update
-     *                 
-     *     2-4. Update result to our table row
-     * 3. Iterate results again
-     *     3-1. Get each member's serNo                                                                                                                                                         , Code
-     *     3-2. Update to our table row
-     * 4. Send nofification to those who need to know, the notification is a link to task detail page
-     * 5. View display task result detail, has pagination, order feature
-     * 
      * @param  $import
      * @return mixed
      */
@@ -81,8 +53,8 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
     {
         $this->adapter = new ImportColumnAdapter(
             [
-                Import::OPTIONS_DISTINCTION => $this->_getBDSerNo(Input::get(Import::OPTIONS_DISTINCTION)),
-                Import::OPTIONS_CATEGORY    => $this->_getCategorySerNo(Input::get(Import::OPTIONS_CATEGORY)),
+                Import::OPTIONS_DISTINCTION => PosMemberImportTask::getBDSerNo(Input::get(Import::OPTIONS_DISTINCTION)),
+                Import::OPTIONS_CATEGORY    => PosMemberImportTask::getCategorySerNo(Input::get(Import::OPTIONS_CATEGORY)),
                 Import::OPTIONS_INSERTFLAG  => Input::get(Import::OPTIONS_INSERTFLAG),
                 Import::OPTIONS_UPDATEFLAG  => Input::get(Import::OPTIONS_UPDATEFLAG)
             ]
@@ -91,7 +63,7 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
         $this->modelFactory = new ImportModelFactory;
         $this->task = $this->createNewTask();
 
-        $import->calculate(false)->chunk(Import::CHUNK_SIZE, $this->getChunkCallback());
+        $import->skip(1)->calculate(false)->chunk(Import::CHUNK_SIZE, $this->getChunkCallback());
 
         return $this->_removeDuplicate()->_saveTaskStatic();
     }
@@ -99,32 +71,16 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
     protected function createNewTask()
     {
         $task = new PosMemberImportTask;
-        $task->user_id = Auth::user()->id;
-        $task->update_flags = json_encode($this->adapter->getUpdateFlagPairs());
-        $task->insert_flags = json_encode($this->adapter->getInsertFlagPairs());
+
+        $task->user_id      = Auth::user()->id;
+        $task->name         = Input::get('name');
+        $task->distinction  = Input::get(Import::OPTIONS_DISTINCTION);
+        $task->category     = Input::get(Import::OPTIONS_CATEGORY);
+        $task->update_flags = $this->adapter->getUpdateFlagPairs();
+        $task->insert_flags = $this->adapter->getInsertFlagPairs();
         $task->save();
 
         return $task;
-    }
-
-    private function _getBDSerNo($str)
-    {
-        $q = Processor::table('BasicDataDef')
-            ->select('TOP 1 BDSerNo')
-            ->where('BDCode', '=', $str)
-        ;
-
-        return array_get(Processor::getArrayResult($q), '0.BDSerNo');
-    }
-
-    private function _getCategorySerNo($str)
-    {
-        $q = Processor::table('POS_MemberCategory')
-            ->select('TOP 1 SerNo')
-            ->where('Code', '=', $str)
-        ;
-
-        return array_get(Processor::getArrayResult($q), '0.SerNo');
     }
 
     /**
@@ -159,12 +115,7 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
 
     private function _saveNewContentModel()
     {
-        /**
-         * @var App\Model\Flap\PosMemberImportTaskContent
-         */
-        $content = $this->modelFactory->create($this->adapter);
-        $content->pos_member_import_task_id = $this->task->id;
-        $content->save();
+        $this->modelFactory->create($this->adapter, $this->task)->save();
 
         return $this;
     }
@@ -174,16 +125,19 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
         $colNames = ['cellphone', 'hometel', 'homeaddress'];
 
         foreach ($colNames as $colName) {
-            $duplicateContents = $this->task->content()->isDuplicate($colName)->get();
-
-            foreach ($duplicateContents as $duplicateContent) {
-                $this->task->content()->duplicateWithThis($colName, $duplicateContent)->get()->each(function ($toBeRemoveContent) {
-                    $toBeRemoveContent->delete();
-                });
-            }
+            $this->_removeDuplicateColumn($colName);
         }
 
         return $this;
+    }
+
+    private function _removeDuplicateColumn($colName)
+    {
+        return $this->task->content()->isDuplicate($colName)->get()->each(function ($duplicateContent) use ($colName) {
+            $this->task->content()->duplicateWithThis($colName, $duplicateContent)->get()->each(function ($toBeRemoveContent) {
+                $toBeRemoveContent->delete();
+            });
+        });
     }
 
     private function _saveTaskStatic()

@@ -12,7 +12,7 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
      */
     public function up()
     {
-        Schema::create('posmember_import_task', function (Blueprint $table) {
+        Schema::create('pos_member_import_task', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table
@@ -32,13 +32,13 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
             $table->timestamps();
         });
 
-        Schema::create('posmember_import_task_content', function (Blueprint $table) {
+        Schema::create('pos_member_import_task_content', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('pos_member_import_task_id')->unsigned()->index();
             $table
                 ->foreign('pos_member_import_task_id')
                 ->references('id')
-                ->on('posmember_import_task')
+                ->on('pos_member_import_task')
                 ->onDelete('cascade')
             ;
             
@@ -64,7 +64,7 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
             $table->string('employ_code')->nullable();
             $table->string('category');
             $table->date('period_at')->nullable();
-            $table->string('hospital');
+            $table->string('hospital')->nullable();
             $table->text('memo')->nullable();
             $table->enum('sex', ['male', 'female'])->nullable();
             $table->json('flags')->nullable();
@@ -90,7 +90,7 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
      */
     public function down()
     {
-        Schema::drop('posmember_import_task_content');
-        Schema::drop('posmember_import_task');
+        Schema::drop('pos_member_import_task_content');
+        Schema::drop('pos_member_import_task');
     }
 }

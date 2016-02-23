@@ -19,6 +19,11 @@ class ImportDataHolder
     protected $flags;
     protected $status;
 
+    public static function getByProxy($val)
+    {
+        return empty($val) ? NULL : $val;
+    }
+
     /**
      * Gets the value of address.
      *

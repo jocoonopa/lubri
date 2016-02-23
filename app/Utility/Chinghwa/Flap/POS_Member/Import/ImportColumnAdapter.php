@@ -2,7 +2,7 @@
 
 namespace App\Utility\Chinghwa\Flap\POS_Member\Import;
 
-use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
+use App\Model\Flap\PosMemberImportTask;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ImportColumnAdapter
@@ -83,20 +83,10 @@ class ImportColumnAdapter
     }
 
     protected function getInflateFlag($nameIndex)
-    {
-        $container = [];
+    {        
+        $flagString = array_get($this->getOptions(), $nameIndex);
 
-        foreach (explode(' ', array_get($this->getOptions(), $nameIndex)) as $pairString) {
-            if (false === strpos($pairString, ':')) {
-                continue;
-            }
-
-            $pair = explode(':', $pairString);
-
-            $container[Flater::genKey(array_get($pair, 0))] = array_get($pair, 1);
-        }
-
-        return $container;
+        return PosMemberImportTask::getInflateFlag($flagString);
     }
 
 	protected function isValid($columns)

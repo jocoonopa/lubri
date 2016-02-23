@@ -2,9 +2,9 @@
 
 namespace App\Utility\Chinghwa\Flap\POS_Member\Import;
 
+use App\Model\Flap\PosMemberImportTask;
 use App\Model\Flap\PosMemberImportTaskContent;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
-use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
 
 class ImportModelFactory
 {
@@ -60,59 +60,47 @@ class ImportModelFactory
             ->orderBy('SerNo', 'DESC');
     }
 
-    public function create(ImportColumnAdapter $adapter)
+    public function create(ImportColumnAdapter $adapter, PosMemberImportTask $task)
     {
-        $model = new PosMemberImportTaskContent;
         $dataHolder = $adapter->getDataHolder();
-
-        list($serNo, $code, $serNoI) = (NULL !== ($memberData = $this->fetchExistOrEmpty($dataHolder))) ? array_values($memberData) : NULL;
-
-        $model->serno              = $serNo;
-        $model->code               = $code;
-        $model->sernoi             = $serNoI;
-        $model->name               = $dataHolder->getName();
-        $model->email              = $dataHolder->getEmail();
-        $model->cellphone          = $dataHolder->getCellphone();
-        $model->hometel            = $dataHolder->getHometel();
-        $model->officetel          = $dataHolder->getOfficetel();
-        $model->birthday           = $dataHolder->getBirthday();
-        $model->homeaddress        = $dataHolder->getAddress();
-
-        $state = $dataHolder->getState();
-
-        $model->state_id           = (NULL === $state) ? $state : $state->id;
-        $model->distinction        = $adapter->getOptions()[Import::OPTIONS_DISTINCTION];
-        $model->category           = $adapter->getOptions()[Import::OPTIONS_CATEGORY];
-        $model->period_at          = (empty($dataHolder->getPeriod())) ? NULL : new \DateTime($dataHolder->getPeriod());
-        $model->hospital           = $dataHolder->getHospital();        
-        $model->sex                = Import::FEMALE_SEX_TEXT;
-        $model->flags              = json_encode($this->_getFlags($adapter, $model));
-        $model->status             = $dataHolder->getStatus();
-        $model->memo               = $model->genMemo();
-        $model->is_exist           = !empty($serNo);
+        $memberData = $this->fetchExistOrEmpty($dataHolder);
+        list($serNo, $code, $serNoI) = (NULL !== $memberData ? array_values($memberData) : NULL);
+        $model = new PosMemberImportTaskContent;
+        
+        $model->serno                     = $serNo;
+        $model->code                      = $code;
+        $model->sernoi                    = $serNoI;
+        $model->name                      = ImportDataHolder::getByProxy($dataHolder->getName());
+        $model->email                     = ImportDataHolder::getByProxy($dataHolder->getEmail());
+        $model->cellphone                 = ImportDataHolder::getByProxy($dataHolder->getCellphone());
+        $model->hometel                   = ImportDataHolder::getByProxy($dataHolder->getHometel());
+        $model->officetel                 = ImportDataHolder::getByProxy($dataHolder->getOfficetel());
+        $model->birthday                  = ImportDataHolder::getByProxy($dataHolder->getBirthday());
+        $model->homeaddress               = ImportDataHolder::getByProxy($dataHolder->getAddress());
+        $model->hospital                  = ImportDataHolder::getByProxy($dataHolder->getHospital());   
+        $model->state_id                  = $this->_getStateId($dataHolder);
+        $model->distinction               = $adapter->getOptions()[Import::OPTIONS_DISTINCTION];
+        $model->category                  = $adapter->getOptions()[Import::OPTIONS_CATEGORY];
+        $model->period_at                 = $this->_getPeriodAt($dataHolder);             
+        $model->sex                       = Import::FEMALE_SEX_TEXT;
+        $model->pos_member_import_task_id = $task->id;
+        $model->flags                     = $model->getFlags();
+        $model->memo                      = $model->genMemo();
+        $model->is_exist                  = !empty($serNo);
+        $model->fixStatus();
 
         return $model;
     }
 
-    private function _getFlags(ImportColumnAdapter $adapter, PosMemberImportTaskContent $model)
+    private function _getStateId(ImportDataHolder $dataHolder)
     {
-        $flags = $this->_genFlagPrototype();
+        $state = $dataHolder->getState();
 
-        $flags = empty($model->serno) ? array_merge($flags, $adapter->getInsertFlagPairs()) : $adapter->getUpdateFlagPairs();
-        $flags[Flater::genKey(8)] = 'Y';
-        $flags[Flater::genKey(23)] = ($model->period_at) ? array_get(PosMemberImportTaskContent::getPeriodFlagMap(), $model->period_at->format('Ym'), 'B') : 'A';
-
-        return $flags;
+        return (NULL === $state) ? $state : $state->id;
     }
 
-    private function _genFlagPrototype()
+    private function _getPeriodAt(ImportDataHolder $dataHolder)
     {
-        $flags = [];
-
-        for ($i = 1; $i <= 40; $i ++) {
-            $flags[Flater::genKey($i)] = 'N';
-        }
-
-        return $flags;
+        return empty($dataHolder->getPeriod()) ? NULL : with(new \DateTime($dataHolder->getPeriod()))->format('Y-m-d');
     }
 }

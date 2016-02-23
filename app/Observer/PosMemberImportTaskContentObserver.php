@@ -18,32 +18,25 @@ class PosMemberImportTaskContentObserver
     {   
         PosMemberImportTaskContent::unsetEventDispatcher();
 
-        $this->filter = new ImportFilter;
-
         $this->content = $content;
+        
+        $this->filter = new ImportFilter;
 
         $this
             ->fixCellphone()
             ->fixHometel()
-            ->fixOfficetel()
-            ->fixStatus()
+            ->fixOfficetel()            
             ->fixFlag23WithPeriodAt()
             ->fixMemo()
             ->fixAddress()
+            ->fixStatus()
             ->save()
         ;
     }
 
     protected function fixFlag23WithPeriodAt()
     {
-        $periodAt = $this->content->getPeriodAt();
-        $flags = (array) json_decode($this->content->flags);
-        $flags['23'] = ($this->content->period_at) 
-            ? array_get(PosMemberImportTaskContent::getPeriodFlagMap(), $periodAt->format('Ym'), 'B') 
-            : 'A'
-        ;
-
-        $this->content->flags = json_encode($flags);
+        $this->content->fixFlag23WithPeriodAt();
 
         return $this;
     }
@@ -69,15 +62,6 @@ class PosMemberImportTaskContentObserver
         return $this;
     }
 
-    protected function fixStatus()
-    {
-        if (NULL === $this->content->pushed_at) {
-            $this->content->status = $this->filter->getStatus($this->content->status, $this->filter->getCacheState());
-        }
-
-        return $this;
-    }
-
     protected function fixMemo()
     {
         $this->content->memo = $this->content->genMemo();
@@ -88,6 +72,13 @@ class PosMemberImportTaskContentObserver
     protected function fixAddress()
     {
         $this->content->homeaddress = $this->filter->getAddress($this->content->state, $this->content->homeaddress);
+
+        return $this;
+    }
+
+    protected function fixStatus()
+    {
+        $this->content->fixStatus();
 
         return $this;
     }
