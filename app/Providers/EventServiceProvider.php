@@ -43,6 +43,10 @@ class EventServiceProvider extends ServiceProvider
             'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Find\CheckIfCTExistEvent',
             'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Copy\CopyFromErpEvent',
             'App\Handlers\Events\Flap\PIS_Goods\CopyToCometrust\Copy\MailNotifyEvent'
+        ],
+
+        'App\Events\Report\RetailSalePersonFormula\ReportEvent' => [
+            'App\Handlers\Events\Report\RetailSalePersionFormula\MailEventHandler'
         ]
     ];
 

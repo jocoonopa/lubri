@@ -18,9 +18,33 @@ class PrefixHandler
 	{
 		$orderNoTrees = $this->genOrderNoTrees($this->getNotYetModifyed());
 
-		$this->genUpdateCCSOrderIndexQuerysByIterateOrderNosAndExecute($orderNoTrees);
+		$this->genUpdateCCSOrderIndexQuerysByIterateOrderNosAndExecute($orderNoTrees)->updateSellIndex();
 
 		return $this->setModifyOrders($orderNoTrees);
+	}
+
+	/**
+	 * 修改銷貨單 PREFIX 為 CT，
+	 * 因為銷貨單(PIS_SellIndex)和訂單(CCS_OrderInde) 有建立的時間差，
+	 * 因此需要另外拉一個 method 處理。
+	 * 
+	 * @return $this
+	 */
+	protected function updateSellIndex()
+	{
+		$condition = self::COMETRUES_PREFIX . '%';
+		$dateTime = with(new \DateTime())->modify('-20 days')->format('Y-m-d H:i:s');
+
+		$ctOrderNos = Processor::getArrayResult("SELECT " . self::ORDERNO_KEY . " FROM CCS_OrderIndex WHERE " . self::ORDERNO_KEY . " LIKE '{$condition}' AND CRT_TIME >= '{$dateTime}'");
+
+		foreach ($ctOrderNos as $ctOrderNo) {
+			$orderNoWithCT = array_get($ctOrderNo, self::ORDERNO_KEY);
+			$orderNoWithoutCT = str_replace('T', '', $orderNoWithCT);
+
+			Processor::execErp("UPDATE PIS_SellIndex SET No='{$orderNoWithCT}' WHERE No='{$orderNoWithoutCT}'");
+		}
+
+		return $this;
 	}
 
 	protected function genOrderNoTrees(array $orderDivs)
@@ -114,8 +138,7 @@ class PrefixHandler
 			$newOrderNo = $this->getNewInsertCTOrderNo($this->getConvertOrderNo($orderNo));
 
 			Processor::execErp("UPDATE CCS_OrderIndex SET OrderNo='{$newOrderNo}' WHERE OrderNo='{$orderNo}'");
-			Processor::execErp("UPDATE PIS_SellIndex SET No='{$newOrderNo}' WHERE No='{$orderNo}'");
-
+			
 			foreach ($orderNoTree->getChildren() as $child) {
 				$newNo = $newOrderNo . $orderNoTree->fetchTailOfChild($child);
 
@@ -153,6 +176,6 @@ class PrefixHandler
 
 		$numPart = substr(array_get($res, '0.OrderNo'), 2);
 
-		return 'CT' . (++ $numPart);
+		return self::COMETRUES_PREFIX . (++ $numPart);
 	}
 }
