@@ -149,15 +149,9 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 		Route::get('/process', ['uses' => 'EmpPurchaseController@process', 'as' => 'emppurchase_process', 'middleware' => 'report']);
 	});
 
-	// 每月初發送門市營業額分析-人報表
-	Route::group(['prefix' => 'retail_sales_persontype'], function () {
-		Route::get('', ['uses' => 'RetailSaleByPersonTypeController@index', 'as' => 'retail_sales_persontype_index']);
-		Route::get('/process', ['uses' => 'RetailSaleByPersonTypeController@process', 'as' => 'retail_sales_persontype_process', 'middleware' => 'report']);
-	});
-
 	// 每月初發送門市營業額分析-人報表(公式)
-	Route::group(['prefix' => 'retail_sales_person_formula'], function () {
-		Route::get('/process', ['uses' => 'RetailSalePersonFormulaController@process', 'as' => 'retail_sales_person_formula_process', 'middleware' => 'report']);
+	Route::group(['prefix' => 'retail_sales_person'], function () {
+		Route::get('/process', ['uses' => 'RetailSalePersonController@process', 'as' => 'retail_sales_person_process', 'middleware' => 'report']);
 	});
 
 	// 每月初發送的康思特報表

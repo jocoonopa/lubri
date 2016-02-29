@@ -8,4 +8,9 @@ class RetailSalePersonExport extends \Maatwebsite\Excel\Files\NewExcelFile
     {
         return 'Retail_Sale_Person_' . date('Ym');
     }
+
+    public function getRealpath()
+    {
+        return __DIR__ . '/../../../../storage/excel/exports/' . $this->getFilename() . '.xls';
+    }
 }

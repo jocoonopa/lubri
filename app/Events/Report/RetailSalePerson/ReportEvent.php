@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events\Report\RetailSalePersonFormula;
+namespace App\Events\Report\RetailSalePerson;
 
 use App\Events\Event;
 use App\Utility\Chinghwa\Export\RetailSalePersonExport;

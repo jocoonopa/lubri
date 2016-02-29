@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Handlers\Events\Report\RetailSalePersionFormula;
+namespace App\Handlers\Events\Report\RetailSalePerson;
 
-use App\Events\Report\RetailSalePersonFormula\ReportEvent;
+use App\Events\Report\RetailSalePerson\ReportEvent;
 use App\Utility\Chinghwa\Export\RetailSalePersonExport;
 use Mail;
 
@@ -26,11 +26,6 @@ class MailEventHandler
     protected $subject;
     protected $event;
 
-    public function __construct()
-    {
-        $this->setSubject('門市營業額分析月報表-人_' . date('Ymd'));
-    }
-
     /**
      * Handle the event.
      *
@@ -39,21 +34,16 @@ class MailEventHandler
      */
     public function handle(ReportEvent $reportEvent)
     {
-        $this->setEvent($reportEvent);
+        $this->setEvent($reportEvent)->setSubject('門市營業額分析月報表-人_' . date('Ymd'));
 
         return Mail::send('emails.creditCard', ['title' => $this->subject], function ($m) {
             $m
                 ->to($this->to)
                 ->cc($this->cc)
                 ->subject($this->getSubject())
-                ->attach($this->getFilePath($this->getEvent()->getExport()))
+                ->attach($this->getEvent()->getExport()->getRealpath())
             ;
         });
-    }
-
-    protected function getFilePath(RetailSalePersonExport $export)
-    {
-        return __DIR__ . '/../../../../../storage/excel/exports/' . $export->getFilename() . '.xls';
     }
 
     /**
