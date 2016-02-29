@@ -64,7 +64,7 @@ Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 		Route::post('copy_to_cometrust', ['uses' => 'CopyToCometrustController@store', 'as' => 'pis_goods_copy_to_cometrust_store']);
 	});
 
-	Route::group(['namespace' => 'POS_Member', 'prefix' => 'pos_member'], function () {
+	Route::group(['namespace' => 'POS_Member', 'prefix' => 'pos_member', 'middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '行銷處級辦公室']], function () {
 		Route::group(['prefix' => 'import_task'], function () {
 			Route::get('{import_task}/content', ['uses' => 'ImportContentController@index'])->where(['import_content' => '[0-9]+']);
 			Route::get('{import_task}/content/{import_content}', ['uses' => 'ImportContentController@show'])->where(['import_content' => '[0-9]+']);
