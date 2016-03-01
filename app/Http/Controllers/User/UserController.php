@@ -42,7 +42,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = User::create($request->all());
+        $user = new User($request->all());
+        $user->email = $user->account . env('DOMAIN');
+        $user->password = bcrypt($user->password);
+        $user->save();
 
         return $this->redirectWithSuccessFlash('user', "您已經新增了使用者<b>{$user->username}</b>");
     }
