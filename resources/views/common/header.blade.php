@@ -35,7 +35,7 @@
             <li><a href="{{ route('emppurchase_index') }}">員購銷貨單 <span class="badge">每周四</span> </a></a></li>
             <li class="divider"></li>
             <li class="dropdown-header">Monthly</li>
-            <li><a href="{{ route('retail_sales_persontype_index') }}">門市月報表<span class="badge">每月初</span></a></li>
+            <li><a href="#">門市月報表<span class="badge">每月初</span></a></li>
             <li><a href="{{ route('conce_index') }}">康思特銷退貨<span class="badge">每月初</span></a></li>
             <li><a href="{{ route('spb_index') }}">每月進銷退<span class="badge">每月初</span></a></li>
             <li><a href="{{ route('promograde_index') }}">促銷模組成效<span class="badge">每月初</span></a></li>
