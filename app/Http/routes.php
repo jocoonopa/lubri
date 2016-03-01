@@ -50,6 +50,8 @@ Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 		Route::get('prefix/update', ['uses' => 'PrefixController@update', 'middleware' => 'report']);
 
 		Route::get('cancelverify', ['uses' => 'CancelVerifyController@index', 'as' => 'ccs_orderindex_cancelverify_index']);
+
+		Route::GET('salerecord',  ['uses' => 'SaleRecordController@process', 'middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部']]);
 	});
 
 	Route::group(['namespace' => 'CCS_ReturnGoodsI', 'prefix' => 'ccs_returngoodsi'], function () {

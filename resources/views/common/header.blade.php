@@ -44,10 +44,11 @@
           </ul> 
         </li>
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="compare">資料比對 <span class="caret"></span></a>
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="compare">資料檢視或比對 <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="compare">
             <li><a href="{{ route('compare_honeybaby') }}">寵兒名單比對</a></li>            
-            <li><a href="{{ route('compare_financial_strike_balance_index')}}">財務沖帳比對</a></li>                     
+            <li><a href="{{ route('compare_financial_strike_balance_index')}}">財務沖帳比對</a></li>
+            <li><a href="{{ url('flap/ccs_order_index/salerecord') }}">客經業績總表</a></li>                      
           </ul> 
         </li>
         <li class="dropdown">
