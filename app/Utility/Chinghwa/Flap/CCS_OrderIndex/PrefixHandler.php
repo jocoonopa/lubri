@@ -33,15 +33,18 @@ class PrefixHandler
 	protected function updateSellIndex()
 	{
 		$condition = self::COMETRUES_PREFIX . '%';
-		$dateTime = with(new \DateTime())->modify('-20 days')->format('Y-m-d H:i:s');
+		$dateTime = with(new \DateTime())->modify('-2 days')->format('Y-m-d H:i:s');
 
-		$ctOrderNos = Processor::getArrayResult("SELECT " . self::ORDERNO_KEY . " FROM CCS_OrderIndex WHERE " . self::ORDERNO_KEY . " LIKE '{$condition}' AND CRT_TIME >= '{$dateTime}'");
+		$ctOrderNos = Processor::getArrayResult("SELECT " . self::ORDERNO_KEY . ", MustPayTotal FROM CCS_OrderIndex WHERE " . self::ORDERNO_KEY . " LIKE '{$condition}' AND CRT_TIME >= '{$dateTime}'");
 
 		foreach ($ctOrderNos as $ctOrderNo) {
 			$orderNoWithCT = array_get($ctOrderNo, self::ORDERNO_KEY);
+			
 			$orderNoWithoutCT = str_replace('T', '', $orderNoWithCT);
 
-			Processor::execErp("UPDATE PIS_SellIndex SET No='{$orderNoWithCT}' WHERE No='{$orderNoWithoutCT}'");
+			$payTotal = array_get($ctOrderNo, 'MustPayTotal');
+
+			Processor::execErp("UPDATE PIS_SellIndex SET No='{$orderNoWithCT}' WHERE No='{$orderNoWithoutCT}' AND TaxedTotal={$payTotal}");
 		}
 
 		return $this;
