@@ -36,6 +36,8 @@ class DailySaleRecordController extends Controller
         
         Mail::send('emails.dears', ['title' => $subject], function ($m) use ($subject, $filePath) {
             $m
+                ->to('linchengpu@chinghwa.com.tw', '5000林振部')
+                ->to('swhsu@chinghwa.com.tw', '6800徐士偉')
                 ->to('sl@chinghwa.com.tw', '6700莊淑玲')
                 ->cc('tonyvanhsu@chinghwa.com.tw', '6820徐士弘')
                 ->cc('jocoonopa@chinghwa.com.tw', '小閎')
