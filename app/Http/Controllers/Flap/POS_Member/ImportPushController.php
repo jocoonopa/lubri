@@ -218,7 +218,7 @@ class ImportPushController extends Controller
     {
         $sql = 'UPDATE CCS_MemberFlags SET ';
 
-        foreach (json_decode($content->flags, true) as $key => $flag) {
+        foreach ($content->flags as $key => $flag) {
             $key = Flater::resoveKey($key);
 
             $sql.= "Distflags_{$key}='{$flag}',";

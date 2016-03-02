@@ -10,6 +10,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+/**
+ * 不會運作，不確定原因為何
+ */
 class SendReminderEmail extends Job implements SelfHandling
 {
     use InteractsWithQueue, SerializesModels;
@@ -35,8 +38,8 @@ class SendReminderEmail extends Job implements SelfHandling
      */
     public function handle(Mailer $mailer)
     {
-        // $mailer->send('emails.reminder', ['user' => $this->user], function ($m) {
-        //     $m->to('jocoonopa@chinghwa.com.tw', '小閎')->subject("{$this->user->username}帳號修改通知");
-        // });
+        $mailer->send('emails.reminder', ['user' => $this->user], function ($m) {
+            $m->to('jocoonopa@chinghwa.com.tw', '小閎')->subject("{$this->user->username}帳號修改通知");
+        });
     }
 }

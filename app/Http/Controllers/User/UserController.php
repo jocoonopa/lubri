@@ -77,7 +77,8 @@ class UserController extends Controller
     {
         $user->update($request->all());
 
-        $this->dispatch(new SendReminderEmail($user));
+        $job = with(new SendReminderEmail($user))->onQueue('default');
+        $this->dispatch($job);
 
         return $this->redirectWithSuccessFlash("user/{$user->id}/edit", "您已經更新了<b>{$user->username}</b>的資料");
     }
