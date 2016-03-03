@@ -18,7 +18,8 @@
         "phpspec/phpspec": "~2.1",
         "laracasts/integrated": "^0.15.6",
         "benconstable/phpspec-laravel": "~2.0",
-        "symfony/options-resolver": "~3.0.1"
+        "symfony/options-resolver": "~3.0.1",
+        "iron-io/iron_mq": "~2.0|~4.0"
     },
     "autoload": {
         "classmap": [

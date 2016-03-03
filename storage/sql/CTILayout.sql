@@ -1,4 +1,4 @@
-SELECT
+SELECT TOP 200
     POS_Member.Code 會員代號,
     POS_Member.Name 會員姓名,
     POS_Member.Sex 性別,
@@ -34,4 +34,6 @@ FROM
     LEFT JOIN BasicDataDef              ON CCS_CRMFields.Distinction = BasicDataDef.BDSerNo
     LEFT JOIN HRS_Employee              ON HRS_Employee.SerNo = CCS_CRMFields.ExploitSerNoStr
     LEFT JOIN CCS_ShoppingBehaviorBrief ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
-WHERE CCS_MemberFlags.DistFlags_37='Q'
+WHERE 
+(CCS_MemberFlags.DistFlags_37='R' OR CCS_MemberFlags.DistFlags_38='R')
+AND CCS_ShoppingBehaviorBrief.TotalConsume > 0

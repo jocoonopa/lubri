@@ -5,19 +5,16 @@ namespace App\Jobs;
 use App\Jobs\Job;
 use App\Model\User;
 use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Mail\Mailer;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailer;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
-/**
- * 不會運作，不確定原因為何
- */
-class SendReminderEmail extends Job implements SelfHandling
+class SendReminderEmail extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
-    protected $user;
+   protected $user;
 
     /**
      * Create a new job instance.

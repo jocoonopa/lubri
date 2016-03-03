@@ -16,38 +16,40 @@ class DataHelper
 
     protected $date;
 
-    public function __construct(\DateTime $date)
+    public function __construct(\DateTime $date, $isToday = false)
     {
         $this->date = $date;
-        $this->fetchErpGroups()->fetchCtiCallLog()->fetchPosGroups();
+        $this->fetchErpGroups($isToday)->fetchCtiCallLog($isToday)->fetchPosGroups($isToday);
     }
 
-    public function fetchPosGroups()
+    public function fetchPosGroups($isToday = false)
     {
-        $this->posGroups = $this->splitPosDataByGroup(Processor::getArrayResult($this->getQuery('POS'), 'Pos'));
+        $this->posGroups = $this->splitPosDataByGroup(Processor::getArrayResult($this->getQuery('POS', $isToday), 'Pos'));
 
         return $this;
     }
 
-    public function fetchCtiCallLog()
+    public function fetchCtiCallLog($isToday = false)
     {
-        $this->ctiCallLog = Processor::getArrayResult($this->getQuery('CTI'), 'Cti');
+        $this->ctiCallLog = Processor::getArrayResult($this->getQuery('CTI', $isToday), 'Cti');
 
         return $this;
     }
 
-    public function fetchErpGroups()
+    public function fetchErpGroups($isToday = false)
     {
-        $this->erpGroups = $this->splitErpDataByGroup(Processor::getArrayResult($this->getQuery('ERP'), 'Erp'));
+        $this->erpGroups = $this->splitErpDataByGroup(Processor::getArrayResult($this->getQuery('ERP', $isToday), 'Erp'));
 
         return $this;
     }
 
-    protected function getQuery($db)
+    protected function getQuery($db, $isToday = false)
     {
+        $startDate = $isToday ? with(new \DateTime)->modify('-1 days')->format('Ymd') : $this->date->modify('first day of this month')->format('Ymd');
+
         return str_replace(
             ['$startDate', '$endDate'],
-            [$this->date->modify('first day of this month')->format('Ymd'), $this->date->modify('last day of this month')->format('Ymd')],
+            [$startDate, $this->date->modify('last day of this month')->format('Ymd')],
             file_get_contents(__DIR__ . "/../../../../../../../storage/sql/DailySaleRecord/{$db}.sql")
         );
     }

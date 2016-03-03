@@ -69,6 +69,10 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * ps: Queue works when you have 3rd party service taking care for your jobs like Amazon SQS. 
+     * Using Amazon SQS, you can queue mails, * jobs, etc. If 3rd party service is not configured, 
+     * Laravel performs all command at the same time as a fail-safe.
+     * 
      * @param  Illuminate\Http\Request $request
      * @param  App\Model\User $user
      * @return \Illuminate\Http\Response
@@ -77,8 +81,8 @@ class UserController extends Controller
     {
         $user->update($request->all());
 
-        $job = with(new SendReminderEmail($user))->onQueue('default');
-        $this->dispatch($job);
+        // $job = with(new SendReminderEmail($user))->onQueue('default');
+        // $this->dispatch($job);
 
         return $this->redirectWithSuccessFlash("user/{$user->id}/edit", "您已經更新了<b>{$user->username}</b>的資料");
     }

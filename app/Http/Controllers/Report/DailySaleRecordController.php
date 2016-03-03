@@ -10,12 +10,12 @@ use Carbon\Carbon;
 
 class DailySaleRecordController extends Controller
 {
-    const REPORT_NAME = '每日業績';
+    const REPORT_NAME = '本月累計業績及每日業績_';
 
     public function index()
     {   
         return view('basic.simple', [
-            'title' => self::REPORT_NAME . '[to副總]', 
+            'title' => self::REPORT_NAME, 
             'des' => NULL,
             'res' => NULL
         ]);
@@ -30,7 +30,7 @@ class DailySaleRecordController extends Controller
 
     protected function sendMail(DailySaleRecordExport $export)
     {
-        $subject = self::REPORT_NAME . $export->getDate()->format('Ymd');
+        $subject = self::REPORT_NAME . with(new \DateTime)->modify('-1 days')->format('Ymd');
         $filename = $export->getFilename();
         $filePath = __DIR__ . '/../../../../storage/excel/exports/' . $filename .  '.xlsx';
         
@@ -40,7 +40,7 @@ class DailySaleRecordController extends Controller
                 ->to('swhsu@chinghwa.com.tw', '6800徐士偉')
                 ->to('sl@chinghwa.com.tw', '6700莊淑玲')
                 ->cc('tonyvanhsu@chinghwa.com.tw', '6820徐士弘')
-                ->cc('jocoonopa@chinghwa.com.tw', '小閎')
+                ->cc('jocoonopa@chinghwa.com.tw', '6231小閎')
                 ->subject($subject)
                 ->attach($filePath);
             ;

@@ -20,7 +20,10 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
     {
         $this->date = $export->getDate();
 
-        return $export->sheet('總表', $this->getSheetFunc())->store('xlsx', storage_path('excel/exports'));
+        return $export->sheet('累計業績', $this->getSheetFunc())
+            ->sheet('今日業績' . with(new \DateTime())->modify('-1 days')->format('Ymd'), $this->getSheet2Func())
+            ->store('xlsx', storage_path('excel/exports'))
+        ;
     }
 
     /**
@@ -44,7 +47,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
                 ->setTargetSheet($sheet)
                 ->setSheetBasicStyle()
                 ->appendHead()->next()
-                ->initDataHelper()
+                ->initDataHelper(false)
                 ->appendByIterateErpTelGroups()->prev()        
                 ->appendTotalErpTelGroup()->next()->next()
                 ->appendErpOuttunnel()
@@ -55,9 +58,44 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
        };
     }
 
-    protected function initDataHelper()
+    /**
+     * Excel 內容編輯動作
+     * 
+     * 1. ERP 資料貼上
+     *     -> 直效資料貼上
+     *     -> 外部通路資料貼上
+     *     
+     * 2. 直營門市資料貼上
+     * 3. 所有資料總和貼上
+     *
+     * 資料的取得應該是伴隨欄位得貼上執行，即掛勾在欄位貼上的動作內
+     * 
+     * @return 
+     */
+    protected function getSheet2Func()
     {
-        $this->dataHelper = new DataHelper($this->date);
+        return function ($sheet) {
+            $this->date = with(new \DateTime)->modify('-1 days');
+            $this->rowIndex = 1;
+
+            $this
+                ->setTargetSheet($sheet)
+                ->setSheetBasicStyle()
+                ->appendHead()->next()
+                ->initDataHelper(true)
+                ->appendByIterateErpTelGroups()->prev()        
+                ->appendTotalErpTelGroup()->next()->next()
+                ->appendErpOuttunnel()
+                ->appendByIteratePosGroups()
+                ->appendTotalPosGroup()->next()
+                ->appendAllSrcTotal()
+            ;   
+       };
+    }
+
+    protected function initDataHelper($isToday = false)
+    {
+        $this->dataHelper = new DataHelper($this->date, $isToday);
 
         return $this;
     }
