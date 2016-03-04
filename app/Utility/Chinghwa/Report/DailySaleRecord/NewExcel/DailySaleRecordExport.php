@@ -3,6 +3,7 @@
 namespace App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel;
 
 use App\Utility\Chinghwa\ExportExcel;
+use Carbon\Carbon;
 
 class DailySaleRecordExport extends \Maatwebsite\Excel\Files\NewExcelFile 
 {
@@ -10,7 +11,7 @@ class DailySaleRecordExport extends \Maatwebsite\Excel\Files\NewExcelFile
 
     public function getFilename()
     {
-        $this->date = with(new \DateTime())->modify('-1 Days');
+        $this->date = Carbon::now()->modify('-1 Days');
 
         return ExportExcel::DSR_FILENAME . $this->date->format('Ymd');
     }

@@ -6,6 +6,7 @@ use App\Utility\Chinghwa\ExportExcel;
 use App\Utility\Chinghwa\Report\DailySaleRecord\DailySaleRecord;
 use App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\DailySaleRecordExport;
 use App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\Helper\DataHelper;
+use Carbon\Carbon;
 
 class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
@@ -21,7 +22,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
         $this->date = $export->getDate();
 
         return $export->sheet('累計業績', $this->getSheetFunc())
-            ->sheet('今日業績' . with(new \DateTime())->modify('-1 days')->format('Ymd'), $this->getSheet2Func())
+            ->sheet('今日業績' . Carbon::now()->modify('-1 days')->format('Ymd'), $this->getSheet2Func())
             ->store('xlsx', storage_path('excel/exports'))
         ;
     }
@@ -75,7 +76,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
     protected function getSheet2Func()
     {
         return function ($sheet) {
-            $this->date = with(new \DateTime)->modify('-1 days');
+            $this->date = Carbon::now()->modify('-1 days');
             $this->rowIndex = 1;
 
             $this

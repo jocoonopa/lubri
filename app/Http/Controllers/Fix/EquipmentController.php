@@ -9,7 +9,7 @@ class EquipmentController extends Controller
 {
     const CHECK_TARGET  = 'TTL';
     const EMAIL_SUBJECT = '設備發現問題!';
-    const LIMIT_DEPTH   = 5;
+    const LIMIT_DEPTH   = -1;
     const TTL_INDEX     = 2;
 
     /**
@@ -19,6 +19,8 @@ class EquipmentController extends Controller
      */
     public function ping()
     {
+        set_time_limit(0);
+        
         $checkList = $this->getCheckList();
 
         $errList = $this->checkProcess($checkList);
