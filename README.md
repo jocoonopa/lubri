@@ -5,6 +5,12 @@
 
 ## 門市營業額分析報表目標可由俐穎變動
 
+## DB handle
+
+關於輔翼資料庫的處理，牽扯到多筆修改的部分需套用 odbc_autocommit[odbc_autocommit](http://php.net/manual/en/function.odbc-autocommit.php)
+
+Lubri 本身則可使用 [DB::transaction](https://laravel.com/docs/5.1/database#database-transactions)
+
 ## Manage Report
 
 各報表寄送對象可透過資料庫控制, 現在每次更換寄送對象都要重新commit, 很麻煩...

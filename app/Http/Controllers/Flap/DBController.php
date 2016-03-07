@@ -10,6 +10,13 @@ use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class DBController extends Controller
 {
+    public function testsp()
+    {
+        $res = Processor::getArrayResult(file_get_contents(__DIR__ . '/test.sql'));
+
+        pr($res);
+    }
+
     public function find()
     {
         set_time_limit(0);
