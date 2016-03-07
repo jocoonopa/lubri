@@ -47,9 +47,11 @@ class DataHelper
     {
         $startDate = $isToday ? with(new \DateTime)->modify('-1 days')->format('Ymd') : $this->date->modify('first day of this month')->format('Ymd');
 
+        $endDate = $isToday ? $startDate : $this->date->modify('last day of this month')->format('Ymd');
+
         return str_replace(
             ['$startDate', '$endDate'],
-            [$startDate, $this->date->modify('last day of this month')->format('Ymd')],
+            [$startDate, $endDate],
             file_get_contents(__DIR__ . "/../../../../../../../storage/sql/DailySaleRecord/{$db}.sql")
         );
     }
