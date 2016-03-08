@@ -86,6 +86,7 @@ class DailySaleRecordController extends Controller
             $filePath = __DIR__ . '/../../../../storage/excel/exports/' . $filename .  '.xlsx';
 
             $m
+                ->to('oliver@chinghwa.com.tw', '6210王誌遠')
                 ->to('selfindex@chinghwa.com.tw', '6810李濬帆')
                 ->subject($subject)
                 ->attach($filePath);
