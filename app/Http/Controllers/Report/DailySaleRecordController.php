@@ -34,6 +34,8 @@ class DailySaleRecordController extends Controller
 
         Mail::send('emails.dears', ['title' => $subject], $this->sendCallback($subject, $export));
 
+        Mail::send('emails.toam', ['title' => $subject], $this->_sendCallback($subject, $export));
+
         return "{$subject} send complete!";
     }
 
@@ -71,6 +73,20 @@ class DailySaleRecordController extends Controller
                 ->to('sl@chinghwa.com.tw', '6700莊淑玲')
                 ->cc('tonyvanhsu@chinghwa.com.tw', '6820徐士弘')
                 ->cc('jocoonopa@chinghwa.com.tw', '6231小閎')
+                ->subject($subject)
+                ->attach($filePath);
+            ;
+        };
+    }
+
+    protected function _sendCallback($subject, $export)
+    {
+        return function ($m) use ($subject, $export) {            
+            $filename = $export->getFilename();
+            $filePath = __DIR__ . '/../../../../storage/excel/exports/' . $filename .  '.xlsx';
+
+            $m
+                ->to('selfindex@chinghwa.com.tw', '6810李濬帆')
                 ->subject($subject)
                 ->attach($filePath);
             ;
