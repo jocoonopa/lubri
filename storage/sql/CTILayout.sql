@@ -25,7 +25,9 @@ SELECT TOP 200
     CCS_ShoppingBehaviorBrief.TotalConsume 累積購物金額,
     POS_Member.TotalBonus 累積紅利點數,
     POS_Member.MemberSerNoI 輔翼會員參數,
-    CCS_CRMFields.newCustomerMemo 備註
+    CCS_CRMFields.newCustomerMemo 備註,    
+    CCS_CRMFields.CRMNote1 備註1,
+    CCS_CRMFields.CRMNote2 備註2
 FROM 
     POS_Member
     LEFT JOIN CCS_MemberFlags           ON POS_Member.SerNo = CCS_MemberFlags.MemberSerNoStr 

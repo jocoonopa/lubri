@@ -130,13 +130,13 @@ class CTILayoutController extends Controller
     protected function getRefactRow($row)
     {
         $data = [];
-        $limit = 26;
+        $limit = 27;
 
         for ($i = 0; $i < $limit; $i ++) { 
             $data[$i] = $row[$i];
         }
 
-        $he = $this->getHospitalAndEdate($row[ExcelHelper::rmi('AA')]);
+        $he = $this->getHospitalAndEdate($row[ExcelHelper::rmi('AA')], $row[ExcelHelper::rmi('AB')]);
 
         $data[ExcelHelper::rmi('AA')] = $he['edate'];
         $data[ExcelHelper::rmi('AB')] = $he['hospital'];
@@ -144,18 +144,30 @@ class CTILayoutController extends Controller
         return $data;
     }
 
-    protected function getHospitalAndEdate($text)
+    protected function getHospitalAndEdate($text, $text2)
     {
-        $arr = explode(':', $text);
+        $res = ['hospital' => '', 'edate' => ''];
+        $arr = explode(';', $text);
 
-        if (3 > count($arr)) {
-            return ['hospital' => '', 'edate' => ''];
+        if (4 > count($arr)) {
+            $arr = explode(';', $text2);
         }
 
-        return [
-            'hospital' => str_replace('生產醫院:', '', $arr[2]),
-            'edate' => preg_replace('/[^0-9]/', '', $arr[1])
-        ];
+        if (4 > count($arr)) {            
+            return $res;
+        }
+
+        foreach ($arr as $val) {
+            if (false !== strpos($val, '生產醫院')) {
+                $res['hospital'] = trim(str_replace('生產醫院:', '', $val));
+            }
+
+            if (false !== strpos($val, '預產期')) {
+                $res['edate'] = preg_replace('/[^0-9]/', '', $val);
+            }
+        }
+
+        return $res;
     }
 
     protected function getSplitBirthDay($birthday)

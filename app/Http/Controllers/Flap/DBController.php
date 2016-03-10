@@ -12,9 +12,18 @@ class DBController extends Controller
 {
     public function testsp()
     {
-        $res = Processor::getArrayResult(file_get_contents(__DIR__ . '/test.sql'));
+        for ($i = 1; $i <= 12; $i ++) {
+            $date = new \DateTime("2015-$i-01");
+            $startString = $date->format('Ymd');
+            $endString = $date->modify('last day of this month')->format('Ymd');
 
-        pr($res);
+            $sql = str_replace(['$startString', '$endString'], [$startString, $endString], file_get_contents(__DIR__ . '2015_salerecord_by_pcode.sql'));
+
+            echo $sql . "<hr>";
+        }
+        // $res = Processor::getArrayResult(file_get_contents(__DIR__ . '/test.sql'));
+
+        // pr($res);
     }
 
     public function find()

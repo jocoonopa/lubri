@@ -52,7 +52,12 @@ Route::group(['namespace' => 'Flap', 'prefix' => 'flap'], function () {
 
 		Route::get('cancelverify', ['uses' => 'CancelVerifyController@index', 'as' => 'ccs_orderindex_cancelverify_index']);
 
-		Route::GET('salerecord',  ['uses' => 'SaleRecordController@process', 'middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部']]);
+		Route::get('salerecord',  ['uses' => 'SaleRecordController@process', 'middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部']]);
+
+		Route::group(['prefix' => 'promote_shipment', 'middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部','供應部NEW']], function () {
+			Route::get('',  ['uses' => 'PromoteShipmentController@index']);
+			Route::post('',  ['uses' => 'PromoteShipmentController@export']);
+		});
 	});
 
 	Route::group(['namespace' => 'CCS_ReturnGoodsI', 'prefix' => 'ccs_returngoodsi'], function () {

@@ -48,7 +48,8 @@
           <ul class="dropdown-menu" aria-labelledby="compare">
             <li><a href="{{ route('compare_honeybaby') }}">寵兒名單比對</a></li>            
             <li><a href="{{ route('compare_financial_strike_balance_index')}}">財務沖帳比對</a></li>
-            <li><a href="{{ url('flap/ccs_order_index/salerecord') }}">客經業績總表</a></li>                      
+            <li><a href="{{ url('flap/ccs_order_index/salerecord') }}">客經業績總表</a></li>   
+            <li><a href="{{ url('flap/ccs_order_index/promote_shipment') }}">促銷出貨撈取</a></li>                   
           </ul> 
         </li>
         <li class="dropdown">

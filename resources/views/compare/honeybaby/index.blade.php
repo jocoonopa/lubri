@@ -70,8 +70,6 @@
 <script src="/assets/js/facade.js"></script>
 <script>
 $('form').find('input[type="submit"]').click(function () {
-	$blockUI(); 
-
 	$('form').submit();
 
 	return false;
