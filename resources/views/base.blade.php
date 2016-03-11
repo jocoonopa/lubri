@@ -10,7 +10,7 @@
 	<meta name="keywords" content="nutrimate, chinghwa, IT, lubri, flap">
 	{{-- <link rel="stylesheet" href="https://bootswatch.com/united/bootstrap.min.css"> --}}
 	<!-- Bootstrap -->
-  	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  	<link rel="stylesheet" href="{!! URL::asset('/assets/css/bootstrap.min.css') !!}" >
   	<link rel="stylesheet" href="{!! URL::asset('/assets/css/bootstrap.extend.css') !!}">
 	<link rel="stylesheet" href="{!! URL::asset('/assets/css/timeline.css') !!}">
 	<link rel="shortcut icon" type="image/png" href="{!! URL::asset('/assets/image/favicon.png') !!}"/>
@@ -20,9 +20,9 @@
   	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
   	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/bootstrap-material-design.min.css">
+	<link rel="stylesheet" href="{!! URL::asset('/assets/css/bootstrap-material-design.min.css') !!}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/bootstrap-material-design.min.css.map">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/ripples.min.css">
+	<link rel="stylesheet" href="{!! URL::asset('/assets/css/ripple.min.css') !!}">
 	<link rel='stylesheet' href='{!! URL::asset('/assets/nprogress-master/nprogress-master/nprogress.css') !!}'/>
   @yield('css')
 </head>
@@ -40,12 +40,12 @@
 		@include('common/footer')	
 	</div>
 
-	<script src="https://bootswatch.com/bower_components/jquery/dist/jquery.min.js"></script>
-	<script src="https://bootswatch.com/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="{!! URL::asset('/assets/js/jquery.min.js') !!}"></script>
+	<script src="{!! URL::asset('/assets/js/bootstrap.min.js') !!}"></script>
 	<script src="{!! URL::asset('/assets/js/bootbox.min.js') !!}"></script>
 	<script src="{!! URL::asset('/assets/js/helper.js') !!}"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/js/material.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/js/ripples.min.js"></script>
+	<script src="{!! URL::asset('/assets/js/material.min.js') !!}"></script>
+	<script src="{!! URL::asset('/assets/js/ripple.min.js') !!}"></script>
 	<script src='{!! URL::asset('/assets/nprogress-master/nprogress-master/nprogress.js') !!}'></script>
 	<script>
 		$.material.init();
