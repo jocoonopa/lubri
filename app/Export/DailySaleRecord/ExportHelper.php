@@ -1,58 +1,53 @@
 <?php
 
-namespace App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\Helper;
+namespace App\Export\DailySaleRecord;
 
-use App\Utility\Chinghwa\Report\DailySaleRecord\DailySaleRecord;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
-class DataHelper
+class ExportHelper
 {
-	public $erpGroups = [];
-    public $posGroups = [];
-    public $erpStatistics = [];
-    public $posStatistics = [];
+    public $erpGroups      = [];
+    public $posGroups      = [];
+    public $erpStatistics  = [];
+    public $posStatistics  = [];
     public $totalPospGroup = [];
-    public $ctiCallLog = [];
+    public $ctiCallLog     = [];
 
     protected $date;
 
-    public function __construct(\DateTime $date, $isToday = false)
+    public function __construct(\DateTime $date, $startDate, $endDate)
     {
         $this->date = $date;
-        $this->fetchErpGroups($isToday)->fetchCtiCallLog($isToday)->fetchPosGroups($isToday);
+        $this->fetchErpGroups($startDate, $endDate)->fetchCtiCallLog($startDate, $endDate)->fetchPosGroups($startDate, $endDate);
     }
 
-    public function fetchPosGroups($isToday = false)
+    public function fetchPosGroups($startDate, $endDate)
     {
-        $this->posGroups = $this->splitPosDataByGroup(Processor::getArrayResult($this->getQuery('POS', $isToday), 'Pos'));
+        $this->posGroups = $this->splitPosDataByGroup(Processor::getArrayResult($this->getQuery('POS', $startDate, $endDate), 'Pos'));
 
         return $this;
     }
 
-    public function fetchCtiCallLog($isToday = false)
+    public function fetchCtiCallLog($startDate, $endDate)
     {
-        $this->ctiCallLog = Processor::getArrayResult($this->getQuery('CTI', $isToday), 'Cti');
+        $this->ctiCallLog = Processor::getArrayResult($this->getQuery('CTI', $startDate, $endDate), 'Cti');
 
         return $this;
     }
 
-    public function fetchErpGroups($isToday = false)
+    public function fetchErpGroups($startDate, $endDate)
     {
-        $this->erpGroups = $this->splitErpDataByGroup(Processor::getArrayResult($this->getQuery('ERP', $isToday), 'Erp'));
+        $this->erpGroups = $this->splitErpDataByGroup(Processor::getArrayResult($this->getQuery('ERP', $startDate, $endDate), 'Erp'));
 
         return $this;
     }
 
-    protected function getQuery($db, $isToday = false)
+    protected function getQuery($db, $startDate, $endDate)
     {
-        $startDate = $isToday ? with(new \DateTime)->modify('-1 days')->format('Ymd') : $this->date->modify('first day of this month')->format('Ymd');
-
-        $endDate = $isToday ? $startDate : $this->date->modify('last day of this month')->format('Ymd');
-
         return str_replace(
             ['$startDate', '$endDate'],
             [$startDate, $endDate],
-            file_get_contents(__DIR__ . "/../../../../../../../storage/sql/DailySaleRecord/{$db}.sql")
+            file_get_contents(__DIR__ . "/../../../storage/sql/DailySaleRecord/{$db}.sql")
         );
     }
 
@@ -71,7 +66,7 @@ class DataHelper
         $list = $this->getErpGroupList();
 
         foreach ($erpData as $erp) {
-            $groupName = in_array($erp[DailySaleRecord::ERP_CORPCODE_COLUMN], $list) ? $erp[DailySaleRecord::ERP_CORPCODE_COLUMN] : DailySaleRecord::ERP_OUTTUNNEL;
+            $groupName = in_array($erp[Export::ERP_CORPCODE_COLUMN], $list) ? $erp[Export::ERP_CORPCODE_COLUMN] : Export::ERP_OUTTUNNEL;
             
             $groupIndexData[$groupName][] = $erp;
         }
@@ -86,8 +81,8 @@ class DataHelper
         $list = $this->getPosGroupList();
 
         foreach ($posData as $pos) {
-            $groupName = (in_array($pos[DailySaleRecord::POS_CORPCODE_COLUMN], $list)) 
-                ? $pos[DailySaleRecord::POS_CORPCODE_COLUMN] : DailySaleRecord::POS_NONEXIST_GROUP;
+            $groupName = (in_array($pos[Export::POS_CORPCODE_COLUMN], $list)) 
+                ? $pos[Export::POS_CORPCODE_COLUMN] : Export::POS_NONEXIST_GROUP;
 
             $groupIndexData[$groupName][] = $pos;
         }
@@ -130,7 +125,7 @@ class DataHelper
     public function updateErpStatistics(array $agentRow, $groupCode)
     {
         if (!array_key_exists($groupCode, $this->erpStatistics)) {
-            $this->erpStatistics[$groupCode]['部門'] = ((DailySaleRecord::ERP_OUTTUNNEL === $groupCode) ? '外部通路' : $agentRow['部門']). '合計';
+            $this->erpStatistics[$groupCode]['部門'] = ((Export::ERP_OUTTUNNEL === $groupCode) ? '外部通路' : $agentRow['部門']). '合計';
             $this->erpStatistics[$groupCode] = array_merge($this->erpStatistics[$groupCode], $this->initTotalGroup());
         }
 
@@ -188,11 +183,11 @@ class DataHelper
 
     public function genAgentRow(array $agent)
     {
-        $cti = $this->getCtiFromErp($agent[DailySaleRecord::CTI_JOIN_COLUMN]);
+        $cti = $this->getCtiFromErp($agent[Export::CTI_JOIN_COLUMN]);
 
         return [
             '部門' => $agent['部門'],
-            '人員代碼' => $agent[DailySaleRecord::CTI_JOIN_COLUMN],
+            '人員代碼' => $agent[Export::CTI_JOIN_COLUMN],
             '姓名' => $agent['姓名'],      
             '會員數' => $agent['會員數'],     
             '訂單數' => $agent['訂單數'],     
@@ -226,7 +221,7 @@ class DataHelper
 
     public function getCtiFromErp($code)
     {       
-        $key = array_search(trim($code), array_column($this->ctiCallLog, DailySaleRecord::CTI_JOIN_COLUMN));
+        $key = array_search(trim($code), array_column($this->ctiCallLog, Export::CTI_JOIN_COLUMN));
 
         return (false !== $key) ? $this->ctiCallLog[$key] : null;
     }

@@ -47,6 +47,11 @@ class EventServiceProvider extends ServiceProvider
 
         'App\Events\Report\RetailSalePerson\ReportEvent' => [
             'App\Handlers\Events\Report\RetailSalePerson\MailEventHandler'
+        ],
+
+        'App\Events\Report\DailySaleRecord\ReportEvent' => [
+            'App\Handlers\Events\Report\DailySaleRecord\MailToManagerEventHandler',
+            'App\Handlers\Events\Report\DailySaleRecord\MailToAssistantEventHandler'
         ]
     ];
 

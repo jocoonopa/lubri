@@ -1,14 +1,11 @@
 <?php
 
-namespace App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel;
+namespace App\Export\DailySaleRecord;
 
 use App\Utility\Chinghwa\ExportExcel;
-use App\Utility\Chinghwa\Report\DailySaleRecord\DailySaleRecord;
-use App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\DailySaleRecordExport;
-use App\Utility\Chinghwa\Report\DailySaleRecord\NewExcel\Helper\DataHelper;
 use Carbon\Carbon;
 
-class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
+class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
 	const BORDER_RIGHT_RANGE = 'L';
 
@@ -21,10 +18,28 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
     {
         $this->date = $export->getDate();
 
-        return $export->sheet('累計業績', $this->getSheetFunc())
-            ->sheet('今日業績' . Carbon::now()->modify('-1 days')->format('Ymd'), $this->getSheet2Func())
+        $export->sheet($this->getSheetToLastOfMonthText(), $this->getSheetToLastOfMonthFunc())
+            ->sheet($this->getSheetTodayText(), $this->getSheetTodayFunc())
+            ->sheet($this->getSheetTilTodayText(), $this->getSheetTilTodayFunc())
             ->store('xlsx', storage_path('excel/exports'))
         ;
+
+        return $export;
+    }
+
+    protected function getSheetToLastOfMonthText()
+    {
+        return '本月目前業績' . with(new Carbon('first day of this month'))->format('Ymd') . '-' . with(new Carbon('last day of this month'))->format('Ymd');
+    }
+
+    protected function getSheetTodayText()
+    {
+        return '今日業績' . Carbon::now()->modify('-1 days')->format('Ymd');
+    }
+
+    protected function getSheetTilTodayText()
+    {
+        return '本月累計至今日業績' . with(new Carbon('first day of this month'))->format('Ymd') . '-' . Carbon::now()->modify('-1 days')->format('Ymd');
     }
 
     /**
@@ -41,14 +56,17 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
      * 
      * @return 
      */
-    protected function getSheetFunc()
+    protected function getSheetToLastOfMonthFunc()
     {
         return function ($sheet) {
+            $startDate = with(new Carbon('first day of this month'))->format('Ymd');
+            $endDate = with(new Carbon('last day of this month'))->format('Ymd');
+
             $this
                 ->setTargetSheet($sheet)
                 ->setSheetBasicStyle()
                 ->appendHead()->next()
-                ->initDataHelper(false)
+                ->initDataHelper($startDate, $endDate)
                 ->appendByIterateErpTelGroups()->prev()        
                 ->appendTotalErpTelGroup()->next()->next()
                 ->appendErpOuttunnel()
@@ -73,17 +91,43 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
      * 
      * @return 
      */
-    protected function getSheet2Func()
+    protected function getSheetTodayFunc()
+    {
+        return function ($sheet) {
+            $this->date = Carbon::now()->modify('-1 days');
+            $this->rowIndex = 1;
+            $startDate = Carbon::now()->modify('-1 days')->format('Ymd');
+            $endDate = $startDate;
+
+            $this
+                ->setTargetSheet($sheet)
+                ->setSheetBasicStyle()
+                ->appendHead()->next()
+                ->initDataHelper($startDate, $endDate)
+                ->appendByIterateErpTelGroups()->prev()        
+                ->appendTotalErpTelGroup()->next()->next()
+                ->appendErpOuttunnel()
+                ->appendByIteratePosGroups()
+                ->appendTotalPosGroup()->next()
+                ->appendAllSrcTotal()
+            ;   
+       };
+    }
+
+    protected function getSheetTilTodayFunc()
     {
         return function ($sheet) {
             $this->date = Carbon::now()->modify('-1 days');
             $this->rowIndex = 1;
 
+            $startDate = with(new Carbon('first day of this month'))->format('Ymd');
+            $endDate = Carbon::now()->modify('-1 days')->format('Ymd');
+
             $this
                 ->setTargetSheet($sheet)
                 ->setSheetBasicStyle()
                 ->appendHead()->next()
-                ->initDataHelper(true)
+                ->initDataHelper($startDate, $endDate)
                 ->appendByIterateErpTelGroups()->prev()        
                 ->appendTotalErpTelGroup()->next()->next()
                 ->appendErpOuttunnel()
@@ -94,9 +138,9 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
        };
     }
 
-    protected function initDataHelper($isToday = false)
+    protected function initDataHelper($startDate, $endDate)
     {
-        $this->dataHelper = new DataHelper($this->date, $isToday);
+        $this->dataHelper = new ExportHelper($this->date, $startDate, $endDate);
 
         return $this;
     }
@@ -180,7 +224,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
 
     protected function appendErpOuttunnelStatistics()
     {
-        return $this->appendRow($this->dataHelper->erpStatistics[DailySaleRecord::ERP_OUTTUNNEL], [
+        return $this->appendRow($this->dataHelper->erpStatistics[Export::ERP_OUTTUNNEL], [
             'backgrounColor' => '#CC0606',
             'fontColor' => '#ffffff'
         ]);
@@ -218,7 +262,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
 
     protected function appendErpOuttunnel()
     {
-        if (array_key_exists(DailySaleRecord::ERP_OUTTUNNEL, $this->dataHelper->erpGroups)) {
+        if (array_key_exists(Export::ERP_OUTTUNNEL, $this->dataHelper->erpGroups)) {
             $this->appendByIterateOuttunnel()->appendErpOuttunnelStatistics()->next();
         }
  
@@ -234,7 +278,7 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
     protected function appendByIterateErpTelGroups()
     {
     	foreach ($this->dataHelper->erpGroups as $groupCode => $group) {
-            if (DailySaleRecord::ERP_OUTTUNNEL === $groupCode) {
+            if (Export::ERP_OUTTUNNEL === $groupCode) {
                 continue;
             }
 
@@ -260,8 +304,8 @@ class DailySaleRecordExportHandler implements \Maatwebsite\Excel\Files\ExportHan
 
     protected function appendByIterateOuttunnel()
     {
-        foreach ($this->dataHelper->erpGroups[DailySaleRecord::ERP_OUTTUNNEL] as $agent) {
-            $this->dataHelper->updateErpStatistics($agentRow = $this->dataHelper->genAgentRow($agent), DailySaleRecord::ERP_OUTTUNNEL);
+        foreach ($this->dataHelper->erpGroups[Export::ERP_OUTTUNNEL] as $agent) {
+            $this->dataHelper->updateErpStatistics($agentRow = $this->dataHelper->genAgentRow($agent), Export::ERP_OUTTUNNEL);
             
             $this->appendEachOuttunnel($agentRow)->next();
         }
