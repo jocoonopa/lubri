@@ -58,3 +58,8 @@ Route 的定義檔案應該要適度拆解，目前所有的 route 都塞在 rou
 - [Laravel Blade Inject Service && Directive](https://mattstauffer.co/blog/custom-conditionals-with-laravels-blade-directives)
 
 - [Material Guilde](https://github.com/FezVrasta/bootstrap-material-design)
+
+https://select2.github.io/examples.html#tags
+http://www.maatwebsite.nl/laravel-excel/docs/blade
+http://www.daterangepicker.com/#examples
+http://carbon.nesbot.com/docs/

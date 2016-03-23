@@ -1,5 +1,7 @@
 <?php
 
+define('STDIN',fopen("php://stdin","r"));
+
 function c8($str)
 {
     return mb_convert_encoding($str, 'UTF-8', 'big5');

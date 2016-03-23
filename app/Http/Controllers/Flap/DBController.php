@@ -12,15 +12,21 @@ class DBController extends Controller
 {
     public function testsp()
     {
+        $codes = ['A00021','A00034','A00047','A00100','A00286','A00267','A00422','A00438','A00458','A00459','A00460','A00461','A00463','A00473','A00474','A00482','A00486','A00490','A00491','A00492','A00493','A00495','A00497','A00499','A00500','A00506','A00513','A00519','A00520','A00537','A00539','A00540','A00541','A00542'];
+
         for ($i = 1; $i <= 12; $i ++) {
             $date = new \DateTime("2015-$i-01");
             $startString = $date->format('Ymd');
             $endString = $date->modify('last day of this month')->format('Ymd');
 
-            $sql = str_replace(['$startString', '$endString'], [$startString, $endString], file_get_contents(__DIR__ . '2015_salerecord_by_pcode.sql'));
+            $sql = str_replace(['$startString', '$endString', '$codes'], [$startString, $endString, implode($codes, "','")], file_get_contents(__DIR__ . '/2015_salerecord_by_pcode.sql'));
 
             echo $sql . "<hr>";
         }
+
+        $sql = str_replace(['$startString', '$endString', '$codes'], ['20150101', '20151231', implode($codes, "','")], file_get_contents(__DIR__ . '/2015_qty_by_pcode.sql'));
+
+         echo $sql . "<hr>";
         // $res = Processor::getArrayResult(file_get_contents(__DIR__ . '/test.sql'));
 
         // pr($res);
