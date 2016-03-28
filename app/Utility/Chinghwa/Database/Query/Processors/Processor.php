@@ -119,4 +119,9 @@ class Processor
 
         return str_replace('`', '', $pdoStatement);
     }
+
+    public static function getStorageSql($filePath)
+    {
+        return file_get_contents(__DIR__ . '/../../../../../../storage/sql/' . $filePath);
+    }
 }

@@ -50,4 +50,9 @@ class State extends Model
     {
         $query->where('zipcode', '=', $zipcode);
     }
+
+    public function scopeFindByName($query, $name)
+    {
+        $query->where('name', '=', $name)->orWhere('pastname', '=', $name);
+    }
 }
