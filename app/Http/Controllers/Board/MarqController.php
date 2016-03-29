@@ -31,10 +31,13 @@ class MarqController extends Controller
 
     protected function getQuery()
     {
+        $startOfMonth = Carbon::now()->modify('first day of this month')->format('Ymd');
+        $today = Carbon::now()->format('Ymd');
+
         return str_replace(
             ['$whereCondition', '$today', '$weekStart', '$weekEnd'],
             [
-                "CCS_OrderIndex.Status = 1 AND CCS_OrderIndex.KeyInDate BETWEEN 20160301 AND 20160328 AND FAS_Corp.Code IN('CH53000','CH54000','CH54100')", 
+                "CCS_OrderIndex.Status = 1 AND CCS_OrderIndex.KeyInDate BETWEEN $startOfMonth AND $today AND FAS_Corp.Code IN('CH53000','CH54000','CH54100')", 
                 Carbon::now()->format('Ymd'), 
                 Carbon::now()->startOfWeek()->format('Ymd'), 
                 Carbon::now()->endOfWeek()->format('Ymd')
