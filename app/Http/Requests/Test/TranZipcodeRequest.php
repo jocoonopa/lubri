@@ -7,7 +7,7 @@ use App\Http\Requests\Request;
 class TranZipcodeRequest extends Request
 {
     protected $rules = [
-        'file' => 'required|max:5000|mimes:xls' //a required, max 5000kb, xls
+        'file' => 'required|max:5000|mimes:xls'
     ];
 
     /**

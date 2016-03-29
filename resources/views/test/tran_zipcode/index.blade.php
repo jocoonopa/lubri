@@ -11,7 +11,7 @@
 
             <h1>郵遞區號轉換</h1> 
             
-            {!! Form::open(['method' => 'POST', 'action' => ['Test\TranZipcodeController@index']]) !!}    
+            {!! Form::open(['method' => 'post', 'files' => true, 'action' => ['Test\TranZipcodeController@index']]) !!}    
                 @include('test.tran_zipcode._form')
             {!! Form::close() !!}   
         </div>

@@ -17,30 +17,25 @@ class TranZipcodeImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
      */
     public function handle($import)
     {
-        return Excel::create('zipcode', function ($excel) {
-            $import->chunk(TranZipcodeImport::CHUNK_SIZE, $this->getChunkCallback($excel));
+        return Excel::create('zipcode', function ($excel) use ($import) {
+            $excel->sheet('FirstSheet', function($exportSheet) use ($import) {
+                $import->chunk(TranZipcodeImport::CHUNK_SIZE, $this->getChunkCallback($exportSheet));
+            });            
         })->download();        
     }
 
-    protected function getChunkCallback($excel)
+    protected function getChunkCallback($exportSheet)
     {
-        return function ($sheet) use ($excel) {
-            $sheet->each(function ($row) use ($excel) {
-                $this->_iterateProcess($row, $excel);
+        return function ($sheet) use ($exportSheet) {
+            $sheet->each(function ($row) use ($exportSheet) {
+                $this->_iterateProcess($row, $exportSheet);
             });      
         };
     }
 
-    private function _iterateProcess($row, $excel)
+    private function _iterateProcess($row, $exportSheet)
     {
-        return $excel->sheet('zipcode', $this->_appendRowCallback($row, $excel));                             
-    }
-
-    private function _appendRowCallback()
-    {
-        return function ($sheet) use ($row) {
-            $sheet->rows($this->_getRowData($row));
-        }
+        $exportSheet->appendRow($this->_getRowData($row));                            
     }
 
     private function _getRowData($row)
@@ -48,10 +43,10 @@ class TranZipcodeImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
         $cityName = trim(keepOnlyChineseWord(array_get($row, 0)));
         $stateName = trim(keepOnlyChineseWord(array_get($row, 1)));
 
-        $city = City::findByName($cityName);
-        $state = NULL !== $city ? State::findByName($stateName) : NULL;                            
-        $zipcode = NULL !== $state ? $state->zipcode : '';
+        $city = City::findByName($cityName)->first();
+        $state = (NULL !== $city) ? State::findByName($stateName)->first() : NULL;                            
+        $zipcode = (NULL !== $state) ? $state->zipcode : '';
 
-        return [$cityName, $stateName, $zipcode];
+        return ('' !== $zipcode) ? [$cityName, $stateName, $zipcode] : [array_get($row, 0), array_get($row, 1), ''];
     }
 } 
