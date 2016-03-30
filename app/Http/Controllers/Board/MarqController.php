@@ -19,17 +19,21 @@ class MarqController extends Controller
      */
     public function index()
     {
-        $data = Processor::getArrayResult($this->getMarqQuery());
+        try {
+            $data = Processor::getArrayResult($this->getMarqQuery());
 
-        $count = count($data);
-        $offset = Input::get('offset', 0);
-        $offset = ($offset > ($count + 5)) ? 0 : $offset;
+            $count = count($data);
+            $offset = Input::get('offset', 0);
+            $offset = ($offset > ($count + 5)) ? 0 : $offset;
 
-        $data = array_slice($data, $offset, 8);
+            $data = array_slice($data, $offset, 8);
 
-        $offset += 5;
+            $offset += 5;
 
-        return ($offset < ($count + 5)) ? view('board.marq.index', ['data' => $data, 'offset' => $offset]) : Redirect::to('board/marq/group?timeout=' . Input::get('timeout', 10));
+            return ($offset < ($count + 5)) ? view('board.marq.index', ['data' => $data, 'offset' => $offset]) : Redirect::to('board/marq/group?timeout=' . Input::get('timeout', 10));
+        } catch (\Exception $e) {
+            return view('board.marq.index', ['data' => [], 'offset' => Input::get('offset', 0)]);
+        }
     }
 
     public function group()

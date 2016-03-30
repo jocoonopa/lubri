@@ -19,17 +19,24 @@ class Processor
 
     public static function execErp($query)
     {
-        return odbc_exec(Connector::toErp(), cb5($query));
+        return self::execSpecific(Connector::toErp(), $query);
     }
 
     public static function execPos($query)
     {
-        return odbc_exec(Connector::toPos(), cb5($query));
+        return self::execSpecific(Connector::toPos(), $query);
     }
 
     public static function execCti($query)
     {
-        return odbc_exec(Connector::toCti(), cb5($query));
+        return self::execSpecific(Connector::toCti(), $query);
+    }
+
+    public static function execSpecific($cnx, $query)
+    {        
+        $res = odbc_exec($cnx, cb5($query));
+
+        return $res;
     }
 
     public static function getErp(Builder $queryBuilder)
@@ -97,6 +104,10 @@ class Processor
             }
         }
 
+        $execDB = NULL;
+        $res = NULL;
+        $row = NULL;
+        
         return $data;
     }
 

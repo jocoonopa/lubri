@@ -4,9 +4,9 @@ namespace App\Utility\Chinghwa\Database\Connectors;
 
 class Connector
 {
-    protected static $erpCnx;
-    protected static $posCnx;
-    protected static $ctiCnx;
+    protected static $erpCnx = NULL;
+    protected static $posCnx = NULL;
+    protected static $ctiCnx = NULL;
 
 	public static function toErp()
     {
