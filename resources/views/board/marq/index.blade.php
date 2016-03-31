@@ -13,30 +13,35 @@
     <link rel="stylesheet" href="{!! URL::asset('/assets/css/bootstrap.extend.css') !!}">
     <link rel="shortcut icon" type="image/png" href="{!! URL::asset('/assets/image/favicon.png') !!}"/>
     <link rel="apple-touch-icon" href="{!! URL::asset('/assets/image/favicon.png') !!}">
-  @yield('css')
+    <style>
+      tbody tr:nth-child(odd) {
+        background: #4E4E4E;
+    }
+    </style>
 </head>
 <body id="body" style="background: #000000;">
-<div class="container" style="width: 100%; font-size: 70px; color: yellow; font-family: 微軟正黑體;">
+<div class="container" style="width: 100%; font-size: 70px; font-family: 微軟正黑體;">
     <table class="table" style="text-align: right;">
         <thead>
-            <tr>
+            <tr class="yellow">
                 <td>排名</td>
-                <td>部門</td>
+                <td>單位</td>
                 <td>姓名</td>
-                <td>本月累計</td>
-                <td>本周業績</td>
                 <td>今日業績</td>
+                <td>本月累計</td>
+                <td>月達成率</td>
             </tr>
         </thead>
         <tbody>
             @foreach($data as $row)
-            <tr>
-                <td style="color: red;">{{ $row['排名'] }}</td>
-                <td style="color: white;">{{ str_replace(['戶','經','營','部'], '', $row['部門']) }}</td>
-                <td style="color: white;">{{ $row['姓名'] }}</td>
-                <td style="color: white;">{{ number_format($row['本月累計']) }}</td>
-                <td style="color: white;">{{ number_format($row['本周業績']) }}</td>
-                <td style="color: white;">{{ number_format($row['今日業績']) }}</td>
+            <tr class="white">
+                <td class="red">{{ $row['排名'] }}</td>
+                <td>{{ str_replace(['戶','經','營','部'], '', $row['部門']) }}</td>
+                <td class="font-weight-bold">{{ $row['姓名'] }}</td>
+
+                <td>{{ number_format($row['今日業績']) }}</td>
+                <td>{{ number_format($row['本月累計']) }}</td>
+                <td></td>
             </tr>
             @endforeach
         </tbody>
@@ -45,14 +50,10 @@
 
 <script src="{!! URL::asset('/assets/js/jquery.min.js') !!}"></script>
 <script src="{!! URL::asset('/assets/js/bootstrap.min.js') !!}"></script>
+<script src="{!! URL::asset('/assets/js/helper.js') !!}"></script>
+<script src="{!! URL::asset('/assets/js/boardmarq.js') !!}"></script>
 <script>
-$('tbody').find('tr:odd').css('background', '#4E4E4E');
-
-var interval = {{ Input::get('timeout', 10)*1000 }};
-
-setTimeout(function () {
-    window.location.href= '?offset={{ $offset }}&timeout={{ Input::get('timeout', 10) }}';
-}, 3000 > interval ? 3000 : interval);
+(new BoardMarq({"timeout": {{ Input::get('timeout', 10) }}, "offset": {{ $offset }} })).run();
 </script>
 </body>
 </html>

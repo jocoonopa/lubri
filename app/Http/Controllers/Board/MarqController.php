@@ -28,17 +28,39 @@ class MarqController extends Controller
 
             $data = array_slice($data, $offset, 8);
 
-            $offset += 5;
-
-            return ($offset < ($count + 5)) ? view('board.marq.index', ['data' => $data, 'offset' => $offset]) : Redirect::to('board/marq/group?timeout=' . Input::get('timeout', 10));
+            return ($offset < $count) ? view('board.marq.index', ['data' => $data, 'offset' => ($offset + 5)]) : Redirect::to('board/marq/group?timeout=' . Input::get('timeout', 10));
         } catch (\Exception $e) {
             return view('board.marq.index', ['data' => [], 'offset' => Input::get('offset', 0)]);
         }
     }
 
+    protected function getOffset($count)
+    {
+        $offset = Input::get('offset', 0);
+
+        return $offset = ($offset > ($count + 5)) ? 0 : $offset;
+    }
+
     public function group()
     {
-        return view('board.marq.group', ['data' => Processor::getArrayResult($this->getMarqGroupQuery())]);
+        return view('board.marq.group', ['data' => $this->extendGroupSum(Processor::getArrayResult($this->getMarqGroupQuery()))]);
+    }
+
+    protected function extendGroupSum($data)
+    {    
+        $today = 0;
+        $thisWeek = 0;
+        $thisMonth = 0;
+
+        foreach ($data as $row) {
+            $today += array_get($row, '今日業績', 0);
+            $thisWeek += array_get($row, '本周業績', 0);
+            $thisMonth += array_get($row, '本月累計', 0);
+        }
+
+        $data[] = ['部門' => '總計', '今日業績' => $today, '本周業績' => $thisWeek, '本月累計' => $thisMonth];
+
+        return $data;
     }
 
     protected function getMarqQuery()

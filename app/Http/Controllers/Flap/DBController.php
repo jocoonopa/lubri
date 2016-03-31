@@ -61,7 +61,7 @@ class DBController extends Controller
     }
 
     /**
-     * Memory leak issue not fix....
+     * Memory leak caused by Sys_DMTaskInfo.maintain, it contains strange sp...
      */
     protected function compareDisplay($columnName, $tableName)
     {
@@ -70,7 +70,7 @@ class DBController extends Controller
 
         if ($this->isTarget($columnName, $serNo)) {
             echo '記憶體使用:' . memory_get_usage() . ':';
-            //echo $serNo . ':';
+            echo $serNo . ':';
             echo $columnName . ':';
             echo $tableName . "<br />";
         }
@@ -101,7 +101,7 @@ class DBController extends Controller
         return Processor::table('INFORMATION_SCHEMA.COLUMNS')
             ->select('INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME, INFORMATION_SCHEMA.COLUMNS.TABLE_NAME')
             ->leftJoin('information_schema.tables', 'information_schema.tables.TABLE_NAME', '=', 'INFORMATION_SCHEMA.COLUMNS.TABLE_NAME')
-            ->where('INFORMATION_SCHEMA.COLUMNS.ordinal_position', '<=', 6)
+            ->where('INFORMATION_SCHEMA.COLUMNS.ordinal_position', '<=', 20)
             ->where('INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME', 'NOT LIKE', '%time%')
             ->whereNotIn('INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME', ['uid', 'Key', 'Open'])
             ->where('INFORMATION_SCHEMA.tables.TABLE_TYPE', '=', 'BASE TABLE')

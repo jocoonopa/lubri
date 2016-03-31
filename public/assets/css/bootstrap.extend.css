@@ -10,3 +10,19 @@
 .m-b-10 {
 	margin-bottom: 10px !important;
 }
+
+.white {
+    color: white !important;
+}
+
+.red {
+    color: red !important;
+}
+
+.yellow {
+    color: yellow !important;
+}
+
+.font-weight-bold {
+    font-weight: bold !important;
+}
