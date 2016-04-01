@@ -26,17 +26,17 @@
             <tr>
                 <td>單位</td>
                 <td>今日業績</td>                
-                <td>本周業績</td>
-                <td>本月累計</td>                
+                <td>本月累計</td>
+                <td>月達成率</td>                
             </tr>
         </thead>
         <tbody>
             @foreach($data as $row)
             <tr class="@if('總計' === $row['部門']){{'red'}}@else{{'white'}}@endif">
                 <td class="font-weight-bold">{{ str_replace(['戶','經','營','部'], '', $row['部門']) }}</td>
-                <td>{{ number_format($row['今日業績']) }}</td>
-                <td>{{ number_format($row['本周業績']) }}</td>
-                <td>{{ number_format($row['本月累計']) }}</td>                                
+                <td>{{ number_format($row['今日業績']) }}</td>                
+                <td>{{ number_format($row['本月累計']) }}</td>
+                <td>@if(0 < $row['目標']){{ floor(($row['本月累計']/$row['目標']) * 1000)/10 }}%@else{{''}}@endif</td>                      
             </tr>
             @endforeach
         </tbody>

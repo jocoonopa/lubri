@@ -41,7 +41,7 @@
 
                 <td>{{ number_format($row['今日業績']) }}</td>
                 <td>{{ number_format($row['本月累計']) }}</td>
-                <td></td>
+                <td>@if(NULL !== $row['目標']){{ floor(($row['本月累計']/$row['目標'])*1000)/10 }}%@else{{''}}@endif</td>
             </tr>
             @endforeach
         </tbody>
