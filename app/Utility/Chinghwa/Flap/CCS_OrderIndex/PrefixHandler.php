@@ -44,7 +44,11 @@ class PrefixHandler
 
 			$payTotal = array_get($ctOrderNo, 'MustPayTotal');
 
-			Processor::execErp("UPDATE PIS_SellIndex SET No='{$orderNoWithCT}' WHERE No='{$orderNoWithoutCT}' AND TaxedTotal={$payTotal}");
+			$sell = Processor::getArrayResult("SELECT No FROM PIS_SellIndex WHERE No='{$orderNoWithCT}'");
+
+			if (empty($sell)) {
+				Processor::execErp("UPDATE PIS_SellIndex SET No='{$orderNoWithCT}' WHERE No='{$orderNoWithoutCT}' AND TaxedTotal={$payTotal}");
+			}
 		}
 
 		return $this;
