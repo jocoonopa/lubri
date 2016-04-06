@@ -263,7 +263,7 @@ class RetailSalesController extends Controller
                     $row[ExcelHelper::rmi('B')] = @number_format($store['goal']);
                     $row[ExcelHelper::rmi('C')] = @number_format($store['goal']);
                     $row[ExcelHelper::rmi('D')] = @number_format($store['累計實績']);
-                    $row[ExcelHelper::rmi('E')] = $store['累計實績']/$store['goal'];
+                    $row[ExcelHelper::rmi('E')] = (0 !== $store['goal']) ? $store['累計實績']/$store['goal'] : 0;
                     $row[ExcelHelper::rmi('F')] = @number_format($store['去年同期']);
                     $row[ExcelHelper::rmi('G')] = (0 < $store['去年同期'])? $store['累計實績']/$store['去年同期'] - 1 : 0;
                     $row[ExcelHelper::rmi('H')] = @number_format($store['累計實績'] - $store['goal']);

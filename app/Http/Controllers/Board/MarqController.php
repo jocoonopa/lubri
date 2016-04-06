@@ -82,6 +82,26 @@ class MarqController extends Controller
         }
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function angular()
+    {
+        try {
+            $data = Processor::getArrayResult($this->getMarqQuery());
+
+            $count = count($data);
+            $offset = Input::get('offset', 0);
+            $data = array_slice($data, $offset, 8);
+
+            $this->extendMarqTarget($data);
+
+            return view('board.marq.rivets', ['data' => json_encode($data), 'offset' => ($offset + 5)]);
+        } catch (\Exception $e) {}
+    }
+
     protected function extendMarqTarget(array &$data)
     {
         $tmp = [];
