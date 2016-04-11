@@ -1,45 +1,17 @@
 <?php
 
-namespace App\Utility\Chinghwa\Flap\POS_Member\Import;
+namespace App\Import\Flap\POS_Member\ImportActivityTask;
 
 use Input;
 
 class Import extends \App\Import\Flap\POS_Member\Import
 {
-    const I_NAME      = 0;
-    const I_BIRTHDAY  = 1;
-    const I_ADDRESS   = 2;
-    const I_ZIPCODE   = 3;
-    const I_HOMETEL   = 4;
-    const I_OFFICETEL = 5;
-    const I_CELLPHONE = 6;
-    const I_PERIOD    = 7;
-    const I_EMAIL     = 8;
-    const I_HOSPITAL  = 9;
-
-    const TARGET_FLAGS = '["11", "12", "37", "38"]';
-
     protected $fileName;
     protected $destinationPath;
 
-    /**
-     * Used in resources\views\flap\posmember\import_task\_searchnull.blade.php:
-     * 
-     * @return [type] [description]
-     */
     public static function getNullColumns()
     {
-        return [
-            'homeaddress' => '住址', 
-            'state_id'    => '郵遞區號', 
-            'cellphone'   => '手機', 
-            'hometel'     => '住家電話', 
-            'pushed_at'   => '尚未推送', 
-            'birthday'    => '生日', 
-            'period_at'   => '預產期', 
-            'hospital'    => '醫院', 
-            'email'       => '電子信箱'
-        ];
+        return [];
     }
 
     public function getFile()

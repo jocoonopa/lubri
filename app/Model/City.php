@@ -38,6 +38,8 @@ class City extends Model
 
     public function scopeFindByName($query, $cityName)
     {
+        $cityName = str_replace('臺', '台', $cityName);
+        
         $query->where('name', '=', $cityName)->orWhere('pastname', '=', $cityName);
     }
 }

@@ -38,7 +38,6 @@
                 <td class="red">{{ $row['排名'] }}</td>
                 <td>{{ str_replace(['戶','經','營','部'], '', $row['部門']) }}</td>
                 <td class="font-weight-bold">{{ $row['姓名'] }}</td>
-
                 <td>{{ number_format($row['今日業績']) }}</td>
                 <td>{{ number_format($row['本月累計']) }}</td>
                 <td>@if(NULL !== $row['目標']){{ floor(($row['本月累計']/$row['目標'])*1000)/10 }}%@else{{''}}@endif</td>

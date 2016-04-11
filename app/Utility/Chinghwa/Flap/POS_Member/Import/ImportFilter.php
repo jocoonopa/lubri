@@ -150,7 +150,11 @@ class ImportFilter
 
         if (NULL !== ($typeB = $this->_guessAddressTypeB($address))) {
             return $typeB;
-        }  
+        } 
+
+        if (NULL !== ($typeC = $this->_guessAddressTypeC($address))) {
+            return $typeC;
+        }
 
         $this->clearCacheState();
 
@@ -175,6 +179,17 @@ class ImportFilter
         $city = City::findByName(mb_substr($address, 0, 3, Import::DOC_ENCODE))->first();
 
         return NULL !== $city ? $this->_findBelongState($city->states, $address) : NULL;
+    }
+
+    public function _guessAddressTypeC($address)
+    {
+        $states = State::findByName(mb_substr($address, 0, 3, Import::DOC_ENCODE))->get();
+
+        if (1 !== count($states)) {
+            return NULL;
+        }
+
+        return array_get($states, 0);
     }
 
     private function _findBelongState(Collection $states, $address)

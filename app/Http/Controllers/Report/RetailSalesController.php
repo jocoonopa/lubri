@@ -424,8 +424,8 @@ class RetailSalesController extends Controller
             ],
             'S049' => [
                 'name' => '新光A8館',
-                'goal' => 520000,
-                'pl' => 0 
+                'goal' => 600000,
+                'pl' => 336000 
             ],
             'S008' => [
                 'name' => '高雄SOGO門市部',
