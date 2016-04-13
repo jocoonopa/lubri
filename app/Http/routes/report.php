@@ -49,9 +49,8 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 
     // 偉特 CTI Import Layout
     // CTILayoutController
-    Route::group(['prefix' => 'ctilayout'], function () {
-        Route::get('/', ['uses' => 'CTILayoutController@index', 'as' => 'ctilayout_index']);
-        Route::get('/download', ['uses' => 'CTILayoutController@download', 'as' => 'ctilayout_download']);
+    Route::group(['prefix' => 'ctilayout','middleware' => ['auth', 'auth.corp'], 'corp' => '資訊部'], function () {
+        Route::get('/', ['uses' => 'CTILayoutController@index']);
     });
 
     // 每日業績

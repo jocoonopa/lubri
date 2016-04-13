@@ -3,7 +3,7 @@
 namespace App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler;
 
 use App\Model\Flap\PosMemberImportContent;
-use App\Utility\Chinghwa\Flap\ORM\POS_Member;
+use App\Utility\Chinghwa\ORM\ERP\POS_Member;
 
 class ModelFactory implements IModelFactory
 {

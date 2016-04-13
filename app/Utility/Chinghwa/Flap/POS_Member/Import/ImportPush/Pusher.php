@@ -7,7 +7,7 @@ use App\Model\Flap\PosMemberImportContent;
 use App\Model\Flap\PosMemberImportTask;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
-use App\Utility\Chinghwa\Flap\ORM\CCS_MemberFlags;
+use App\Utility\Chinghwa\ORM\ERP\CCS_MemberFlags;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Act\ModelFactory;
 
 abstract class Pusher implements IPusher

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Utility\Chinghwa\Flap\ORM;
+namespace App\Utility\Chinghwa\ORM\ERP;
 
 use App\Model\Flap\PosMemberImportContent;
 use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
+use App\Utility\Chinghwa\ORM\iORM;
 
 class CCS_MemberFlags implements iORM
 {

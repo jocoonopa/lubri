@@ -131,9 +131,9 @@ class Processor
         return str_replace('`', '', $pdoStatement);
     }
 
-    public static function getStorageSql($filePath)
+    public static function getStorageSql($fileName)
     {
-        return file_get_contents(__DIR__ . '/../../../../../../storage/sql/' . $filePath);
+        return file_get_contents(__DIR__ . '/../../../../../../storage/sql/' . $fileName);
     }
 
     public static function getWrapVal($val)

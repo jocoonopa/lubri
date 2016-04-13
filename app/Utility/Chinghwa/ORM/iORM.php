@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utility\Chinghwa\Flap\ORM;
+namespace App\Utility\Chinghwa\ORM;
 
 interface iORM
 {

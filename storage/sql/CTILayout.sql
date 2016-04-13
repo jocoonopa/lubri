@@ -1,4 +1,4 @@
-SELECT TOP 200
+SELECT TOP 2000
     POS_Member.Code 會員代號,
     POS_Member.Name 會員姓名,
     POS_Member.Sex 性別,
@@ -29,13 +29,11 @@ SELECT TOP 200
     CCS_CRMFields.CRMNote1 備註1,
     CCS_CRMFields.CRMNote2 備註2
 FROM 
-    POS_Member
-    LEFT JOIN CCS_MemberFlags           ON POS_Member.SerNo = CCS_MemberFlags.MemberSerNoStr 
-    LEFT JOIN POS_MemberCategory        ON POS_Member.MemberClassSerNo = POS_MemberCategory.SerNo
-    LEFT JOIN CCS_CRMFields             ON POS_Member.SerNo = CCS_CRMFields.MemberSerNoStr
-    LEFT JOIN BasicDataDef              ON CCS_CRMFields.Distinction = BasicDataDef.BDSerNo
-    LEFT JOIN HRS_Employee              ON HRS_Employee.SerNo = CCS_CRMFields.ExploitSerNoStr
-    LEFT JOIN CCS_ShoppingBehaviorBrief ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
-WHERE 
-(CCS_MemberFlags.DistFlags_37='R' OR CCS_MemberFlags.DistFlags_38='R')
-AND CCS_ShoppingBehaviorBrief.TotalConsume > 0
+    POS_Member WITH(NOLOCK)
+    LEFT JOIN CCS_MemberFlags WITH(NOLOCK)          ON POS_Member.SerNo = CCS_MemberFlags.MemberSerNoStr 
+    LEFT JOIN POS_MemberCategory WITH(NOLOCK)       ON POS_Member.MemberClassSerNo = POS_MemberCategory.SerNo
+    LEFT JOIN CCS_CRMFields WITH(NOLOCK)            ON POS_Member.SerNo = CCS_CRMFields.MemberSerNoStr
+    LEFT JOIN BasicDataDef  WITH(NOLOCK)            ON CCS_CRMFields.Distinction = BasicDataDef.BDSerNo
+    LEFT JOIN HRS_Employee WITH(NOLOCK)             ON HRS_Employee.SerNo = CCS_CRMFields.ExploitSerNoStr
+    LEFT JOIN CCS_ShoppingBehaviorBrief WITH(NOLOCK) ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
+WHERE POS_Member.Code='$memberCode'

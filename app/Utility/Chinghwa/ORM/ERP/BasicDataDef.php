@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Utility\Chinghwa\Flap\ORM;
+namespace App\Utility\Chinghwa\ORM\ERP;
 
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use App\Utility\Chinghwa\ORM\iORM;
 
 class BasicDataDef implements iORM 
 {

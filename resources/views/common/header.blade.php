@@ -39,16 +39,15 @@
             <li><a href="{{ route('conce_index') }}">康思特銷退貨<span class="badge">每月初</span></a></li>
             <li><a href="{{ route('spb_index') }}">每月進銷退<span class="badge">每月初</span></a></li>
             <li><a href="{{ route('promograde_index') }}">促銷模組成效<span class="badge">每月初</span></a></li>
-            {{-- <li class="divider"></li>
-            <li><a href="{{ route('ctilayout_index') }}">偉特CTI Layout</a></li> --}}
           </ul> 
         </li>
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="compare">資料檢視或比對 <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="compare">
             <li><a href="{{ route('compare_honeybaby') }}">寵兒名單比對</a></li>            
-            <li><a href="{{ route('compare_financial_strike_balance_index')}}">財務沖帳比對</a></li>
-            <li><a href="{{ url('flap/ccs_order_index/salerecord') }}">客經業績總表</a></li>   
+            <!-- <li><a href="{{ route('compare_financial_strike_balance_index')}}">財務沖帳比對</a></li> -->
+           <!--  <li><a href="{{ url('flap/ccs_order_index/salerecord') }}">客經業績總表</a></li>  -->
+            <li><a href="{{ url('report/ctilayout') }}">偉特CTI Layout</a></li>               
             <li><a href="{{ url('flap/ccs_order_index/promote_shipment') }}">促銷出貨撈取</a></li>                   
           </ul> 
         </li>
