@@ -32,7 +32,7 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
             $table->timestamps();
         });
 
-        Schema::create('pos_member_import_task_content', function (Blueprint $table) {
+        Schema::create('pos_member_import_content', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('pos_member_import_task_id')->unsigned()->index();
             $table
@@ -90,7 +90,7 @@ class CreatePosMemberImportTaskANDPosMemberTaskDetail extends Migration
      */
     public function down()
     {
-        Schema::drop('pos_member_import_task_content');
+        Schema::drop('pos_member_import_content');
         Schema::drop('pos_member_import_task');
     }
 }

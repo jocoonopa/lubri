@@ -2,6 +2,7 @@
 
 namespace App\Utility\Chinghwa\Flap\ORM;
 
+use App\Import\Flap\POS_Member\Import;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class POS_Member implements iORM
@@ -26,12 +27,12 @@ class POS_Member implements iORM
         return Processor::table('Customer_lubri')            
             ->where('cust_cname', '=', array_get($options, 'name', NULL))
             ->where('member_id', 'NOT LIKE', 'CT%')
-            ->where($this->getOr($options))
-            ->orderBy('SerNo', 'DESC')
+            ->where(self::getOr($options))
+            ->orderBy('member_id', 'DESC')
         ;
     }
 
-    protected function getOr(array $options)
+    protected static function getOr(array $options)
     {
         return function ($q) use ($options) {
             $q->orWhere(function($q) use ($options) {

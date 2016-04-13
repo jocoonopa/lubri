@@ -57,7 +57,7 @@ function getLiStyleListGroupItemString(columnName, colVal)
 function submitTaskCreateForm()
 {
     $blockUI(); 
-    initMsg = '(請勿關閉視窗) 檔案上傳中，請稍後...';
+    initMsg = '(請勿關閉視窗) 檔案匯入中，請稍後...';
 
     $('form#import-task').submit();
 
@@ -147,7 +147,10 @@ $('.import-task-push').click(function () {
             if (true === result) {
                 $blockUI();
                 window.location.href = $this.attr('href'); 
-                ImportTask_loadPushProgress_init();            
+
+                var taskId = $this.data('task-id');
+                
+                ImportTask_loadPushProgress_init(taskId);            
             } else {
                 this.modal('hide');
             }
@@ -180,11 +183,11 @@ $('.import-task-pull').click(function () {
     return false;
 });
 
-function ImportTask_loadPushProgress_init() {
-    initMsg =  '(請勿關閉視窗) 推送中，請稍後...';
+function ImportTask_loadPushProgress_init(taskId) {
+    initMsg =  '推送中，請稍後...';
     $('.blockMsg').text(initMsg);
             
-    return ImportTask_loadPushProgress(4000, $('.import-task-push').first().data('task-id'));
+    return ImportTask_loadPushProgress(4000, taskId);
 }
 
 function ImportTask_loadPushProgress(timedistance, taskId) {
@@ -196,7 +199,7 @@ function ImportTask_loadPushProgress(timedistance, taskId) {
                 $('.blockMsg').text(initMsg);
                 nextTimeDis = 5000;
             } else {
-                $('.blockMsg').text('(請勿關閉視窗) 已推送' + importedCount + '筆');
+                $('.blockMsg').text('已推送' + importedCount + '筆');
                 nextTimeDis = 1500;
             }
         })
@@ -206,7 +209,7 @@ function ImportTask_loadPushProgress(timedistance, taskId) {
 }
 
 function ImportTask_loadPullProgress_init() {
-    initMsg =  '(請勿關閉視窗) 更新中，請稍後...';
+    initMsg =  '更新中，請稍後...';
     $('.blockMsg').text(initMsg);
             
     return ImportTask_loadPullProgress(4000, $('.import-task-pull').first().data('task-id'));
@@ -221,7 +224,7 @@ function ImportTask_loadPullProgress(timedistance, taskId) {
                 $('.blockMsg').text(initMsg);
                 nextTimeDis = 5000;
             } else {
-                $('.blockMsg').text('(請勿關閉視窗) 已更新' + importedCount + '筆');
+                $('.blockMsg').text('已更新' + importedCount + '筆');
                 nextTimeDis = 2500;
             }
         })
@@ -252,6 +255,10 @@ function ImportTask_loadImportProgress(timedistance) {
 
         return ImportTask_loadImportProgress(nextTimeDis);
     }, timedistance);
+}
+
+function trick_load_progress(id) {
+    $blockUI(); ImportTask_loadPushProgress_init(id);
 }
 
 $('.check-component').find('.check-all').click(function () {

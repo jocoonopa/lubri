@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Flap\POS_Member;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Flap\POS_Member\ImportContentRequest;
+use App\Model\Flap\PosMemberImportContent;
 use App\Model\Flap\PosMemberImportTask;
-use App\Model\Flap\PosMemberImportTaskContent;
 use App\Model\State;
-use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportModelFactory;
+use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Lyin\ModelFactory;
 use Illuminate\Http\Request;
 use Input;
 use Session;
@@ -17,6 +17,7 @@ class ImportContentController extends Controller
     public function __construct()
     {
         $this->middleware('import.content', ['only' => ['destroy', 'update', 'edit']]);
+        $this->middleware('import.kind');
     }
 
     /**
@@ -41,23 +42,23 @@ class ImportContentController extends Controller
         return view('flap.posmember.import_content.create', [
             'title' => "{$task->name}項目新增",
             'task' => $task, 
-            'content' => with(new PosMemberImportTaskContent)
+            'content' => with(new PosMemberImportContent)
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Model\Flap\PosMemberImportTaskContent
+     * @param  \App\Model\Flap\PosMemberImportContent
      * @return \Illuminate\Http\Response
      */
     public function store(ImportContentRequest $request, PosMemberImportTask $task)
     {
-        $content = PosMemberImportTaskContent::create($request->all());
+        $content = PosMemberImportContent::create($request->all());
         
         $this->_prevSetContentState($content, $request);
 
-        $content->setIsExist(ImportModelFactory::getExistOrNotByContent($content));
+        $content->setIsExist(ModelFactory::getExistOrNotByContent($content));
         $content->flags = $content->getFlags();
         $content->memo = $content->genMemo();
         $content->save();
@@ -71,10 +72,10 @@ class ImportContentController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Model\Flap\PosMemberImportTask
-     * @param  \App\Model\Flap\PosMemberImportTaskContent
+     * @param  \App\Model\Flap\PosMemberImportContent
      * @return \Illuminate\Http\Response
      */
-    public function show(PosMemberImportTask $task, PosMemberImportTaskContent $content)
+    public function show(PosMemberImportTask $task, PosMemberImportContent $content)
     {
         return view('flap.posmember.import_content.edit', [
             'title' => "{$content->name}編輯",
@@ -87,10 +88,10 @@ class ImportContentController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \App\Model\Flap\PosMemberImportTask
-     * @param  \App\Model\Flap\PosMemberImportTaskContent
+     * @param  \App\Model\Flap\PosMemberImportContent
      * @return \Illuminate\Http\Response
      */
-    public function edit(PosMemberImportTask $task, PosMemberImportTaskContent $content)
+    public function edit(PosMemberImportTask $task, PosMemberImportContent $content)
     {
         return view('flap.posmember.import_content.edit', [
             'title' => "{$content->name}編輯",
@@ -104,10 +105,10 @@ class ImportContentController extends Controller
      *
      * @param  \Illuminate\Http\ImportContentRequest
      * @param  \App\Model\Flap\PosMemberImportTask
-     * @param  \App\Model\Flap\PosMemberImportTaskContent
+     * @param  \App\Model\Flap\PosMemberImportContent
      * @return \Illuminate\Http\Response
      */
-    public function update(ImportContentRequest $request, PosMemberImportTask $task, PosMemberImportTaskContent $content)
+    public function update(ImportContentRequest $request, PosMemberImportTask $task, PosMemberImportContent $content)
     {
         $this->_prevSetContentState($content, $request);
         
@@ -130,10 +131,10 @@ class ImportContentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Model\Flap\PosMemberImportTaskContent
+     * @param  \App\Model\Flap\PosMemberImportContent
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PosMemberImportTask $task, PosMemberImportTaskContent $content)
+    public function destroy(PosMemberImportTask $task, PosMemberImportContent $content)
     {
         Session::flash('success', "項目 <b>{$content->name}</b> 已經移除!");
 

@@ -3,8 +3,8 @@
 namespace App\Http\Validator;
 
 use App\Model\State;
+use App\Utility\Chinghwa\Flap\POS_Member\Filter;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\Import;
-use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportFilter;
 
 class ImportContentValidator
 {
@@ -12,7 +12,7 @@ class ImportContentValidator
 
     public function __construct()
     {
-        $this->filter = new ImportFilter;
+        $this->filter = new Filter;
     }
 
     public function zipcode($attribute, $value, $parameters, $validator) 

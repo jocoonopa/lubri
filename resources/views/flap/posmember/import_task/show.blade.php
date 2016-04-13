@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-md-12">
             <h1>{{ $task->name}} 
-            <small><a href="/flap/pos_member/import_task" class="btn btn-raised btn-sm btn-default">
+            <small><a href="/flap/pos_member/import_task?kind_id={{ $task->kind()->first()->id }} " class="btn btn-raised btn-sm btn-default">
                 <i class="glyphicon glyphicon-list"></i>
                 任務列表
             </a>

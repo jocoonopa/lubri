@@ -45,12 +45,12 @@
     <body>
         <div class="container">
             <div class="content">
-                <div class="title">{!! $title or '您沒有足夠權限' !!}，五秒後系統將跳轉首頁</div>
+                <div class="title">{!! $title or '您沒有足夠權限' !!}，五秒後系統將回到前一頁</div>
             </div>
         </div>
         <script>
         setTimeout(function () {
-            window.location.href = '/';
+           window.history.back();
         }, 5000);
         </script>
     </body>

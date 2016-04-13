@@ -3,7 +3,7 @@
 namespace App\Utility\Chinghwa\Export;
 
 use App\Model\Flap\PosMemberImportTask;
-use App\Model\Flap\PosMemberImportTaskContent;
+use App\Model\Flap\PosMemberImportContent;
 use App\Utility\Chinghwa\Export\ImportTaskExport;
 use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\Import;
@@ -74,7 +74,7 @@ class ImportTaskExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         return $columns;
     }
 
-    protected function getRowDataFromContent(PosMemberImportTaskContent $content)
+    protected function getRowDataFromContent(PosMemberImportContent $content)
     {
         $row = [
             $content->serno, 

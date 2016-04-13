@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Model\Flap\PosMemberImportTask;
-use App\Model\Flap\PosMemberImportTaskContent;
-use App\Observer\PosMemberImportTaskContentObserver;
+use App\Model\Flap\PosMemberImportContent;
+use App\Observer\PosMemberImportContentObserver;
 use App\Observer\PosMemberImportTaskObserver;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -65,7 +65,7 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot($events);
 
-        PosMemberImportTaskContent::observe(new PosMemberImportTaskContentObserver);
+        PosMemberImportContent::observe(new PosMemberImportContentObserver);
         PosMemberImportTask::observe(new PosMemberImportTaskObserver);
     }
 }

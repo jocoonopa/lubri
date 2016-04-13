@@ -2,25 +2,31 @@
 
 namespace App\Utility\Chinghwa\Flap\POS_Member\Import;
 
-use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use App\Import\Flap\POS_Member\Import AS _Import;
 use App\Model\Flap\PosMemberImportTask;
-use App\Model\Flap\PosMemberImportTaskContent;
+use App\Model\Flap\PosMemberImportContent;
+use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
+use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Lyin\Adapter;
+use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Lyin\ModelFactory;
 use Auth;
+use DB;
 use Input;
 
 class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler 
 {
+    protected $import;
+
     /**
      * Data adapter
      * 
-     * @var App\Utility\Chinghwa\Flap\POS_Member\Import\ImportColumnAdapter
+     * @var App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Act\Adapter
      */
     protected $adapter;
 
     /**
-     * Factory of App\Model\Flap\PosMemberImportTaskContent
+     * Factory of App\Model\Flap\PosMemberImportContent
      * 
-     * @var App\Utility\Chinghwa\Flap\POS_Member\Import\ImportModelFactory
+     * @var App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Act\ModelFactory
      */
     protected $modelFactory;
 
@@ -51,21 +57,31 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
      */
     public function handle($import)
     {
-        $this->adapter = new ImportColumnAdapter(
-            [
-                Import::OPTIONS_DISTINCTION => PosMemberImportTask::getBDSerNo(Input::get(Import::OPTIONS_DISTINCTION)),
-                Import::OPTIONS_CATEGORY    => PosMemberImportTask::getCategorySerNo(Input::get(Import::OPTIONS_CATEGORY)),
-                Import::OPTIONS_INSERTFLAG  => Input::get(Import::OPTIONS_INSERTFLAG),
-                Import::OPTIONS_UPDATEFLAG  => Input::get(Import::OPTIONS_UPDATEFLAG)
-            ]
-        );
+        $this->import = $import;
 
-        $this->modelFactory = new ImportModelFactory;
-        $this->task = $this->createNewTask();
+        //DB::transaction(function() {
+            $this->task = $this->createNewTask();
 
-        $import->skip(1)->calculate(false)->chunk(Import::CHUNK_SIZE, $this->getChunkCallback());
+            $kind = $this->task->kind()->first();            
+            $factoryClass = $kind->factory;
+            $adapterClass = $kind->adapter;
 
-        return $this->_removeDuplicate()->_saveTaskStatic();
+            $this->modelFactory = new $factoryClass;
+            
+            $this->adapter = new $adapterClass([
+                _Import::OPTIONS_TASK        => $this->task,
+                _Import::OPTIONS_DISTINCTION => PosMemberImportTask::getBDSerNo(Input::get(_Import::OPTIONS_DISTINCTION)),
+                _Import::OPTIONS_CATEGORY    => PosMemberImportTask::getCategorySerNo(Input::get(_Import::OPTIONS_CATEGORY)),
+                _Import::OPTIONS_INSERTFLAG  => Input::get(_Import::OPTIONS_INSERTFLAG),
+                _Import::OPTIONS_UPDATEFLAG  => Input::get(_Import::OPTIONS_UPDATEFLAG)
+            ]);            
+            
+            $this->import->skip(1)->calculate(false)->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback());
+
+            $this->_removeDuplicate()->_saveTaskStatic();
+        //});        
+
+        return $this->task;
     }
 
     protected function createNewTask()
@@ -74,10 +90,12 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
 
         $task->user_id      = Auth::user()->id;
         $task->name         = Input::get('name');
-        $task->distinction  = Input::get(Import::OPTIONS_DISTINCTION);
-        $task->category     = Input::get(Import::OPTIONS_CATEGORY);
-        $task->update_flags = $this->adapter->getUpdateFlagPairs();
-        $task->insert_flags = $this->adapter->getInsertFlagPairs();
+        $task->distinction  = Input::get(_Import::OPTIONS_DISTINCTION);
+        $task->category     = Input::get(_Import::OPTIONS_CATEGORY);
+        $task->update_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_INSERTFLAG));
+        $task->insert_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_UPDATEFLAG));
+        $task->kind_id      = Input::get('kind_id');
+        $task->memo         = Input::get(_Import::OPTIONS_OBMEMO);
         $task->save();
 
         return $task;
@@ -115,7 +133,8 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
 
     private function _saveNewContentModel()
     {
-        $this->modelFactory->create($this->adapter, $this->task)->save();
+        $content = $this->modelFactory->create($this->adapter);
+        $content->save();
 
         return $this;
     }

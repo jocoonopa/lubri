@@ -17,6 +17,12 @@ class Import extends \App\Import\Flap\POS_Member\Import
     const I_EMAIL     = 8;
     const I_HOSPITAL  = 9;
 
+    const A_NAME    = 0;
+    const A_EMAIL   = 1;
+    const A_TEL     = 2;
+    const A_ADDRESS = 3;
+    const A_SEX     = 4;
+
     const TARGET_FLAGS = '["11", "12", "37", "38"]';
 
     protected $fileName;

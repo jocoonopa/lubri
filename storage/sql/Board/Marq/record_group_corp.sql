@@ -22,7 +22,5 @@ LEFT JOIN FAS_Corp WITH(NOLOCK) ON FAS_Corp.SerNo = HRS_Employee.CorpSerNo
 WHERE $whereCondition
 GROUP BY 
     FAS_Corp.Name
-ORDER BY 
-    本月累計 DESC,
-    今日業績 DESC,
+ORDER BY
     部門

@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
         'honeybaby'     => \App\Http\Middleware\HoneyBabyMiddleware::class,
         'import.task'   => \App\Http\Middleware\ImportTaskMiddleware::class,
         'import.push'   => \App\Http\Middleware\ImportPushMiddleware::class,
-        'import.content'=> \App\Http\Middleware\ImportContentMiddleware::class
+        'import.content'=> \App\Http\Middleware\ImportContentMiddleware::class,
+        'import.kind'   => \App\Http\Middleware\ImportKindMiddleware::class
     ];
 }

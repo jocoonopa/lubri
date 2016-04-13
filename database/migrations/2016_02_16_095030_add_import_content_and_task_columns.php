@@ -15,6 +15,7 @@ class AddImportContentAndTaskColumns extends Migration
         Schema::table('posmember_import_task', function (Blueprint $table) {
             $table->json('update_flags')->nullable();
             $table->json('insert_flags')->nullable();
+            $table->string('memo')->nullable();
         });
 
         Schema::table('posmember_import_task_content', function (Blueprint $table) {

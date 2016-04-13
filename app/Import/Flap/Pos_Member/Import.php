@@ -6,7 +6,8 @@ abstract class Import extends \Maatwebsite\Excel\Files\ExcelFile
 {
     const FEMALE_SEX_CODE = 0;
 
-    const FEMALE_SEX_TEXT = 'female';
+    const FEMALE_SEX_TEXT   = 'female';
+    const MALE_SEX_TEXT     = 'male';
 
     const DEFAULT_FLAG_VALUE = 'N';
 
@@ -63,9 +64,10 @@ abstract class Import extends \Maatwebsite\Excel\Files\ExcelFile
     const EIGHT_LENGTH_TELCODE = self::TELCODE_HEAD . '2';
     const EXT_PREFIX           = '-';
     const STORAGE_PATH         = __DIR__ . '/../../../../../../storage/json/';
+    const OPTIONS_TASK         = 'task';
     const OPTIONS_DISTINCTION  = 'distinction';
     const OPTIONS_CATEGORY     = 'category';
     const OPTIONS_INSERTFLAG   = 'insertFlagString';
     const OPTIONS_UPDATEFLAG   = 'updateFlagString';
-    const OPTIONS_MEMO         = 'memo';    
+    const OPTIONS_OBMEMO       = 'memo';    
 } 

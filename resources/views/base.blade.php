@@ -11,6 +11,7 @@
 	{{-- <link rel="stylesheet" href="https://bootswatch.com/united/bootstrap.min.css"> --}}
 	<!-- Bootstrap -->
   	<link rel="stylesheet" href="{!! URL::asset('/assets/css/bootstrap.min.css') !!}" >
+  	<link rel="stylesheet" href="{!! URL::asset('/assets/css/bootstrap.override.css') !!}">
   	<link rel="stylesheet" href="{!! URL::asset('/assets/css/bootstrap.extend.css') !!}">
 	<link rel="stylesheet" href="{!! URL::asset('/assets/css/timeline.css') !!}">
 	<link rel="shortcut icon" type="image/png" href="{!! URL::asset('/assets/image/favicon.png') !!}"/>

@@ -38,7 +38,7 @@ class State extends Model
      */
     public function content()
     {
-        return $this->hasMany('App\Model\Flap\PosMemberImportTaskContent');
+        return $this->hasMany('App\Model\Flap\PosMemberImportContent');
     }
 
     public function isBelong($address)

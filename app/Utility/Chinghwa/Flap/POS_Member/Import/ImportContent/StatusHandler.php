@@ -2,20 +2,20 @@
 
 namespace App\Utility\Chinghwa\Flap\POS_Member\Import\ImportContent;
 
-use App\Model\Flap\PosMemberImportTaskContent;
+use App\Model\Flap\PosMemberImportContent;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportContent\StatusRequest;
 
 /**
  * 狀態定義:
  *
- * 000000001: 有地址
- * 000000010: 有對應到的區
- * 000000100: 有手機
- * 000001000: 有住家電話
- * 000010000: 有生日
- * 000100000: 有成功推送
- * 001000000: 有預產期
- * 010000000: 有醫院
+ * 000000001: 有地址1
+ * 000000010: 有對應到的區2
+ * 000000100: 有手機4
+ * 000001000: 有住家電話8
+ * 000010000: 有生日16
+ * 000100000: 有成功推送32
+ * 001000000: 有預產期64
+ * 010000000: 有醫院128
  * 100000000: 有Email
  */
 class StatusHandler
@@ -168,7 +168,7 @@ class StatusHandler
      *
      * @return self
      */
-    protected function setContent(PosMemberImportTaskContent $content)
+    protected function setContent(PosMemberImportContent $content)
     {
         $this->content = $content;
 

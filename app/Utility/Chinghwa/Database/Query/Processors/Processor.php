@@ -135,4 +135,9 @@ class Processor
     {
         return file_get_contents(__DIR__ . '/../../../../../../storage/sql/' . $filePath);
     }
+
+    public static function getWrapVal($val)
+    {
+        return empty($val) ? 'NULL' : "'{$val}'";
+    }
 }

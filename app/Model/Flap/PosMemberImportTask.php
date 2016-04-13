@@ -36,10 +36,12 @@ class PosMemberImportTask extends Model
         'insert_flags',
         'update_flags',
         'distinction',
-        'category'
+        'category',
+        'memo',
+        'kind_id'
     ];
 
-     protected $casts = [
+    protected $casts = [
         'error' => 'array',
         'insert_flags' => 'array',
         'update_flags' => 'array'
@@ -57,23 +59,33 @@ class PosMemberImportTask extends Model
     }
 
     /**
-     * A user can have many articles
+     * A task can have many contents
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function content()
     {
-        return $this->hasMany('App\Model\Flap\PosMemberImportTaskContent');
+        return $this->hasMany('App\Model\Flap\PosMemberImportContent');
     }
 
     /**
-     * An article is owned by a user
+     * An task is owned by a user
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
         return $this->belongsTo('App\Model\User');
+    }
+
+    /**
+     * An task is owned by a task_kind
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function kind()
+    {
+        return $this->belongsTo('App\Model\Flap\PosMemberImportKind');
     }
 
     public static function getBDSerNo($str)
@@ -98,19 +110,12 @@ class PosMemberImportTask extends Model
 
     public static function getInflateFlag($flagString)
     {        
-        $container = [];
+        return Flater::getInflateFlag($flagString);
+    }
 
-        foreach (explode(' ', $flagString) as $pairString) {
-            if (false === strpos($pairString, ':')) {
-                continue;
-            }
-
-            $pair = explode(':', $pairString);
-
-            $container[Flater::genKey(array_get($pair, 0))] = array_get($pair, 1);
-        }
-
-        return $container;
+    private function _getFlagString($flags)
+    {
+        return Flater::getFlagString($flags);
     }
 
     public function updateStat()
@@ -129,20 +134,10 @@ class PosMemberImportTask extends Model
     public function getUpdateFlagString()
     {
         return $this->_getFlagString($this->update_flags);
-    }
+    }    
 
-    private function _getFlagString($flags)
+    public function scopeFindByKind($query, $kind_id)
     {
-        if (NULL === $flags) {
-            return '';
-        }
-
-        $str = '';
-
-        foreach ($flags as $key => $flag) {
-            $str .= Flater::resoveKey($key) . ':' . $flag . ' ';
-        }
-
-        return substr($str, 0, -1);
+        $query->where('kind_id', '=', $kind_id);
     }
 }
