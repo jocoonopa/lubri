@@ -49,12 +49,12 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
                 $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
 
-                $sheet->appendRow($this->getFilterMember($member, $hd));
+                $sheet->appendRow($this->getFilterMember($member, $hd, $calllist));
             }     
         };
     }
 
-    protected function getFilterMember($member, $hd)
+    protected function getFilterMember($member, $hd, $calllist)
     {
         $this->replaceWithNewCityState($member);
 
@@ -71,9 +71,9 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             array_get($member, '區'),
             array_get($member, '郵遞區號'),
             array_get($member, '地址'),
-            array_get($member, 'e-mail'), 
-            array_get($member, '開發人代號'), 
-            array_get($member, '開發人姓名'), 
+            array_get($member, 'e-mail'),             
+            array_get($calllist, 'AgentCD'), //  array_get($member, '開發人代號'),             
+            array_get($calllist, 'AgentName'), // array_get($member, '開發人姓名'), 
             array_get($member, '會員類別代號'), 
             array_get($member, '會員類別名稱'), 
             array_get($member, '區別代號'),
@@ -151,22 +151,38 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     protected function getHospitalAndPeriod($memos)
     {
-        $res = ['hospital' => '', 'period' => ''];
+        $arr = $this->convertMemoStrToArr($memos);
+
+        return 4 > count($arr) ? $this->getResproto() : $this->fillRes($arr);
+    }
+
+    protected function convertMemoStrToArr(array $memos)
+    {
         $arr = [];
 
         foreach ($memos as $memo) {
             $arr = explode(';', $memo);
 
             if (3 >= count($arr)) {
+                $arr = [];
+
                 continue;
             }
 
             break;
         }
 
-        if (4 > count($arr)) {            
-            return $res;
-        }
+        return $arr;
+    }
+
+    protected function getResproto()
+    {
+        return ['hospital' => '', 'period' => ''];
+    }
+
+    protected function fillRes(array $arr)
+    {
+        $res = $this->getResproto();
 
         foreach ($arr as $val) {
             if (false !== strpos($val, '生產醫院')) {
