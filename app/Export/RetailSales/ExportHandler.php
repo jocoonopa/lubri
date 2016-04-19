@@ -12,6 +12,9 @@ use Input;
 
 class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 {
+    protected $colorIndex = [];
+    protected $dateObj;
+
     public function handle($export)
     {
         return $this->process($export);
@@ -209,10 +212,11 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     }
 
     /**
-     * [groupAreaData description]
+     * groupAreaData description
+     * 
      * @param  array  $container 
      * @param  array  $arr       區的店代碼陣列
-     * @return $area
+     * @return array  $area
      */
     protected function groupAreaData(array $container, array $arr)
     {
@@ -273,6 +277,8 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         $rows = [];
             
         foreach ($container as $store) {
+            $row = [];
+
             $row[ExcelHelper::rmi('A')] = array_key_exists($store['STOCK_NO'], $config)
                 ? $store['STOCK_NO'] . $config[$store['STOCK_NO']]['name']
                 : $store['STOCK_NO'];
