@@ -30,6 +30,10 @@ class Store extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $casts = [
+        'is_active' => 'boolean'
+    ];
+
     /**
      * A user can have many articles
      * 
@@ -37,11 +41,16 @@ class Store extends Model
      */
     public function goals()
     {
-        return $this->hasMany('App\Model\Pos\StoreGoal');
+        return $this->hasMany('App\Model\Pos\Store\StoreGoal');
     }
 
     public function storeArea()
     {
         return $this->belongsTo('App\Model\Pos\Store\StoreArea');
+    }
+
+    public function scopeFindActive($q)
+    {
+        return $q->where('is_active', '=', true);
     }
 }

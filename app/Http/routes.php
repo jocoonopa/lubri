@@ -17,4 +17,5 @@ require_once 'routes/fix.php';
 require_once 'routes/compare.php';
 require_once 'routes/auth.php';
 require_once 'routes/board.php';
+require_once 'routes/pos.php';
 require_once 'routes/test.php';

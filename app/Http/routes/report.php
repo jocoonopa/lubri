@@ -15,6 +15,7 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
     Route::group(['prefix' => 'retail_sales'], function () {
         Route::get('/', ['uses' => 'RetailSalesController@index', 'as' => 'retail_sales_index']);
         Route::get('/process', ['uses' => 'RetailSalesController@process', 'as' => 'retail_sales_process', 'middleware' => 'report']);
+        Route::get('/download', ['uses' => 'RetailSalesController@download', 'middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '供應部NEW']]);
     });
 
     // 每周發送的員購銷貨單

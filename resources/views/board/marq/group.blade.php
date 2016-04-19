@@ -36,7 +36,7 @@
                 <td class="font-weight-bold">{{ str_replace(['戶','經','營','部'], '', $row['部門']) }}</td>
                 <td>{{ number_format($row['今日業績']) }}</td>                
                 <td>{{ number_format($row['本月累計']) }}</td>
-                <td>@if(0 < $row['目標']){{ floor(($row['本月累計']/$row['目標']) * 1000)/10 }}%@else{{''}}@endif</td>                      
+                <td>@if(0 < $row['目標']){{ sprintf("%01.1f", floor(($row['本月累計']/$row['目標'])*1000)/10) }}%@else{{''}}@endif</td>                      
             </tr>
             @endforeach
         </tbody>

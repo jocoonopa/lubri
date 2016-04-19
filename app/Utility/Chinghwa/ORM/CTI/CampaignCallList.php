@@ -14,11 +14,25 @@ class CampaignCallList implements iORM
 
     public static function find(array $options)
     {
-        return Processor::getArrayResult(Processor::table('CampaignCallList')
-            ->select('*')
-            ->where('AgentCD', '=', array_get($options, 'agentCD'))
-            ->where('CampaignCD', '=', array_get($options, 'campaignCD')),
-            'Cti'
-        );
+        $q = Processor::table('CampaignCallList WITH(NOLOCK)')
+            ->select('distinct SourceCD, max(UID)')            
+            ->groupBy('SourceCD')
+        ;
+
+        $agentCD = array_get($options, 'agentCD');
+
+        is_array($agentCD) ? $q->whereIn('AgentCD', $agentCD) : $q->where('AgentCD', '=', $agentCD);
+
+        if (NULL !== array_get($options, 'campaignCD')) {
+            $q->where('CampaignCD', '=', array_get($options, 'campaignCD'));
+        }
+
+        if (NULL !== array_get($options, 'assignDate')) {
+            $q->where('AssignDate', '>=', array_get($options, 'assignDate') . ' 00:00:00');
+        }
+
+        //dd(Processor::toSql($q));
+        
+        return Processor::getArrayResult($q,'Cti');
     }
 }

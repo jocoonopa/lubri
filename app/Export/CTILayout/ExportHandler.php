@@ -20,23 +20,55 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
      */
     public function handle($export)
     {
-        $emp = HRS_Employee::first(['code' => Input::get('code', '20160203')]);
+        return 1 === Input::get('is_split') ? $this->split($export)->export() : $this->single($export)->export();
+    }
+
+    protected function single($export)
+    {
+        $codes = explode(',', Input::get('code'));
+        $agentCDs = [];
+        
+        foreach ($codes as $code) {
+            $emp = HRS_Employee::first(['code' => $code]);
+
+            $agentCDs[] = array_get($emp, 'Code');
+        }        
+        
+        $callLists = CampaignCallList::find([
+            'agentCD' => $agentCDs, 
+            //'campaignCD' => trim(array_get($campaign, 'CampaignCD')),
+            'assignDate' => Input::get('assign_date')
+        ]);
+
+        $sheetName = 'export';
+
+        $export->sheet($sheetName, $this->getSheetCallback($callLists));           
+
+        return $export;
+    }
+
+    protected function split($export)
+    {
+        $emp = HRS_Employee::first(['code' => Input::get('code')]);
         
         $campaigns = $this->getCampaigns();
 
         foreach ($campaigns as $campaign) {
-            $callLists = $this->getCampaignCallList(array_get($emp, 'Code'), trim(array_get($campaign, 'CampaignCD')));
-
-            $sheetName = trim(array_get($campaign, 'DefSchemaCD')) . '##' . trim(array_get($campaign, 'CampaignCD'));
+            $callLists = CampaignCallList::find([
+                'agentCD' => trim(array_get($emp, 'Code')), 
+                'campaignCD' => trim(array_get($campaign, 'CampaignCD'))
+            ]);
 
             if (!$callLists) {
                 continue;
             }
 
+            $sheetName = trim(array_get($campaign, 'DefSchemaCD')) . '##' . trim(array_get($campaign, 'CampaignCD'));            
+
             $export->sheet($sheetName, $this->getSheetCallback($callLists));           
         }
 
-        $export->export();
+        return $export;
     }
 
     protected function getSheetCallback($callLists)
@@ -72,8 +104,8 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             array_get($member, '郵遞區號'),
             array_get($member, '地址'),
             array_get($member, 'e-mail'),             
-            array_get($calllist, 'AgentCD'), //  array_get($member, '開發人代號'),             
-            array_get($calllist, 'AgentName'), // array_get($member, '開發人姓名'), 
+            array_get($calllist, 'AgentCD'),    //array_get($member, '開發人代號'),    
+            array_get($calllist, 'AgentName'), //array_get($member, '開發人姓名'),
             array_get($member, '會員類別代號'), 
             array_get($member, '會員類別名稱'), 
             array_get($member, '區別代號'),
@@ -105,9 +137,9 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         }
     }
 
-    public function getCampaignCallList($agentCD, $campaignCD)
+    public function getCampaignCallList($agentCD, $campaignCD = NULL, $assignDate = NULL)
     {
-        return CampaignCallList::find(['agentCD' => $agentCD, 'campaignCD' => $campaignCD]);
+        return CampaignCallList::find(['agentCD' => $agentCD, 'campaignCD' => $campaignCD, 'assignDate' => $assignDate]);
     }
 
     public function getCTILayoutData($memberCode)

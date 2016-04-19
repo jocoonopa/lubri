@@ -9,8 +9,6 @@ class Export extends \Maatwebsite\Excel\Files\NewExcelFile
 {
     public function getFilename()
     {
-        $emp = HRS_Employee::first(['code' => Input::get('code', '20160203')]);
-
-        return 'CTILayout_' . array_get($emp, 'Code') . '_' . array_get($emp, 'Name');
+        return 'CTILayout';
     }
 }

@@ -40,8 +40,8 @@ class CreateStoreTable extends Migration
             $table->string('origin_goal')->nullable();
             $table->string('pl_origin_goal');
             $table->string('pl_new_goal')->nullable();
-            $table->date('start_at');
-            $table->date('stop_at');
+            $table->integer('year')->unsigned();
+            $table->integer('month')->unsigned();
             $table->timestamps();
 
             $table
