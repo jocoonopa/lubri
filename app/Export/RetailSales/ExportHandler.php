@@ -246,132 +246,170 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         return $export->sheet('總表', $this->sheetCallBack($export, $container));
     }
 
+    protected function setBasicStyle($sheet)
+    {
+        $sheet
+            ->setAutoSize(true)
+            ->setFontFamily('細明體')
+            ->setFontSize(10)
+            ->row(1, []) // 留白
+            ->row(2, []) // 留白
+            ->row(3, $this->getSpecificNav())
+            ->row(4, $this->getHeadRow())
+            ->setColumnFormat(array(
+                'E' => '0%',
+                'G' => '0%',
+                'L' => '0%',
+                'N' => '0%',
+                'R' => '0%'
+            ))
+        ;
+
+        return $this;
+    }
+
+    protected function appendRowsByContainer($sheet, $container, $config)
+    {
+        $rows = [];
+            
+        foreach ($container as $store) {
+            $row[ExcelHelper::rmi('A')] = array_key_exists($store['STOCK_NO'], $config)
+                ? $store['STOCK_NO'] . $config[$store['STOCK_NO']]['name']
+                : $store['STOCK_NO'];
+            $row[ExcelHelper::rmi('B')] = @number_format($store['goal']);
+            $row[ExcelHelper::rmi('C')] = @number_format($store['goal']);
+            $row[ExcelHelper::rmi('D')] = @number_format($store['累計實績']);
+            $row[ExcelHelper::rmi('E')] = (0 != $store['goal']) ? $store['累計實績']/$store['goal'] : 0;
+            $row[ExcelHelper::rmi('F')] = @number_format($store['去年同期']);
+            $row[ExcelHelper::rmi('G')] = (0 < $store['去年同期'])? $store['累計實績']/$store['去年同期'] - 1 : 0;
+            $row[ExcelHelper::rmi('H')] = @number_format($store['累計實績'] - $store['goal']);
+            $row[ExcelHelper::rmi('I')] = @number_format($store['去年當月']);
+            $row[ExcelHelper::rmi('J')] = @number_format($store['累計實績'] - $store['去年當月']);
+            $row[ExcelHelper::rmi('K')] = @number_format($store['PL業績']);
+            $row[ExcelHelper::rmi('L')] = (0 < $store['累計實績'])? $store['PL業績']/$store['累計實績'] : 0;
+            $row[ExcelHelper::rmi('M')] = @number_format($store['去年同期PL']);
+            $row[ExcelHelper::rmi('N')] = (0 < $store['去年同期PL'])? $store['PL業績']/$store['去年同期PL'] - 1 : 0;
+            $row[ExcelHelper::rmi('O')] = @number_format($store['pl']);
+            $row[ExcelHelper::rmi('P')] = @number_format($store['pl'] - $store['PL業績']);
+            $row[ExcelHelper::rmi('Q')] = @number_format($store['毛利']);
+            $row[ExcelHelper::rmi('R')] = (0 < $store['累計實績'])? $store['毛利']/$store['累計實績'] : 0;
+            $row[ExcelHelper::rmi('S')] = @number_format($store['PL毛利']);
+            $row[ExcelHelper::rmi('T')] = $store['本月來客'];
+            $row[ExcelHelper::rmi('U')] = $store['去年同期來客'];
+            $row[ExcelHelper::rmi('V')] = $store['本月來客'] - $store['去年同期來客'];
+            $row[ExcelHelper::rmi('W')] = (0 < $store['本月來客'])? @floor($store['累計實績'] / $store['本月來客']) : 0;
+            $row[ExcelHelper::rmi('X')] = (0 < $store['去年同期來客'])? floor($store['去年同期']/$store['去年同期來客']) : 0;
+            $row[ExcelHelper::rmi('Y')] = (0 < $store['本月來客'])? @floor(($store['累計實績'] / $store['本月來客']) - ($store['去年同期']/$store['去年同期來客'])) : 0;
+
+            $rows[] = $row;
+        }
+
+        $sheet->rows($rows);
+
+        return $this;
+    }
+
+    protected function drawBorder($sheet, $container)
+    {
+        $startRow = $this->getStartRowAndLastRow($container)[0];
+        $lastRow = $this->getStartRowAndLastRow($container)[1];
+
+        $sheet->cells('A1:Y1', function ($cells) {
+            $cells->setBorder('none');
+        });
+
+        foreach ($this->colorIndex as $index) {
+            $sheet->cells('B' . ($index + 3) . ':Y' . ($index + 3), function ($cells) use ($sheet) {
+                $cells->setFontSize(11);
+            });
+
+            $sheet->cells('A' . ($index + 3) . ':A' . ($index + 3), function ($cells) {
+                $cells->setFontWeight('bold');
+            });
+        }
+
+        // 畫框線 Begin 
+        // 左側Title邊框細線設定
+        $leftArr = ['B', 'I', 'K', 'Q', 'T'];
+
+        foreach ($leftArr as $index) {
+            $sheet->cells($index . '3:' . $index . '4', function ($cells) {
+                $cells->setBorder('none', 'none', 'none', 'thin');
+            });
+        }
+
+        // 整個 sheet 最外部的粗框
+        $sheet->cells('A3:Y' . $lastRow, function ($cells) {
+            $cells->setBorder('thick', 'thick', 'thick', 'thick');
+        });
+
+        // 北區->總計資料細框
+        $sheet->setBorder('B5:Y' . $lastRow, 'thin');
+
+        // 北區粗框
+        $sheet->cells('A' . ($startRow + 2) . ':Y' . ($startRow + $this->colorIndex[1]), function ($cells) {
+            $cells->setBorder('thick', 'thick', 'none', 'thick');
+        });
+
+        // 南區粗框
+        $sheet->cells('A' . ($startRow + $this->colorIndex[1]) .':Y' . ($lastRow - 1), function ($cells) {
+            $cells->setBorder('thick', 'thick', 'none', 'thick');
+        });
+
+        // 總計粗框
+        $sheet->cells('A' . $lastRow .':Y' . $lastRow, function ($cells) {
+            $cells->setBorder('thick', 'thin', 'thick', 'thick');
+        });
+        // 最後一格補粗框
+        $sheet->cells('Y' . $lastRow .':Y' . $lastRow, function ($cells) {
+            $cells->setBorder('thick', 'thick', 'thick', 'thin');
+        });
+
+        // 畫框線 End
+         
+        return $this;
+    }
+
+    protected function drawFontColor($sheet, $container)
+    {
+        $startRow = $this->getStartRowAndLastRow($container)[0];
+        $lastRow = $this->getStartRowAndLastRow($container)[1];
+
+        // 上色
+        $colorColArr = [
+            '#105C92' => ['O', 'B', 'C'],
+            '#DA1E00' => ['P', 'H', 'J'],
+            '#356F17' => ['Y', 'V']
+        ];
+
+        foreach ($colorColArr as $colorCode => $col) {
+            foreach ($col as $index) {
+                $sheet->cells($index . $startRow .':' . $index . $lastRow, function ($cells) use ($colorCode) {
+                    $cells->setFontColor($colorCode);
+                });
+            }
+        }
+
+        return $this;
+    }
+
+    protected function getStartRowAndLastRow($container)
+    {
+        $startRow = 3;
+        $lastRow = ($startRow + count($container) + 1);
+
+        return [$startRow, $lastRow];
+    }
+
     protected function sheetCallBack($export, &$container)
     {
         return function($sheet) use ($export, &$container) {
-            $sheet
-                ->setAutoSize(true)
-                ->setFontFamily('細明體')
-                ->setFontSize(10)
-                ->row(1, []) // 留白
-                ->row(2, []) // 留白
-                ->row(3, $this->getSpecificNav())
-                ->row(4, $this->getHeadRow())
-                ->setColumnFormat(array(
-                    'E' => '0%',
-                    'G' => '0%',
-                    'L' => '0%',
-                    'N' => '0%',
-                    'R' => '0%'
-                ))
-            ; 
-
-            $sheet->cells('A1:Y1', function ($cells) {
-                $cells->setBorder('none');
-            });
-
-            $rows = array();
-            $config = $this->getConfig($export);
-
-            foreach ($container as $store) {
-                $row[ExcelHelper::rmi('A')] = array_key_exists($store['STOCK_NO'], $config)
-                    ? $store['STOCK_NO'] . $config[$store['STOCK_NO']]['name']
-                    : $store['STOCK_NO'];
-                $row[ExcelHelper::rmi('B')] = @number_format($store['goal']);
-                $row[ExcelHelper::rmi('C')] = @number_format($store['goal']);
-                $row[ExcelHelper::rmi('D')] = @number_format($store['累計實績']);
-                $row[ExcelHelper::rmi('E')] = (0 != $store['goal']) ? $store['累計實績']/$store['goal'] : 0;
-                $row[ExcelHelper::rmi('F')] = @number_format($store['去年同期']);
-                $row[ExcelHelper::rmi('G')] = (0 < $store['去年同期'])? $store['累計實績']/$store['去年同期'] - 1 : 0;
-                $row[ExcelHelper::rmi('H')] = @number_format($store['累計實績'] - $store['goal']);
-                $row[ExcelHelper::rmi('I')] = @number_format($store['去年當月']);
-                $row[ExcelHelper::rmi('J')] = @number_format($store['累計實績'] - $store['去年當月']);
-                $row[ExcelHelper::rmi('K')] = @number_format($store['PL業績']);
-                $row[ExcelHelper::rmi('L')] = (0 < $store['累計實績'])? $store['PL業績']/$store['累計實績'] : 0;
-                $row[ExcelHelper::rmi('M')] = @number_format($store['去年同期PL']);
-                $row[ExcelHelper::rmi('N')] = (0 < $store['去年同期PL'])? $store['PL業績']/$store['去年同期PL'] - 1 : 0;
-                $row[ExcelHelper::rmi('O')] = @number_format($store['pl']);
-                $row[ExcelHelper::rmi('P')] = @number_format($store['pl'] - $store['PL業績']);
-                $row[ExcelHelper::rmi('Q')] = @number_format($store['毛利']);
-                $row[ExcelHelper::rmi('R')] = (0 < $store['累計實績'])? $store['毛利']/$store['累計實績'] : 0;
-                $row[ExcelHelper::rmi('S')] = @number_format($store['PL毛利']);
-                $row[ExcelHelper::rmi('T')] = $store['本月來客'];
-                $row[ExcelHelper::rmi('U')] = $store['去年同期來客'];
-                $row[ExcelHelper::rmi('V')] = $store['本月來客'] - $store['去年同期來客'];
-                $row[ExcelHelper::rmi('W')] = (0 < $store['本月來客'])? @floor($store['累計實績'] / $store['本月來客']) : 0;
-                $row[ExcelHelper::rmi('X')] = (0 < $store['去年同期來客'])? floor($store['去年同期']/$store['去年同期來客']) : 0;
-                $row[ExcelHelper::rmi('Y')] = (0 < $store['本月來客'])? @floor(($store['累計實績'] / $store['本月來客']) - ($store['去年同期']/$store['去年同期來客'])) : 0;
-
-                $rows[] = $row;
-            }
-
-            $sheet->rows($rows);
-
-            foreach ($this->colorIndex as $index) {
-                $sheet->cells('B' . ($index + 3) . ':Y' . ($index + 3), function ($cells) use ($sheet) {
-                    $cells->setFontSize(11);
-                });
-
-                $sheet->cells('A' . ($index + 3) . ':A' . ($index + 3), function ($cells) {
-                    $cells->setFontWeight('bold');
-                });
-            }
-
-            $startRow = 3;
-            $lastRow = ($startRow + count($container) + 1);
-
-            // 畫框線 Begin 
-            // 左側Title邊框細線設定
-            $leftArr = ['B', 'I', 'K', 'Q', 'T'];
-
-            foreach ($leftArr as $index) {
-                $sheet->cells($index . '3:' . $index . '4', function ($cells) {
-                    $cells->setBorder('none', 'none', 'none', 'thin');
-                });
-            }
-
-            // 整個 sheet 最外部的粗框
-            $sheet->cells('A3:Y' . $lastRow, function ($cells) {
-                $cells->setBorder('thick', 'thick', 'thick', 'thick');
-            });
-
-            // 北區->總計資料細框
-            $sheet->setBorder('B5:Y' . $lastRow, 'thin');
-
-            // 北區粗框
-            $sheet->cells('A' . ($startRow + 2) . ':Y' . ($startRow + $this->colorIndex[1]), function ($cells) {
-                $cells->setBorder('thick', 'thick', 'none', 'thick');
-            });
-
-            // 南區粗框
-            $sheet->cells('A' . ($startRow + $this->colorIndex[1]) .':Y' . ($lastRow - 1), function ($cells) {
-                $cells->setBorder('thick', 'thick', 'none', 'thick');
-            });
-
-            // 總計粗框
-            $sheet->cells('A' . $lastRow .':Y' . $lastRow, function ($cells) {
-                $cells->setBorder('thick', 'thin', 'thick', 'thick');
-            });
-            // 最後一格補粗框
-            $sheet->cells('Y' . $lastRow .':Y' . $lastRow, function ($cells) {
-                $cells->setBorder('thick', 'thick', 'thick', 'thin');
-            });
-            // 畫框線 End
-            
-            // 上色
-            $colorColArr = [
-                '#105C92' => ['O', 'B', 'C'],
-                '#DA1E00' => ['P', 'H', 'J'],
-                '#356F17' => ['Y', 'V']
-            ];
-
-            foreach ($colorColArr as $colorCode => $col) {
-                foreach ($col as $index) {
-                    $sheet->cells($index . $startRow .':' . $index . $lastRow, function ($cells) use ($colorCode) {
-                        $cells->setFontColor($colorCode);
-                    });
-                }
-            }
+            $this
+                ->setBasicStyle($sheet)
+                ->appendRowsByContainer($sheet, $container, $this->getConfig($export))
+                ->drawBorder($sheet, $container)
+                ->drawFontColor($sheet, $container)
+            ;                        
         };
     }
 
