@@ -20,7 +20,7 @@
     </style>
 </head>
 <body id="body" style="background: #000000;">
-<div class="container" style="width: 100%; font-size: 70px; color: yellow; font-family: 微軟正黑體;">
+<div class="container" style="width: 100%; font-size: {{Input::get('size', 70)}}px; color: yellow; font-family: 微軟正黑體;">
     <table class="table" style="text-align: right;">
         <thead>
             <tr>
