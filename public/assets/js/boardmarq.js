@@ -42,16 +42,16 @@ BoardMarq.prototype.refreshPage = function () {
 };
 
 // 因為我的電腦22:02 固定會噴500錯誤...
-// 所以特別寫下這個 2在晚上八點以後到隔天早上七點不執行資料判斷
+// 所以 21:55 ~ 22:10 停止刷新頁面的動作
 // 之後若是換電腦運行可取消這段判斷程式碼
 // 
 // - Jocoonopa@20160412
 BoardMarq.prototype.atOnboardTime = function () {
-    var date = new Date();
-    var curHour = date.getHours();
-    var curMinutes = date.getMinutes();
+    var date       = new Date();
+    var curHour    = parseInt(date.getHours());
+    var curMinutes = parseInt(date.getMinutes());
     
-    if ((21 === parseInt(curHour) && 59 <= curMinutes) || (22 === parseInt(curHour) && 6 >= curMinutes)) {
+    if ((21 === curHour && 55 <= curMinutes) || (22 === curHour && 10 >= curMinutes)) {
         return false;
     }
 
@@ -59,7 +59,18 @@ BoardMarq.prototype.atOnboardTime = function () {
 };
 
 BoardMarq.prototype.setLocationHref = function () {
-    return window.location.href= '/board/marq?offset=' + this.offset + '&timeout=' + this.timeout;
+    var self = this;
+
+    return $.get('/is_alive').done(function (res) {
+        if (1 === parseInt(res)) {
+            return window.location.href= '/board/marq?offset=' + self.offset + '&timeout=' + self.timeout;
+        }
+
+        return self.run();
+    }).fail(function (e) {
+        console.log(e);
+        return self.run();
+    });    
 };
 
 BoardMarq.prototype.run = function (specTimeoutSeconds) {
@@ -68,3 +79,22 @@ BoardMarq.prototype.run = function (specTimeoutSeconds) {
 
     return setTimeout(function () { return self.refreshPage();}, specTimeoutSeconds * 1000);
 };
+
+$(window, 'body').resize(function () {
+    var fontSize = 30;
+    var windowWidth = $(window).width();
+
+    if (windowWidth >= 1700) {
+        fontSize = 70;
+    } else if (windowWidth >= 1200) {
+        fontSize = 50;
+    } else if (windowWidth >= 800){
+        fontSize = 30;
+    } else if (windowWidth >= 400){
+        fontSize = 18;
+    } else {
+        fontSize = 12;
+    }
+
+    return $('.container').css('font-size', fontSize);
+}).resize();

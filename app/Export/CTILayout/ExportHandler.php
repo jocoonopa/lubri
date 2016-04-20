@@ -35,8 +35,8 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         }        
         
         $callLists = CampaignCallList::find([
-            'agentCD' => $agentCDs, 
-            //'campaignCD' => trim(array_get($campaign, 'CampaignCD')),
+            'agentCD'    => $agentCDs, 
+            'campaignCD' => trim(array_get($campaign, 'CampaignCD')),
             'assignDate' => Input::get('assign_date')
         ]);
 
@@ -135,11 +135,6 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             $member['縣市'] = $state->city()->first()->name;
             $member['區'] = $state->name;
         }
-    }
-
-    public function getCampaignCallList($agentCD, $campaignCD = NULL, $assignDate = NULL)
-    {
-        return CampaignCallList::find(['agentCD' => $agentCD, 'campaignCD' => $campaignCD, 'assignDate' => $assignDate]);
     }
 
     public function getCTILayoutData($memberCode)

@@ -11,7 +11,7 @@ class CTILayoutController extends Controller
 	public function index(Export $export)
     {
         if (NULL === Input::get('code')) {
-            return 'Please give a code param with url, like <a href="http://localhost.lubri_dev/report/ctilayout?code=20160202">http://localhost.lubri_dev/report/ctilayout?code=20160202</a>' ;
+            return 'Please give a code param with url, like <a href="http://localhost.lubri_dev/report/ctilayout?code=20160202">http://localhost.lubri_dev/report/ctilayout?code=20160202&date=20160415</a>' ;
         }
 
         set_time_limit(0);
