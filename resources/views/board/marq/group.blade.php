@@ -48,7 +48,7 @@
 <script src="{!! URL::asset('/assets/js/helper.js') !!}"></script>
 <script src="{!! URL::asset('/assets/js/boardmarq.js') !!}"></script>
 <script>
-(new BoardMarq({"timeout": {{ Input::get('timeout', 10) }} })).run();
+(new BoardMarq({"timeout": {{ Input::get('timeout', 10) }}, "size": parseInt({{Input::get('size', 0)}})})).run();
 </script>
 </body>
 </html>

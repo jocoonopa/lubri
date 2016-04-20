@@ -10,7 +10,7 @@ use App\Utility\Chinghwa\ORM\CTI\CampaignCallList;
 use App\Utility\Chinghwa\ORM\ERP\HRS_Employee;
 use Input;
 
-class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
+class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
     /**
      * ExcelHelper::rmi('Z') === 25
@@ -24,20 +24,11 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     }
 
     protected function single($export)
-    {
-        $codes = explode(',', Input::get('code'));
-        $agentCDs = [];
-        
-        foreach ($codes as $code) {
-            $emp = HRS_Employee::first(['code' => $code]);
-
-            $agentCDs[] = array_get($emp, 'Code');
-        }        
-        
-        $callLists = CampaignCallList::find([
-            'agentCD'    => $agentCDs, 
-            'campaignCD' => trim(array_get($campaign, 'CampaignCD')),
-            'assignDate' => Input::get('assign_date')
+    {        
+        $callLists = CampaignCallList::fetchCtiRes([
+            'agentCD'    => !empty(Input::get('code')) ? explode(',', trim(Input::get('code'))) : [], 
+            'campaignCD' => !empty(Input::get('campaign_cd')) ? explode(',', trim(Input::get('campaign_cd'))) : [],
+            'assignDate' => trim(Input::get('assign_date'))
         ]);
 
         $sheetName = 'export';
@@ -49,14 +40,15 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     protected function split($export)
     {
-        $emp = HRS_Employee::first(['code' => Input::get('code')]);
+        $codes = explode(',', trim(Input::get('code')));  
+        $campaignCDs = explode(',', trim(Input::get('campaign_cd')));   
         
         $campaigns = $this->getCampaigns();
 
         foreach ($campaigns as $campaign) {
             $callLists = CampaignCallList::find([
-                'agentCD' => trim(array_get($emp, 'Code')), 
-                'campaignCD' => trim(array_get($campaign, 'CampaignCD'))
+                'agentCD' => $codes, 
+                'campaignCD' => array_get($campaign, 'CampaignCD')
             ]);
 
             if (!$callLists) {

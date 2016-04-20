@@ -2,18 +2,41 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\Export\CTILayout\Export;
+use App\Export\CTILayout\FlapExport;
+use App\Export\CTILayout\CtiExport;
 use App\Http\Controllers\Controller;
 use Input;
 
 class CTILayoutController extends Controller
 {
-	public function index(Export $export)
+	public function index()
     {
-        if (NULL === Input::get('code')) {
-            return 'Please give a code param with url, like <a href="http://localhost.lubri_dev/report/ctilayout?code=20160202">http://localhost.lubri_dev/report/ctilayout?code=20160202&date=20160415</a>' ;
-        }
+        $code       = Input::get('code', '20160202');
+        $assignDate = Input::get('assign_date', '20160415');
+        $campaignCD = Input::get('campaign_cd', 'OB_6713');
+        
+        $qStr       = "code={$code}&assign_date={$assignDate}&campaign_cd={$campaignCD}";
+        $flapUrl    = "http://localhost.lubri_dev/report/ctilayout/flap?{$qStr}";
+        $ctiUrl     = "http://localhost.lubri_dev/report/ctilayout/cti?{$qStr}";
 
+        return view('report.ctilayout.index', [
+            'flapUrl'    => $flapUrl, 
+            'ctiUrl'     => $ctiUrl,
+            'code'       => $code,
+            'assignDate' => $assignDate,
+            'campaignCD' => $campaignCD
+        ]);
+    }
+
+    public function flap(FlapExport $export)
+    {
+        set_time_limit(0);
+        
+        $export->handleExport();
+    }
+
+    public function cti(CtiExport $export)
+    {
         set_time_limit(0);
         
         $export->handleExport();

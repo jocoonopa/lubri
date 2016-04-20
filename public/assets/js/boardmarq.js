@@ -16,17 +16,19 @@ BoardMarq.prototype.init = function (options) {
     var defaultOptions = {
         "timeout": 10,
         "offset": 0,
-        "src": "/assets/image/favicon.png?v=" + Math.random()
+        "src": "/assets/image/favicon.png?v=" + Math.random(),
+        "size": 0
     };
     var options = $.extend({}, defaultOptions, options);
 
-    return this.setAttributes(options);
+    return this.setAttributes(options).resize();
 };
 
 BoardMarq.prototype.setAttributes = function (options) {
     this.timeout = (this.minTimeout > options.timeout) ? this.minTimeout : options.timeout;
     this.offset = options.offset;
     this.src = options.src;
+    this.size = options.size;
 
     return this;
 };
@@ -63,7 +65,7 @@ BoardMarq.prototype.setLocationHref = function () {
 
     return $.get('/is_alive').done(function (res) {
         if (1 === parseInt(res)) {
-            return window.location.href= '/board/marq?offset=' + self.offset + '&timeout=' + self.timeout;
+            return window.location.href= '/board/marq?offset=' + self.offset + '&timeout=' + self.timeout + '&size=' + self.size;
         }
 
         return self.run();
@@ -80,21 +82,25 @@ BoardMarq.prototype.run = function (specTimeoutSeconds) {
     return setTimeout(function () { return self.refreshPage();}, specTimeoutSeconds * 1000);
 };
 
-$(window, 'body').resize(function () {
-    var fontSize = 30;
-    var windowWidth = $(window).width();
+BoardMarq.prototype.resize = function () {
+    if (0 === this.size) {
+        $(window, 'body').resize(function () {
+            var fontSize = 30;
+            var windowWidth = $(window).width();
 
-    if (windowWidth >= 1700) {
-        fontSize = 70;
-    } else if (windowWidth >= 1200) {
-        fontSize = 50;
-    } else if (windowWidth >= 800){
-        fontSize = 30;
-    } else if (windowWidth >= 400){
-        fontSize = 18;
-    } else {
-        fontSize = 12;
-    }
+            if (windowWidth >= 1700) {
+                fontSize = 70;
+            } else if (windowWidth >= 1200) {
+                fontSize = 50;
+            } else if (windowWidth >= 800){
+                fontSize = 30;
+            } else if (windowWidth >= 450){
+                fontSize = 18;
+            } else {
+                fontSize = 12;
+            }
 
-    return $('.container').css('font-size', fontSize);
-}).resize();
+            return $('.container').css('font-size', fontSize);
+        }).resize();
+    }    
+}

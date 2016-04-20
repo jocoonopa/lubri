@@ -76,7 +76,10 @@ class MarqController extends Controller
 
             $this->extendMarqTarget($data);
 
-            return ($offset < $count) ? view('board.marq.index', ['data' => $data, 'offset' => ($offset + 5)]) : Redirect::to('board/marq/group?timeout=' . Input::get('timeout', 10));
+            return ($offset < $count) 
+                ? view('board.marq.index', ['data' => $data, 'offset' => ($offset + 5), 'size' => Input::get('size', 0)]) 
+                : Redirect::to('board/marq/group?timeout=' . Input::get('timeout', 10) . '&size=' . Input::get('size', 0))
+            ;
         } catch (\Exception $e) {
             return view('board.marq.index', ['data' => [], 'offset' => Input::get('offset', 0)]);
         }

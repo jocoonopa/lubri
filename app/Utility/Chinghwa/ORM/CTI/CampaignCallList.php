@@ -19,20 +19,77 @@ class CampaignCallList implements iORM
             ->groupBy('SourceCD')
         ;
 
+        return Processor::getArrayResult(self::condition($q, $options),'Cti');
+    }
+
+    public static function fetchCtiRes(array $options)
+    {
+        $q = Processor::table('CampaignCallList WITH(NOLOCK)')
+            ->select('DataSchema.SchemaCD,
+DataSchema.SchemaName,
+CampaignCallList.CampaignCD,CampaignCallList.CampaignName,
+Campaign.StartDate,
+Campaign.EndDate,
+CampaignCallList.AgentCD,
+CampaignCallList.AgentName,
+CampaignCallList.CustName,CampaignCallList.ID,
+CampaignCallList.Tel1,CampaignCallList.Tel2,
+CampaignCallList.Tel3,CampaignCallList.TelHistory,
+CampaignCallList.StatusCD,
+CampaignCallList.StatusName,
+CampaignCallList.ResultCD,
+CampaignCallList.ResultName,
+CampaignCallList.SourceCD,
+CampaignCallList.FollowupDate,
+CampaignCallList.DialingTime,
+CampaignCallList.Payday,
+CampaignCallList.AssignDate,
+CampaignCallList.Data01,
+CampaignCallList.Data02,
+CampaignCallList.Data03,
+CampaignCallList.Data04,
+CampaignCallList.Data05,
+CampaignCallList.Data06,
+CampaignCallList.Data08,
+CampaignCallList.Data09,
+CampaignCallList.Data11,
+CampaignCallList.Data12,
+CampaignCallList.Data15,
+CampaignCallList.Data16,
+CampaignCallList.Data17,
+CampaignCallList.Data20,
+CampaignCallList.Note,
+CampaignCallList.modified_by,
+CampaignCallList.modified_at,
+CampaignCallList.created_by,
+CampaignCallList.created_at')     
+            ->leftJoin('Campaign', 'CampaignCallList.CampaignCD', '=', 'Campaign.CampaignCD')
+            ->leftJoin('DataSchema', 'Campaign.DefSchemaCD', '=', 'DataSchema.SchemaCD')       
+        ;
+
+        return Processor::getArrayResult(self::condition($q, $options),'Cti');
+    }
+
+    protected static function condition($q, array $options)
+    {
         $agentCD = array_get($options, 'agentCD');
+        $campaignCD = array_get($options, 'campaignCD');
 
-        is_array($agentCD) ? $q->whereIn('AgentCD', $agentCD) : $q->where('AgentCD', '=', $agentCD);
+        if (!empty($agentCD)) {
+            dd($agentCD);
+            is_array($agentCD) ? $q->whereIn('CampaignCallList.AgentCD', $agentCD) : $q->where('AgentCD', '=', $agentCD);
+        }     
 
-        if (NULL !== array_get($options, 'campaignCD')) {
-            $q->where('CampaignCD', '=', array_get($options, 'campaignCD'));
+        if (!empty($campaignCD)) {
+            is_array($campaignCD) ? $q->whereIn('CampaignCallList.CampaignCD', $campaignCD) : $q->where('CampaignCD', '=', $campaignCD);
         }
 
-        if (NULL !== array_get($options, 'assignDate')) {
-            $q->where('AssignDate', '>=', array_get($options, 'assignDate') . ' 00:00:00');
+        if (!empty(array_get($options, 'assignDate'))) {
+            $q->where('CampaignCallList.AssignDate', '>=', array_get($options, 'assignDate') . ' 00:00:00');
         }
 
-        //dd(Processor::toSql($q));
-        
-        return Processor::getArrayResult($q,'Cti');
+        //pr(Processor::toSql($q));dd();
+
+        return $q;
     }
 }

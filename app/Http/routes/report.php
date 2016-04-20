@@ -52,6 +52,8 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
     // CTILayoutController
     Route::group(['prefix' => 'ctilayout','middleware' => ['auth', 'auth.corp'], 'corp' => '資訊部'], function () {
         Route::get('/', ['uses' => 'CTILayoutController@index']);
+        Route::get('/flap', ['uses' => 'CTILayoutController@flap']);
+        Route::get('/cti', ['uses' => 'CTILayoutController@cti']);
     });
 
     // 每日業績
