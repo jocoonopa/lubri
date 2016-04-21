@@ -4,11 +4,6 @@ Route::get('/', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);
 
-Route::get('/is_alive', function () {
-    //throw new \Exception('xxx');
-    return 1;
-});
-
 Route::get('/home', ['as' => 'index', function () {
     return view('base', ['title' => 'LubriNutrimate']);
 }]);

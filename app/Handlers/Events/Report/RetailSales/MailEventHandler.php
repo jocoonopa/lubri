@@ -48,6 +48,7 @@ class MailEventHandler
         return function ($m) {
             $m
                 ->to($this->to)
+                ->cc($this->cc)
                 ->subject($this->getSubject())
                 ->attach($this->getEvent()->getExport()->getRealpath())
             ;

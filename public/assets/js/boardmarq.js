@@ -43,7 +43,7 @@ BoardMarq.prototype.refreshPage = function () {
     }, self.src);  
 };
 
-// 因為我的電腦22:02 固定會噴500錯誤...
+// 因為我的電腦0600 固定會噴500錯誤...
 // 所以 21:55 ~ 22:10 停止刷新頁面的動作
 // 之後若是換電腦運行可取消這段判斷程式碼
 // 
@@ -53,7 +53,7 @@ BoardMarq.prototype.atOnboardTime = function () {
     var curHour    = parseInt(date.getHours());
     var curMinutes = parseInt(date.getMinutes());
     
-    if ((21 === curHour && 55 <= curMinutes) || (22 === curHour && 10 >= curMinutes)) {
+    if (21 <= curHour && 8 >= curHour) {
         return false;
     }
 
@@ -61,18 +61,7 @@ BoardMarq.prototype.atOnboardTime = function () {
 };
 
 BoardMarq.prototype.setLocationHref = function () {
-    var self = this;
-
-    return $.get('/is_alive').done(function (res) {
-        if (1 === parseInt(res)) {
-            return window.location.href= '/board/marq?offset=' + self.offset + '&timeout=' + self.timeout + '&size=' + self.size;
-        }
-
-        return self.run();
-    }).fail(function (e) {
-        console.log(e);
-        return self.run();
-    });    
+    return window.location.href= '/board/marq?offset=' + this.offset + '&timeout=' + this.timeout + '&size=' + this.size;
 };
 
 BoardMarq.prototype.run = function (specTimeoutSeconds) {

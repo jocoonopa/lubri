@@ -53,7 +53,7 @@
 <script src="{!! URL::asset('/assets/js/boardmarq.js') !!}"></script>
 <script>
 
-(new BoardMarq({"timeout": {{ Input::get('timeout', 10) }}, "offset": {{ $offset }} , "size": parseInt({{Input::get('size', 0)}})})).run();
+(new BoardMarq({"timeout": {{ Input::get('timeout', 10) }}, "offset": {{ $offset }}, "size": parseInt({{Input::get('size', 0)}})})).run();
 </script>
 </body>
 </html>
