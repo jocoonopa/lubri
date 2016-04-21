@@ -6,7 +6,7 @@
 
 @section('css')
 <link rel="stylesheet" href="/assets/bootstrap-material-datetimepicker-gh-pages/css/bootstrap-material-datetimepicker.css">
-<link href="/assets/select2-4.0.2/dist/css/select2.min.css" rel="stylesheet" />
+<link href="/assets/select2-4.0.2/dist/css/select2.css" rel="stylesheet" />
 @stop
 
 @section('body')
@@ -16,7 +16,7 @@
         <h1>偉特匯入資料下載</h1>
       
         <form action="" method="GET">
-            <div class="form-group label-floating">
+            <div class="form-group">
                 <label class="control-label" for="code">專員代號</label>
                 <input class="form-control" name="code" id="code" type="text" value="{{Input::get('code', '')}}">
 
@@ -32,14 +32,14 @@
                 </select>
             </div>
 
-            <div class="form-group label-floating">
+            <div class="form-group">
                 <label class="control-label" for="assign_date">指派日期(>=)</label>
                 <input class="form-control" name="assign_date" id="assign_date" type="text" value="{{Input::get('assign_date', '')}}">
 
                 <p class="help-block hint">{{'>= 選擇的指派日期'}}</p>
             </div>
 
-            <div class="form-group label-floating">
+            <div class="form-group">
                 <label class="control-label" for="campaign_cd">活動代號</label>
                 <input class="form-control" name="campaign_cd" id="campaign_cd" type="text" value="{{Input::get('campaign_cd', '')}}">
 

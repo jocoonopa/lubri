@@ -79,7 +79,7 @@ abstract class Pusher implements IPusher
         
         list($content->serno, $content->code, $content->sernoi) = array_values($row);        
         
-        Processor::execErp($this->getExecInsertSpQuery($content));
+        Processor::execErp($this->getInsertProcQuery($content));
 
         return $this->memberflagUpdateProc($content)->contentUpdateProc($content);
     }
