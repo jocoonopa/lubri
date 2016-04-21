@@ -76,7 +76,6 @@ CampaignCallList.created_at')
         $campaignCD = array_get($options, 'campaignCD');
 
         if (!empty($agentCD)) {
-            dd($agentCD);
             is_array($agentCD) ? $q->whereIn('CampaignCallList.AgentCD', $agentCD) : $q->where('AgentCD', '=', $agentCD);
         }     
 

@@ -71,11 +71,26 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             foreach ($callLists as $calllist) {                   
                 $member = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);
 
+                if (NULL === $member || !$this->inCorps($member)) {
+                    continue;
+                }                
+
                 $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
 
                 $sheet->appendRow($this->getFilterMember($member, $hd, $calllist));
             }     
         };
+    }
+
+    protected function inCorps(array $member)
+    {
+        $corps = Input::get('corps');
+
+        if (empty($corps)) {
+            return true;
+        }
+
+        return in_array(array_get($member, '部門'), $corps);
     }
 
     protected function getFilterMember($member, $hd, $calllist)

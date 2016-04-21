@@ -27,7 +27,8 @@ SELECT TOP 2000
     POS_Member.MemberSerNoI 輔翼會員參數,
     CCS_CRMFields.newCustomerMemo 備註,    
     CCS_CRMFields.CRMNote1 備註1,
-    CCS_CRMFields.CRMNote2 備註2
+    CCS_CRMFields.CRMNote2 備註2,
+    FAS_Corp.Code 部門
 FROM 
     POS_Member WITH(NOLOCK)
     LEFT JOIN CCS_MemberFlags WITH(NOLOCK)          ON POS_Member.SerNo = CCS_MemberFlags.MemberSerNoStr 
@@ -35,5 +36,6 @@ FROM
     LEFT JOIN CCS_CRMFields WITH(NOLOCK)            ON POS_Member.SerNo = CCS_CRMFields.MemberSerNoStr
     LEFT JOIN BasicDataDef  WITH(NOLOCK)            ON CCS_CRMFields.Distinction = BasicDataDef.BDSerNo
     LEFT JOIN HRS_Employee WITH(NOLOCK)             ON HRS_Employee.SerNo = CCS_CRMFields.ExploitSerNoStr
+    LEFT JOIN FAS_Corp                              ON FAS_Corp.SerNo = HRS_Employee.CorpSerNo 
     LEFT JOIN CCS_ShoppingBehaviorBrief WITH(NOLOCK) ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
 WHERE POS_Member.Code='$memberCode'

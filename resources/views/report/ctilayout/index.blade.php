@@ -6,6 +6,7 @@
 
 @section('css')
 <link rel="stylesheet" href="/assets/bootstrap-material-datetimepicker-gh-pages/css/bootstrap-material-datetimepicker.css">
+<link href="/assets/select2-4.0.2/dist/css/select2.min.css" rel="stylesheet" />
 @stop
 
 @section('body')
@@ -20,6 +21,15 @@
                 <input class="form-control" name="code" id="code" type="text" value="{{Input::get('code', '')}}">
 
                 <p class="help-block hint">{{'20160202,20160203'}}</p>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="corp">部門</label>
+                <select class="form-control" name="corps[]" multiple="multiple">
+                    <option value="CH53000">客戶經營一部</option>
+                    <option value="CH54000">客戶經營二部</option>
+                    <option value="CH54100">客戶經營三部</option>
+                </select>
             </div>
 
             <div class="form-group label-floating">
@@ -50,6 +60,7 @@
 @section('js')
 <script src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
 <script src="/assets/bootstrap-material-datetimepicker-gh-pages/js/bootstrap-material-datetimepicker.js"></script>
+<script src="/assets/select2-4.0.2/dist/js/select2.min.js"></script>
 <script>
 
 moment.locale('zh-tw');
@@ -71,6 +82,8 @@ $('.submit').click(function () {
 
     return false;
 });
+
+$('select').select2();
 
 </script>
 @stop

@@ -22,10 +22,19 @@ class HRS_Employee implements iORM
         return Processor::getArrayResult(self::getBase($options)->select('*'));
     }
 
+    public static function findByCorps(array $corps)
+    {
+        return Processor::getArrayResult(Processor::table('HRS_Employee')
+            ->leftJoin('FAS_Corp', 'HRS_Employee.CorpSerNo', '=', 'FAS_Corp.SerNo')
+            ->whereIn('FAS_Corp.Code', $corps)
+        );
+    }
+
     protected static function getBase(array $options)
     {
         return Processor::table('HRS_Employee')            
             ->where('Code', '=', array_get($options, 'code'))
+            ->where('IsWork', '=', 1)
         ;
     }
 }

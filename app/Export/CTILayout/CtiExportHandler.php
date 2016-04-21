@@ -34,10 +34,32 @@ class CtiExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         return $export;
     }
 
+    protected function inCorps(array $calllist)
+    {        
+        $corps = Input::get('corps');
+
+        if (empty($corps)) {
+            return true;
+        }
+
+        $member = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);
+
+        return in_array(array_get($member, '部門'), $corps);
+    }
+
+    public function getCTILayoutData($memberCode)
+    {
+        return Processor::getArrayResult(str_replace('$memberCode', $memberCode, Processor::getStorageSql('CTILayout.sql')));
+    }
+
     protected function getSheetCallback($callLists)
     {
         return function ($sheet) use ($callLists) {
-            foreach ($callLists as $calllist) {                   
+            foreach ($callLists as $calllist) {  
+                if (!$this->inCorps($calllist)) {
+                    continue;
+                }   
+
                 $sheet->appendRow($calllist);
             }     
         };
