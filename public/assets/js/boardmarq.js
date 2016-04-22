@@ -17,7 +17,8 @@ BoardMarq.prototype.init = function (options) {
         "timeout": 10,
         "offset": 0,
         "src": "/assets/image/favicon.png?v=" + Math.random(),
-        "size": 0
+        "size": 0,
+        "url": false
     };
     var options = $.extend({}, defaultOptions, options);
 
@@ -29,6 +30,7 @@ BoardMarq.prototype.setAttributes = function (options) {
     this.offset = options.offset;
     this.src = options.src;
     this.size = options.size;
+    this.url = options.url;
 
     return this;
 };
@@ -61,7 +63,10 @@ BoardMarq.prototype.atOnboardTime = function () {
 };
 
 BoardMarq.prototype.setLocationHref = function () {
-    return window.location.href= '/board/marq?offset=' + this.offset + '&timeout=' + this.timeout + '&size=' + this.size;
+    var url = (false === this.url) ? '/board/marq?offset=' + this.offset + '&timeout=' + this.timeout + '&size=' + this.size 
+        : '/board/marq/cti?timeout=' + this.timeout + '&size=' + this.size;
+
+    return window.location.href= url;
 };
 
 BoardMarq.prototype.run = function (specTimeoutSeconds) {

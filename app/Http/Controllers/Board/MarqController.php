@@ -85,6 +85,81 @@ class MarqController extends Controller
         }
     }
 
+    public function group()
+    {
+        $data = Processor::getArrayResult($this->getMarqGroupQuery());
+
+        $this->extendMarqGroupTarget($data);
+
+        return view('board.marq.group', ['data' => $this->extendGroupSum($data)]);
+    }
+
+    public function cti()
+    {
+        $data = Processor::getArrayResult($this->getCtiQuery(), 'Cti');
+        $data = $this->genCtiDisplayData($data);
+        
+        $prototype = ['日通數' => 0, '日分鐘' => 0, '月通數' => 0, '月時數' => 0];
+
+        $groups = ['客戶經營一部' => $prototype, '客戶經營二部' => $prototype, '客戶經營三部' => $prototype, '總計' => $prototype];
+
+        foreach ($data as $row) {
+            $groups[$row['部門']]['日通數'] += $row['日通數'];
+            $groups[$row['部門']]['日分鐘'] += $row['日分鐘'];
+            $groups[$row['部門']]['月通數'] += $row['月通數'];
+            $groups[$row['部門']]['月時數'] += $row['月時數'];
+
+            $groups['總計']['日通數'] += $row['日通數'];
+            $groups['總計']['日分鐘'] += $row['日分鐘'];
+            $groups['總計']['月通數'] += $row['月通數'];
+            $groups['總計']['月時數'] += $row['月時數'];
+        }
+        
+        return view('board.marq.cti', [
+            'data' => $data,
+            'groups' => $groups
+        ]);
+    }
+
+    protected function genCtiDisplayData(array $data)
+    {
+        $tmp = [];
+
+        foreach ($data as $key => $row) {
+            $row['部門'] = '';
+
+            $agentCD = trim(str_replace(["\n", "\r"], '', $row['AgentCD']));
+
+            foreach ($this->target as $corpName => $agents) {                
+                if (array_key_exists($agentCD, $agents)) {
+                    $row['部門'] = $corpName;
+
+                    break;
+                }              
+            }
+
+            if ('' !== $row['部門']) {
+                $tmp[] = $row;
+            }            
+        }
+
+        return $tmp;
+    }
+
+    protected function getCtiQuery()
+    {
+        $callDate = Carbon::now()->format('Ymd');
+        $endDate = Carbon::now()->format('Y-m-d H:i:s');
+        $startDate = with(new Carbon('first day of this month'))->format('Y-m-d') . ' 00:00:00';
+
+        $query = Processor::getStorageSql('Board/Marq/cti.sql');
+        return str_replace(
+            ['$callDate', '$startDate', '$endDate'], 
+            [$callDate, $startDate, $endDate], 
+            $query
+        );
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -110,7 +185,9 @@ class MarqController extends Controller
         $tmp = [];
 
         foreach ($data as $row) {
-            $row['目標'] = array_get($this->target, $row['部門'] . '.' . $row['Code'], NULL);
+            $target = array_get($this->target, $row['部門'] . '.' . $row['Code'], NULL);
+
+            $row['目標'] = $target;
 
             $tmp[] = $row;
         }
@@ -125,15 +202,6 @@ class MarqController extends Controller
         $offset = Input::get('offset', 0);
 
         return $offset = ($offset > ($count + 5)) ? 0 : $offset;
-    }
-
-    public function group()
-    {
-        $data = Processor::getArrayResult($this->getMarqGroupQuery());
-
-        $this->extendMarqGroupTarget($data);
-
-        return view('board.marq.group', ['data' => $this->extendGroupSum($data)]);
     }
 
     protected function extendMarqGroupTarget(array &$data)
