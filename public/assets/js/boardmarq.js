@@ -55,7 +55,7 @@ BoardMarq.prototype.atOnboardTime = function () {
     var curHour    = parseInt(date.getHours());
     var curMinutes = parseInt(date.getMinutes());
     
-    if (21 <= curHour && 8 >= curHour) {
+    if (21 <= curHour || 8 >= curHour) {
         return false;
     }
 

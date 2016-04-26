@@ -73,10 +73,15 @@ CampaignCallList.created_at')
     protected static function condition($q, array $options)
     {
         $agentCD = array_get($options, 'agentCD');
+        $sourceCD = array_get($options, 'sourceCD');
         $campaignCD = array_get($options, 'campaignCD');
 
         if (!empty($agentCD)) {
             is_array($agentCD) ? $q->whereIn('CampaignCallList.AgentCD', $agentCD) : $q->where('AgentCD', '=', $agentCD);
+        }
+
+        if (!empty($sourceCD)) {
+            is_array($sourceCD) ? $q->whereIn('CampaignCallList.SourceCD', $sourceCD) : $q->where('SourceCD', '=', $sourceCD);
         }     
 
         if (!empty($campaignCD)) {

@@ -17,6 +17,13 @@
       
         <form action="" method="GET">
             <div class="form-group">
+                <label class="control-label" for="source_cd">客戶代號</label>
+                <input class="form-control" name="source_cd" id="source_cd" type="text" value="{{Input::get('source_cd', '')}}">
+
+                <p class="help-block hint">{{'N032310, T88420'}}</p>
+            </div>
+
+            <div class="form-group">
                 <label class="control-label" for="code">專員代號</label>
                 <input class="form-control" name="code" id="code" type="text" value="{{Input::get('code', '')}}">
 

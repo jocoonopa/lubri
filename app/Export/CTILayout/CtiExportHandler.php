@@ -23,6 +23,7 @@ class CtiExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     {
         $callLists = CampaignCallList::fetchCtiRes([
             'agentCD'    => !empty(Input::get('code')) ? explode(',', trim(Input::get('code'))) : [], 
+            'sourceCD'   => !empty(Input::get('source_cd')) ? explode(',', trim(Input::get('source_cd'))) : [], 
             'campaignCD' => !empty(Input::get('campaign_cd')) ? explode(',', trim(Input::get('campaign_cd'))) : [],
             'assignDate' => trim(Input::get('assign_date'))
         ]);
@@ -55,6 +56,8 @@ class CtiExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function getSheetCallback($callLists)
     {
         return function ($sheet) use ($callLists) {
+            $sheet->appendRow($this->getTitle());
+
             foreach ($callLists as $calllist) {  
                 if (!$this->inCorps($calllist)) {
                     continue;
@@ -63,5 +66,10 @@ class CtiExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
                 $sheet->appendRow($calllist);
             }     
         };
+    }
+
+    protected function getTitle() 
+    {
+        return ['PLACEHOLDER'];
     }
 }

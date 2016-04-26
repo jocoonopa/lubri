@@ -27,6 +27,7 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     {        
         $callLists = CampaignCallList::fetchCtiRes([
             'agentCD'    => !empty(Input::get('code')) ? explode(',', trim(Input::get('code'))) : [], 
+            'sourceCD'   => !empty(Input::get('source_cd')) ? explode(',', trim(Input::get('source_cd'))) : [], 
             'campaignCD' => !empty(Input::get('campaign_cd')) ? explode(',', trim(Input::get('campaign_cd'))) : [],
             'assignDate' => trim(Input::get('assign_date'))
         ]);
