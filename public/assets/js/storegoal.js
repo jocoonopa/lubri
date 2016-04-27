@@ -13,10 +13,14 @@ function updateGoal(goalId, attr, val) {
 }
 
 (function () {
-    $('input').keydown(function (e) {
+    $('input').keyup(function (e) {
         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
             (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
             (e.keyCode >= 35 && e.keyCode <= 40)) {
+            if (8 === e.keyCode) {
+                $(this).val(typeWithComma($(this).val()));
+            }
+            
             return;
         }
 
@@ -25,13 +29,21 @@ function updateGoal(goalId, attr, val) {
         }
 
         hasTask = $(this).data('id');
+
+        $(this).val(typeWithComma($(this).val()));
     });
 
     $('input').blur(function () {
-        return updateGoal($(this).data('id'), $(this).attr('name'), $(this).val());
+        var str = $(this).val();
+
+        return updateGoal($(this).data('id'), $(this).attr('name'), str.split(',').join(''));
     });
 
     $('select[name="year"]').change(function () {
         window.location.href = '?year=' + $(this).val();
+    });
+
+    $('input').each(function () {
+        $(this).val(typeWithComma($(this).val()));
     });
 })();

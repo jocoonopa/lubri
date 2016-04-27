@@ -42,3 +42,9 @@ var ifServerOnline = function (ifOnline, ifOffline, checkSrc) {
 
     img.src = checkSrc;        
 };
+
+var typeWithComma = function (str) {
+    var num = str.split(',').join('');
+
+    return num.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+}
