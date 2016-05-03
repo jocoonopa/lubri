@@ -69,6 +69,18 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         return function ($sheet) use ($callLists) {
             $sheet->appendRow($this->getExportHead());
 
+            if (empty($calllists)) {
+                $member = array_get($this->getCTILayoutData(Input::get('source_cd')), 0);
+
+                if (NULL === $member || !$this->inCorps($member)) {
+                    return;
+                } 
+
+                $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
+
+                $sheet->appendRow($this->getFilterMember($member, $hd, []));
+            }
+
             foreach ($callLists as $calllist) {                   
                 $member = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);
 
@@ -112,8 +124,8 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             array_get($member, '郵遞區號'),
             array_get($member, '地址'),
             array_get($member, 'e-mail'),             
-            array_get($calllist, 'AgentCD'),    //array_get($member, '開發人代號'),    
-            array_get($calllist, 'AgentName'), //array_get($member, '開發人姓名'),
+            array_get($calllist, 'AgentCD', array_get($member, '開發人代號')),    //array_get($member, '開發人代號'),    
+            array_get($calllist, 'AgentName', array_get($member, '開發人姓名')), //array_get($member, '開發人姓名'),
             array_get($member, '會員類別代號'), 
             array_get($member, '會員類別名稱'), 
             array_get($member, '區別代號'),
