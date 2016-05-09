@@ -24,45 +24,10 @@ class CampaignCallList implements iORM
 
     public static function fetchCtiRes(array $options)
     {
+        $selectStr = 'DataSchema.SchemaCD,DataSchema.SchemaName,CampaignCallList.CampaignCD,CampaignCallList.CampaignName,Campaign.StartDate,Campaign.EndDate,CampaignCallList.AgentCD,CampaignCallList.AgentName,CampaignCallList.CustName,CampaignCallList.ID,CampaignCallList.Tel1,CampaignCallList.Tel2,CampaignCallList.Tel3,CampaignCallList.TelHistory,CampaignCallList.StatusCD,CampaignCallList.StatusName,CampaignCallList.ResultCD,CampaignCallList.ResultName,CampaignCallList.SourceCD,CampaignCallList.FollowupDate,CampaignCallList.DialingTime,CampaignCallList.Payday,CampaignCallList.AssignDate,CampaignCallList.Data01,CampaignCallList.Data02,CampaignCallList.Data03,CampaignCallList.Data04,CampaignCallList.Data05,CampaignCallList.Data06,CampaignCallList.Data08,CampaignCallList.Data09,CampaignCallList.Data11,CampaignCallList.Data12,CampaignCallList.Data15,CampaignCallList.Data16,CampaignCallList.Data17,CampaignCallList.Data20,CampaignCallList.Note,CampaignCallList.modified_by,CampaignCallList.modified_at,CampaignCallList.created_by,CampaignCallList.created_at';
+
         $q = Processor::table('CampaignCallList WITH(NOLOCK)')
-            ->select('DataSchema.SchemaCD,
-DataSchema.SchemaName,
-CampaignCallList.CampaignCD,CampaignCallList.CampaignName,
-Campaign.StartDate,
-Campaign.EndDate,
-CampaignCallList.AgentCD,
-CampaignCallList.AgentName,
-CampaignCallList.CustName,CampaignCallList.ID,
-CampaignCallList.Tel1,CampaignCallList.Tel2,
-CampaignCallList.Tel3,CampaignCallList.TelHistory,
-CampaignCallList.StatusCD,
-CampaignCallList.StatusName,
-CampaignCallList.ResultCD,
-CampaignCallList.ResultName,
-CampaignCallList.SourceCD,
-CampaignCallList.FollowupDate,
-CampaignCallList.DialingTime,
-CampaignCallList.Payday,
-CampaignCallList.AssignDate,
-CampaignCallList.Data01,
-CampaignCallList.Data02,
-CampaignCallList.Data03,
-CampaignCallList.Data04,
-CampaignCallList.Data05,
-CampaignCallList.Data06,
-CampaignCallList.Data08,
-CampaignCallList.Data09,
-CampaignCallList.Data11,
-CampaignCallList.Data12,
-CampaignCallList.Data15,
-CampaignCallList.Data16,
-CampaignCallList.Data17,
-CampaignCallList.Data20,
-CampaignCallList.Note,
-CampaignCallList.modified_by,
-CampaignCallList.modified_at,
-CampaignCallList.created_by,
-CampaignCallList.created_at')     
+            ->select($selectStr)     
             ->leftJoin('Campaign', 'CampaignCallList.CampaignCD', '=', 'Campaign.CampaignCD')
             ->leftJoin('DataSchema', 'Campaign.DefSchemaCD', '=', 'DataSchema.SchemaCD')       
         ;

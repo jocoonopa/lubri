@@ -67,9 +67,15 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function getSheetCallback($callLists)
     {
         return function ($sheet) use ($callLists) {
+            // Set multiple column formats
+            $sheet->setColumnFormat([
+                'A' => '@',
+                'N' => '@'
+            ]);
+
             $sheet->appendRow($this->getExportHead());
 
-            if (empty($calllists)) {
+            if (empty($callLists)) {
                 $member = array_get($this->getCTILayoutData(Input::get('source_cd')), 0);
 
                 if (NULL === $member || !$this->inCorps($member)) {
@@ -79,19 +85,20 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
                 $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
 
                 $sheet->appendRow($this->getFilterMember($member, $hd, []));
+            } else {
+                foreach ($callLists as $calllist) {                   
+                    $member = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);
+
+                    if (NULL === $member || !$this->inCorps($member)) {
+                        continue;
+                    }                
+
+                    $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
+
+                    $sheet->appendRow($this->getFilterMember($member, $hd, $calllist));
+                }  
             }
 
-            foreach ($callLists as $calllist) {                   
-                $member = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);
-
-                if (NULL === $member || !$this->inCorps($member)) {
-                    continue;
-                }                
-
-                $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
-
-                $sheet->appendRow($this->getFilterMember($member, $hd, $calllist));
-            }     
         };
     }
 
@@ -138,7 +145,8 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             array_get($member, '累積紅利點數'), 
             array_get($member, '輔翼會員參數'),
             array_get($hd, 'period'),
-            array_get($hd, 'hospital')
+            array_get($hd, 'hospital'),
+            $this->genVigaFormatFlagStr($member)
         ];
     }
 
@@ -159,7 +167,22 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     public function getCTILayoutData($memberCode)
     {
-        return Processor::getArrayResult(str_replace('$memberCode', $memberCode, Processor::getStorageSql('CTILayout.sql')));
+        return Processor::getArrayResult(str_replace('$memberCode', $memberCode, Processor::getStorageSql('CTILayout.sql')));        
+    }
+
+    protected function genVigaFormatFlagStr($member)
+    {
+        $flagStr = '';
+
+        for ($i = 1; $i <= 40; $i ++) {
+            $flag = "Distflags_{$i}";
+
+            $flagChar = substr(array_get($member, $flag), 0, 1);
+
+            $flagStr .= empty($flagChar) ? '^' : $flagChar; 
+        }
+
+        return $flagStr;
     }
 
     protected function getExportHead()
@@ -192,7 +215,8 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             '累積紅利點數', 
             '輔翼會員參數', 
             '預產期', 
-            '醫院'
+            '醫院',
+            '旗標'
         ];
     }
 

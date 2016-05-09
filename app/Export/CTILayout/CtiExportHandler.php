@@ -56,6 +56,8 @@ class CtiExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function getSheetCallback($callLists)
     {
         return function ($sheet) use ($callLists) {
+            $sheet->setColumnFormat(['S' => '@']);
+
             $sheet->appendRow($this->getTitle());
 
             foreach ($callLists as $calllist) {  

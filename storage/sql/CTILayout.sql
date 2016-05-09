@@ -28,7 +28,8 @@ SELECT TOP 2000
     CCS_CRMFields.newCustomerMemo 備註,    
     CCS_CRMFields.CRMNote1 備註1,
     CCS_CRMFields.CRMNote2 備註2,
-    FAS_Corp.Code 部門
+    FAS_Corp.Code 部門,
+    CCS_MemberFlags.* 
 FROM 
     POS_Member WITH(NOLOCK)
     LEFT JOIN CCS_MemberFlags WITH(NOLOCK)          ON POS_Member.SerNo = CCS_MemberFlags.MemberSerNoStr 
