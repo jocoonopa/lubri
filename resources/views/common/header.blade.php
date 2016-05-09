@@ -48,7 +48,8 @@
             <!-- <li><a href="{{ route('compare_financial_strike_balance_index')}}">財務沖帳比對</a></li> -->
            <!--  <li><a href="{{ url('flap/ccs_order_index/salerecord') }}">客經業績總表</a></li>  -->
             <li><a href="{{ url('report/ctilayout') }}">偉特CTI Layout</a></li>               
-            <li><a href="{{ url('flap/ccs_order_index/promote_shipment') }}">促銷出貨撈取</a></li>                   
+            <li><a href="{{ url('flap/ccs_order_index/promote_shipment') }}">促銷出貨撈取</a></li>    
+            <li><a href="{{ url('flap/ccs_order_div_index') }}">分寄單查詢</a></li>                  
           </ul> 
         </li>
         <li class="dropdown">
@@ -56,8 +57,7 @@
           <ul class="dropdown-menu" aria-labelledby="flap">
             <li><a href="{{ url('flap/pos_member/import_kind') }}">會員匯入</a></li>
             <li><a href="{{ route('pis_goods_fix_cprefix_goods_index') }}">贈品新增BUG處理</a></li> 
-            <li><a href="{{ route('pis_goods_copy_to_cometrust_index') }}">複製景華商品為康萃特商品</a></li>  
-            <li><a href="{{ url('flap/ccs_order_div_index') }}">分寄單查詢</a></li>   
+            <li><a href="{{ route('pis_goods_copy_to_cometrust_index') }}">複製景華商品為康萃特商品</a></li>              
             <li><a href="{{ route('ccs_orderindex_cancelverify_index') }}">出貨取消覆核</a></li>              
             <li><a href="{{ route('ccs_returngoodsi_cancelverify_index') }}">退貨取消覆核</a></li>
           </ul> 

@@ -6,9 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Illuminate\Http\Request;
+use Input;
+use Storage;
 
 class TestController extends Controller
 {
+    public function testwatcher()
+    {
+        pr(Input::all());
+
+        return __FUNCTION__;
+    }
+
+    public function exportfile()
+    {   
+        $fileName = time();
+
+        Storage::disk('local')->put($fileName, 'Contents');
+
+        return $fileName;
+    }
+
     public function backmail() 
     {
         set_time_limit(0);

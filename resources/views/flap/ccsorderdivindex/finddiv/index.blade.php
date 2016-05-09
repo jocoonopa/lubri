@@ -23,7 +23,7 @@
                                         
                     <div class="col-md-4">{!! Form::text('end', $end,['id'=>'end', 'class' => 'form-control']) !!}</div>
 
-                    <div class="col-md-2">{!! Form::submit('查詢', ['class' => 'btn btn-raised btn-primary btn-sm']) !!}</div>                    
+                    <div class="col-md-2">{!! Form::button('<i class="glyphicon glyphicon-search"></i>', ['type' => 'submit', 'class' => 'btn btn-raised btn-primary btn-sm']) !!}</div>                    
                 </div>
             {!! Form::close() !!}   
 

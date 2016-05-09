@@ -5,4 +5,7 @@ Route::group(['namespace' => 'Test', 'prefix' => 'test'], function() {
         Route::resource('tran_zipcode', 'TranZipcodeController');
         Route::get('/', ['uses' => 'TestController@backmail']);
     });    
+
+    Route::any('/testwatcher', ['uses' => 'TestController@testwatcher']);
+    Route::get('/exportfile', ['uses' => 'TestController@exportfile']);
 });

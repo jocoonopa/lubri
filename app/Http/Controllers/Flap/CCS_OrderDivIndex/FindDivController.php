@@ -47,7 +47,15 @@ class FindDivController extends Controller
             ->leftJoin('CCS_OrderIndex WITH(NOLOCK)', 'CCS_OrderIndex.SerNo', '=', 'CCS_OrderDivIndex.IndexSerNo')
             ->leftJoin('POS_Member WITH(NOLOCK)', 'POS_Member.SerNo', '=', 'CCS_OrderIndex.MemberSerNo')
             ->groupBy('CCS_OrderDivIndex.IndexSerNo')
-            ->having('count(*)', '>', 1)
+            ->having('COUNT(*)', '>', 1)
+            // ->orWhere(function ($query) {
+            //     $query
+            //         ->having('COUNT(*)', '=', 1)
+            //         ->where('CCS_OrderDivIndex.town', '=', '新店區')
+            //         ->where('CCS_OrderDivIndex.city', '=', '新北市')
+            //         ->where('CCS_OrderDivIndex.address', 'like', '寶強路6%')
+            //     ;
+            // })
             ->orderBy('MAX(CCS_OrderIndex.KeyInDate)')
         ;
 
@@ -66,6 +74,8 @@ class FindDivController extends Controller
             $q->where('CCS_OrderIndex.KeyInDate', '>=', $this->startKeyInDate);
             $q->where('CCS_OrderIndex.KeyInDate', '<=', $this->endKeyInDate);
         }
+
+        dd(Processor::toSql($q));
 
         return Processor::getArrayResult($q);
     }

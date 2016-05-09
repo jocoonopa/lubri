@@ -3,6 +3,7 @@
 .env.php
 .env
 vendor/
+storage/app
 storage/excel/exports/*
 storage/excel/exports/posmember/
 storage/excel/import
