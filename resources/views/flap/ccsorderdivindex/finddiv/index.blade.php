@@ -35,8 +35,10 @@
                         <th>訂單日</th>
                         <th>出貨日</th>
                         <th>應付帳款</th>
-                        <th>會員</th>
+                        <th>會員姓名</th>
                         <th>分寄單數</th>
+                        <th>覆核日期</th>
+                        <th>狀態</th>                        
                     </tr>                    
                 </thead>
                 <tbody>
@@ -49,8 +51,28 @@
                         <td>{{$order['訂單日']}}</td>
                         <td>{{$order['出貨日']}}</td>
                         <td>{{ number_format($order['應付帳款']) . '元'}}</td>
-                        <td>{{$order['會員姓名']}}</td>
-                        <td>{{$order['分寄單數']}}</td>
+                        <td>{{$order['會員姓名']}}</td> 
+                        <td>{{$order['分寄單數']}}</td>                       
+                        <td>
+                        @if (empty($order['覆核日']))
+                            <span class="label label-default">尚未覆核</span>
+                        @else
+                            <span class="label label-info">{{$order['覆核日']}}</span>
+                        @endif
+                        </td>
+                        <td>
+                            @if (1 == $order['狀態'])
+                                <span class="label label-success">{{'正常'}}</span>
+                            @elseif(0 == $order['狀態'])
+                                <span class="label label-default">{{'資料未完整'}}</span>
+                            @elseif(-1 == $order['狀態'])
+                                <span class="label label-warning">{{'取消訂單'}}</span>
+                            @elseif(-2 == $order['狀態'])
+                                <span class="label label-danger">{{'停止出貨'}}</span>
+                            @else
+                                <span class="label label-info">{{'未定義狀態'}}</span>
+                            @endif
+                        </td>                        
                     </tr>
                     @endforeach
                 </tbody>

@@ -43,7 +43,7 @@ class FindDivController extends Controller
         }   
 
         $q = Processor::table('CCS_OrderDivIndex WITH(NOLOCK)')
-            ->select(DB::raw("MAX(CCS_OrderIndex.OrderNo) AS 單號,MAX(CCS_OrderIndex.KeyInDate) AS 出貨日,MAX(CCS_OrderIndex.OrderDate) AS 訂單日,MAX(CCS_OrderDivIndex.IndexSerNo) AS 流水號,MAX(CCS_OrderIndex.MustPayTotal) AS 應付帳款, MAX(POS_Member.Name) AS 會員姓名,COUNT(*) AS 分寄單數"))
+            ->select(DB::raw("MAX(CCS_OrderIndex.OrderNo) AS 單號,MAX(CCS_OrderIndex.KeyInDate) AS 出貨日,MAX(CCS_OrderIndex.OrderDate) AS 訂單日,MAX(CCS_OrderDivIndex.IndexSerNo) AS 流水號,MAX(CCS_OrderIndex.MustPayTotal) AS 應付帳款, MAX(POS_Member.Name) AS 會員姓名,COUNT(*) AS 分寄單數, MAX(CCS_OrderIndex.VerifyDate) AS 覆核日, MAX(CCS_OrderIndex.Status) AS 狀態"))
             ->leftJoin('CCS_OrderIndex WITH(NOLOCK)', 'CCS_OrderIndex.SerNo', '=', 'CCS_OrderDivIndex.IndexSerNo')
             ->leftJoin('POS_Member WITH(NOLOCK)', 'POS_Member.SerNo', '=', 'CCS_OrderIndex.MemberSerNo')
             ->groupBy('CCS_OrderDivIndex.IndexSerNo')
