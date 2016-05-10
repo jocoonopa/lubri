@@ -9,14 +9,15 @@ use Mail;
 class MailEventHandler
 {
     protected $to = [
-        'amy@chinghwa.com.tw' => '李佩蓉',
-        'meganlee@chinghwa.com.tw' => '李惠淑',
+        'amy@chinghwa.com.tw'          => '李佩蓉',
+        'meganlee@chinghwa.com.tw'     => '李惠淑',
         'lingying3025@chinghwa.com.tw' => '吳俐潁'
     ];
 
     protected $cc = [
-        'sl@chinghwa.com.tw' => '莊淑玲',
-        'swhsu@chinghwa.com.tw' => '徐士偉',
+        'fengcheng@chinghwa.com.tw'  => '馮誠',
+        'sl@chinghwa.com.tw'         => '莊淑玲',
+        'swhsu@chinghwa.com.tw'      => '徐士偉',
         'tonyvanhsu@chinghwa.com.tw' => '徐士弘',
         'jocoonopa@chinghwa.com.tw'  => '洪小閎'
     ];

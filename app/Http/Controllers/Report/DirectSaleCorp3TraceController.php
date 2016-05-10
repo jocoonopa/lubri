@@ -55,6 +55,7 @@ class DirectSaleCorp3TraceController extends Controller
     protected function getToList()
     {
         return [
+            'fengcheng@chinghwa.com.tw' => '馮誠',
             'sl@chinghwa.com.tw' => '莊淑玲',
             'swhsu@chinghwa.com.tw' => '徐士偉',
             'leaha@chinghwa.com.tw' => '陳佳莉',

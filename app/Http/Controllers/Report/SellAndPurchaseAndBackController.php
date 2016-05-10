@@ -155,16 +155,17 @@ class SellAndPurchaseAndBackController extends Controller
     {
         return [
             'vivian@chinghwa.com.tw' => '謝玉英',
-            'pyeh@chinghwa.com.tw' => '葉晴慧'
+            'pyeh@chinghwa.com.tw'   => '葉晴慧'
         ];
     }
 
     protected function getCCList()
     {
         return [
-            'sl@chinghwa.com.tw' => '莊淑玲',
+            'fengcheng@chinghwa.com.tw'  => '馮誠',
+            'sl@chinghwa.com.tw'         => '莊淑玲',
             'tonyvanhsu@chinghwa.com.tw' => '徐士弘',
-            'jocoonopa@chinghwa.com.tw' => '洪小閎'
+            'jocoonopa@chinghwa.com.tw'  => '洪小閎'
         ];
     }
 

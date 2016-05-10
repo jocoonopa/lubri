@@ -138,6 +138,7 @@ class EmpPurchaseController extends Controller
     protected function getCCList()
     {
         return [
+            'fengcheng@chinghwa.com.tw' => '馮誠',
             'sl@chinghwa.com.tw' => '莊淑玲',
             'tonyvanhsu@chinghwa.com.tw' => '徐士弘',
             'jocoonopa@chinghwa.com.tw' => '洪小閎'

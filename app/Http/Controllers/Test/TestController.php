@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Test;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Input;
 use Storage;
@@ -13,7 +14,10 @@ class TestController extends Controller
 {
     public function testwatcher()
     {
-        pr(Input::all());
+        //throw new \Exception('error');
+        // pr(Input::all());
+
+        Storage::disk('local')->prepend('..\logs\watcher.log', 'Call at' . Carbon::now()->format('Ymd H:i:s') . ',data ' . json_encode(Input::all()));
 
         return __FUNCTION__;
     }

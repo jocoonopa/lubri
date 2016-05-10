@@ -82,18 +82,19 @@ class ConceController extends Controller
     {
         return [
             'oliver@chinghwa.com.tw' => '王誌遠',
-            'yutzu@chinghwa.com.tw' => '張祐慈',
-            'life@chinghwa.com.tw' => '林春秀'
+            'yutzu@chinghwa.com.tw'  => '張祐慈',
+            'life@chinghwa.com.tw'   => '林春秀'
         ];
     }
 
     protected function getCCList()
     {
         return [
-            'sl@chinghwa.com.tw' => '莊淑玲',
-            'swhsu@chinghwa.com.tw' => '徐士偉',
+            'fengcheng@chinghwa.com.tw'  => '馮誠',
+            'sl@chinghwa.com.tw'         => '莊淑玲',
+            'swhsu@chinghwa.com.tw'      => '徐士偉',
             'tonyvanhsu@chinghwa.com.tw' => '徐士弘',
-            'jocoonopa@chinghwa.com.tw' => '洪小閎'
+            'jocoonopa@chinghwa.com.tw'  => '洪小閎'
         ];
     }
 
