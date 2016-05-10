@@ -43,7 +43,7 @@
                 </thead>
                 <tbody>
                     @foreach ($orders as $key => $order)
-                    <tr>
+                    <tr @if(1 === (int) $order['分寄單數']) data-toggle="tooltip" data-placement="left" title="{{$order['縣市']}}{{$order['區']}}{{$order['地址']}}" @endif>
                         <td>{{$key + 1}}</td>
                         <td>
                             <a href="http://192.168.100.68/chinghwa/iCCS/Order/OrderDetailsFrame.jsp?serNo={{$order['流水號']}}" target="_blank">{{$order['單號']}}</a>
@@ -86,6 +86,10 @@
 <script src="/assets/bootstrap-material-datetimepicker-gh-pages/js/bootstrap-material-datetimepicker.js"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 moment.locale('zh-tw');
 var bmdObg = {
     'time': false, 

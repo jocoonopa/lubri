@@ -79,7 +79,7 @@ class FindDivController extends Controller
         if (1 === (int) $var['分寄單數'] 
             && Chinghwa::CITY === trim(keepOnlyChineseWord($var['縣市'])) 
             && Chinghwa::TOWN === trim(keepOnlyChineseWord($var['區'])) 
-            && false !== strpos('寶強路', trim(keepOnlyChineseWord($var['地址'])))
+            && false !== strpos(trim(keepOnlyChineseWord($var['地址'])), '寶強路')
         ) {
             return true;
         } 
