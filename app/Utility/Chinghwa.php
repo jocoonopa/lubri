@@ -10,6 +10,9 @@ namespace App\Utility;
 
 class Chinghwa
 {
+    const TOWN = '新店區';
+    const CITY = '新北市';
+    
     public function get($data = [])
     {
         echo "foo";
