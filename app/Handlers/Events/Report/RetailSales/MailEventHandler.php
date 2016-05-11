@@ -12,7 +12,7 @@ class MailEventHandler
     ];
 
     protected $cc = [
-        'fengcheng@chinghwa.com.tw' => '馮誠',
+        'fengcheng@chinghwa.com.tw'  => '馮誠',
         'meganlee@chinghwa.com.tw'   => '6500李惠淑',
         'sl@chinghwa.com.tw'         => '6700莊淑玲',
         'swhsu@chinghwa.com.tw'      => '6800徐士偉',
