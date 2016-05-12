@@ -67,31 +67,41 @@ class FindDivController extends Controller
             $q->where('CCS_OrderIndex.KeyInDate', '<=', $this->endKeyInDate);
         }
 
-        return array_values(array_filter(Processor::getArrayResult($q), [$this, 'filter']));
+        $result = Processor::getArrayResult($q);
+
+        return array_values($this->filter($result));
+
+        //return array_values(array_filter(Processor::getArrayResult($q), [$this, 'filter']));
     }
 
-    protected function filter(&$var)
+    protected function filter($result)
     {
-        $var['isAddressError'] = false;
+        foreach ($result as $key => $var) {
+            $result[$key]['isAddressError'] = false;
         
-        if (1 < $var['分寄單數']) {
-            return true;
+            if (1 < $var['分寄單數']) {
+                continue;
+            }
+
+            if (1 === (int) $var['分寄單數'] 
+                && Chinghwa::CITY === trim(keepOnlyChineseWord($var['縣市'])) 
+                && Chinghwa::TOWN === trim(keepOnlyChineseWord($var['區'])) 
+                && false !== strpos(trim(keepOnlyChineseWord($var['地址'])), '寶強路')
+            ) {
+                $result[$key]['isAddressError'] = true;
+
+                continue;
+            } 
+
+            if (0 === (int) $var['應付帳款']) {
+                continue;
+            }
+
+            unset($result[$key]);
+
+            continue;
         }
 
-        if (1 === (int) $var['分寄單數'] 
-            && Chinghwa::CITY === trim(keepOnlyChineseWord($var['縣市'])) 
-            && Chinghwa::TOWN === trim(keepOnlyChineseWord($var['區'])) 
-            && false !== strpos(trim(keepOnlyChineseWord($var['地址'])), '寶強路')
-        ) {
-            $var['isAddressError'] = true;
-
-            return true;
-        } 
-
-        if (0 === (int) $var['應付帳款']) {
-            return true;
-        }
-
-        return false;
+        return $result;
     }
 }
