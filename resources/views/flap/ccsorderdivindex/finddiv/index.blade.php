@@ -47,12 +47,16 @@
                         <td>{{$key + 1}}</td>
                         <td>
                             <a href="http://192.168.100.68/chinghwa/iCCS/Order/OrderDetailsFrame.jsp?serNo={{$order['流水號']}}" target="_blank">{{$order['單號']}}</a>
+
+                            @if(true === $order['isAddressError'])
+                            <span class="label label-danger">公司</span>
+                            @endif
                         </td>
                         <td>{{$order['訂單日']}}</td>
                         <td>{{$order['出貨日']}}</td>
                         <td @if(0 === (int) $order['應付帳款']) class="danger" @endif>{{ number_format($order['應付帳款']) . '元'}}</td>
                         <td>{{$order['會員姓名']}}</td> 
-                        <td>{{$order['分寄單數']}}</td>                       
+                        <td @if(1 < (int) $order['分寄單數']) class="danger" @endif>{{$order['分寄單數']}}</td>                       
                         <td>
                         @if (empty($order['覆核日']))
                             <span class="label label-default">尚未覆核</span>

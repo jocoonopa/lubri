@@ -70,8 +70,10 @@ class FindDivController extends Controller
         return array_values(array_filter(Processor::getArrayResult($q), [$this, 'filter']));
     }
 
-    protected function filter($var)
+    protected function filter(&$var)
     {
+        $var['isAddressError'] = false;
+        
         if (1 < $var['分寄單數']) {
             return true;
         }
@@ -81,6 +83,8 @@ class FindDivController extends Controller
             && Chinghwa::TOWN === trim(keepOnlyChineseWord($var['區'])) 
             && false !== strpos(trim(keepOnlyChineseWord($var['地址'])), '寶強路')
         ) {
+            $var['isAddressError'] = true;
+
             return true;
         } 
 
