@@ -10,10 +10,10 @@ class MailToManagerEventHandler
 {
     protected $to = [
         'linchengpu@chinghwa.com.tw' => '5000林振部',
-        'fengcheng@chinghwa.com.tw'  => '馮誠',
+        'fengcheng@chinghwa.com.tw'  => '6600馮誠',
         'swhsu@chinghwa.com.tw'      => '6800徐士偉',
         'sl@chinghwa.com.tw'         => '6700莊淑玲',
-        'darren@chinghwa.com.tw'     => '張碩'
+        'gavin@chinghwa.com.tw'      => '6300何育佳'
     ];
 
     protected $cc = [

@@ -12,11 +12,11 @@ class MailEventHandler
     ];
 
     protected $cc = [
-        'fengcheng@chinghwa.com.tw'  => '馮誠',
+        'fengcheng@chinghwa.com.tw'  => '6600馮誠',
         'meganlee@chinghwa.com.tw'   => '6500李惠淑',
         'sl@chinghwa.com.tw'         => '6700莊淑玲',
         'swhsu@chinghwa.com.tw'      => '6800徐士偉',
-        'leaha@chinghwa.com.tw'      => '6150陳佳莉',
+        'sharon@chinghwa.com.tw'     => '6110張佳園',
         'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
         's008@chinghwa.com.tw'       => 'S008高雄SOGO門市',
         's009@chinghwa.com.tw'       => 'S009美麗華門市',

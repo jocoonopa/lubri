@@ -130,18 +130,18 @@ class EmpPurchaseController extends Controller
     protected function getToList()
     {
         return [
-            'lingying3025@chinghwa.com.tw' => '吳俐穎',            
-            'judysu@chinghwa.com.tw' => '蘇怡華'
+            'lingying3025@chinghwa.com.tw' => '6521吳俐穎',            
+            'judysu@chinghwa.com.tw'       => '6532蘇怡華'
         ];
     }
 
     protected function getCCList()
     {
         return [
-            'fengcheng@chinghwa.com.tw' => '馮誠',
-            'sl@chinghwa.com.tw' => '莊淑玲',
-            'tonyvanhsu@chinghwa.com.tw' => '徐士弘',
-            'jocoonopa@chinghwa.com.tw' => '洪小閎'
+            'fengcheng@chinghwa.com.tw'  => '6600馮誠',
+            'sl@chinghwa.com.tw'         => '6700莊淑玲',
+            'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
+            'jocoonopa@chinghwa.com.tw'  => '6231洪小閎'
         ];
     }
 }

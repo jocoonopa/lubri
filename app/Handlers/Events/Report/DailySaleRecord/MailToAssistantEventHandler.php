@@ -9,8 +9,8 @@ use Mail;
 class MailToAssistantEventHandler
 {
     protected $to = [
-        'oliver@chinghwa.com.tw' => '6210王誌遠',
-        'selfindex@chinghwa.com.tw' => '6810李濬帆'   
+        'oliver@chinghwa.com.tw'    => '6210王誌遠',
+        'selfindex@chinghwa.com.tw' => '6810李濬帆'
     ];
 
     protected $subject;
