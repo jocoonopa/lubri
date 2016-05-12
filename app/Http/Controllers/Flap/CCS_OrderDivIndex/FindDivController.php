@@ -84,6 +84,10 @@ class FindDivController extends Controller
             return true;
         } 
 
+        if (0 === (int) $var['應付帳款']) {
+            return true;
+        }
+
         return false;
     }
 }

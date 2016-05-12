@@ -50,7 +50,7 @@
                         </td>
                         <td>{{$order['訂單日']}}</td>
                         <td>{{$order['出貨日']}}</td>
-                        <td>{{ number_format($order['應付帳款']) . '元'}}</td>
+                        <td @if(0 === (int) $order['應付帳款']) class="danger" @endif>{{ number_format($order['應付帳款']) . '元'}}</td>
                         <td>{{$order['會員姓名']}}</td> 
                         <td>{{$order['分寄單數']}}</td>                       
                         <td>
