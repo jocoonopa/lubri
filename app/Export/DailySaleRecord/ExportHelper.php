@@ -93,18 +93,19 @@ class ExportHelper
     public function getBundleTotal(array $totalGroup, $bundleName)
     {
         $allGroup = [];
-        $allGroup['部門'] = $bundleName;
-        $allGroup['人員代碼'] = '';
-        $allGroup['姓名'] = '';
-        $allGroup['會員數'] = 0; 
-        $allGroup['訂單數'] = 0; 
-        $allGroup['淨額'] = 0; 
-        $allGroup['會員均單'] = 0;
-        $allGroup['訂單均價'] = 0;
+        
+        $allGroup['部門']       = $bundleName;
+        $allGroup['人員代碼']   = '';
+        $allGroup['姓名']       = '';
+        $allGroup['會員數']     = 0; 
+        $allGroup['訂單數']     = 0; 
+        $allGroup['淨額']       = 0; 
+        $allGroup['會員均單']   = 0;
+        $allGroup['訂單均價']   = 0;
         $allGroup['撥打會員數'] = 0;
-        $allGroup['撥打通數'] = 0;
-        $allGroup['撥打秒數'] = 0;
-        $allGroup['工作日'] = 0; 
+        $allGroup['撥打通數']   = 0;
+        $allGroup['撥打秒數']   = 0;
+        $allGroup['工作日']     = 0; 
 
         foreach ($totalGroup as $group) {
             $allGroup['會員數'] += (int) getArrayVal($group, '會員數', 0);

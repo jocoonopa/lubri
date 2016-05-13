@@ -8,19 +8,6 @@ use Mail;
 
 class MailToManagerEventHandler
 {
-    protected $to = [
-        'linchengpu@chinghwa.com.tw' => '5000林振部',
-        'fengcheng@chinghwa.com.tw'  => '6600馮誠',
-        'swhsu@chinghwa.com.tw'      => '6800徐士偉',
-        'sl@chinghwa.com.tw'         => '6700莊淑玲',
-        'gavin@chinghwa.com.tw'      => '6300何育佳'
-    ];
-
-    protected $cc = [
-        'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
-        'jocoonopa@chinghwa.com.tw'  => '6231小閎'
-    ];
-
     protected $subject;
     protected $event;
 
@@ -32,12 +19,14 @@ class MailToManagerEventHandler
      */
     public function handle(ReportEvent $reportEvent)
     {
+        $export = $reportEvent->getExport();
+
         $this->setEvent($reportEvent)->setSubject($reportEvent->getExport()->getFilename());
 
-        return Mail::send('emails.creditCard', ['title' => $this->subject], function ($m) {
+        return Mail::send('emails.creditCard', ['title' => $this->subject], function ($m) use ($export) {
             $m
-                ->to($this->to)
-                ->cc($this->cc)
+                ->to($export->getTo())
+                ->cc($export->getCc())
                 ->subject($this->getSubject())
                 ->attach($this->getEvent()->getExport()->getRealpath())
             ;

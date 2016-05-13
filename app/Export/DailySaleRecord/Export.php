@@ -13,6 +13,18 @@ class Export extends \Maatwebsite\Excel\Files\NewExcelFile
     const POS_CORPCODE_COLUMN = '門市代號';
     const POS_NONEXIST_GROUP  = '未知門市';
     const ERP_OUTTUNNEL       = 'outTunnel';
+
+    protected $to = [
+        'linchengpu@chinghwa.com.tw' => '5000林振部',
+        'fengcheng@chinghwa.com.tw'  => '6600馮誠',
+        'swhsu@chinghwa.com.tw'      => '6800徐士偉',
+        'sl@chinghwa.com.tw'         => '6700莊淑玲'
+    ];
+
+    protected $cc = [
+        'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
+        'jocoonopa@chinghwa.com.tw'  => '6231小閎'
+    ];
     
     protected $date;
 
@@ -53,5 +65,53 @@ class Export extends \Maatwebsite\Excel\Files\NewExcelFile
     public function getDate()
     {
         return $this->date;
+    }
+
+    /**
+     * Gets the value of to.
+     *
+     * @return mixed
+     */
+    public function getTo()
+    {
+        return $this->to;
+    }
+
+    /**
+     * Sets the value of to.
+     *
+     * @param mixed $to the to
+     *
+     * @return self
+     */
+    protected function setTo($to)
+    {
+        $this->to = $to;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of cc.
+     *
+     * @return mixed
+     */
+    public function getCc()
+    {
+        return $this->cc;
+    }
+
+    /**
+     * Sets the value of cc.
+     *
+     * @param mixed $cc the cc
+     *
+     * @return self
+     */
+    protected function setCc($cc)
+    {
+        $this->cc = $cc;
+
+        return $this;
     }
 }

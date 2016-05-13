@@ -70,8 +70,6 @@ class FindDivController extends Controller
         $result = Processor::getArrayResult($q);
 
         return array_values($this->filter($result));
-
-        //return array_values(array_filter(Processor::getArrayResult($q), [$this, 'filter']));
     }
 
     protected function filter($result)

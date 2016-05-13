@@ -51,7 +51,6 @@ class EventServiceProvider extends ServiceProvider
 
         'App\Events\Report\DailySaleRecord\ReportEvent' => [
             'App\Handlers\Events\Report\DailySaleRecord\MailToManagerEventHandler',
-            'App\Handlers\Events\Report\DailySaleRecord\MailToAssistantEventHandler'
         ],
 
         'App\Events\Report\RetailSales\ReportEvent' => [
