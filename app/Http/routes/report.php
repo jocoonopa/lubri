@@ -60,9 +60,9 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
     // DailySaleRecordController
     Route::group(['prefix' => 'daily_sale_record'], function () {
         Route::get('/', ['uses' => 'DailySaleRecordController@index', 'as' => 'daily_sale_record_index']);
-        Route::get('/process', ['uses' => 'DailySaleRecordController@process', 'as' => 'daily_sale_record_download']);
-        Route::get('/onlyec', ['uses' => 'DailySaleRecordController@onlyEc']);
-        Route::get('/onlycti', ['uses' => 'DailySaleRecordController@onlyCti']);
+        Route::get('/process', ['uses' => 'DailySaleRecordController@process', 'as' => 'daily_sale_record_download', 'middleware' => 'report']);
+        Route::get('/onlyec', ['uses' => 'DailySaleRecordController@onlyEc', 'middleware' => 'report']);
+        Route::get('/onlycti', ['uses' => 'DailySaleRecordController@onlyCti', 'middleware' => 'report']);
     });
 
     // 每日回貨

@@ -103,7 +103,7 @@ class DataHelper
 
 	protected function getConvertyQuery($newCCode, $code)
 	{
-		return "UPDATE PIS_Goods SET Code='{$newCCode}', Barcode='{$newCCode}', ColorSerNo='{$this->getCColorSerNo()}' WHERE Code='{$code}'";
+		return "UPDATE PIS_Goods SET Code='{$newCCode}', GoodsStyleCode='{$newCCode}', Barcode='{$newCCode}', ColorSerNo='{$this->getCColorSerNo()}' WHERE Code='{$code}'";
 	}
 
 	/**
