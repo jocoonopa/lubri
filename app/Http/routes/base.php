@@ -32,3 +32,8 @@ Route::group(['namespace' => 'Intro', 'prefix' => 'intro'], function() {
     Route::get('/report', ['uses' => 'IntroController@report', 'as' => 'intro_report']);
     Route::get('/b', ['uses' => 'IntroController@b', 'as' => 'intro_b']);
 });
+
+Route::any('queue/receive', function()
+{
+    return Queue::marshal();
+});
