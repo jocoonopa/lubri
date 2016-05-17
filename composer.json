@@ -8,7 +8,7 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.1.*",
         "maatwebsite/excel": "~2.0.6",
-        "guzzlehttp/guzzle": "5.3",
+        "guzzlehttp/guzzle": "4.0",
         "illuminate/html": "5.*"
     },
     "require-dev": {
@@ -19,7 +19,8 @@
         "laracasts/integrated": "^0.15.6",
         "benconstable/phpspec-laravel": "~2.0",
         "symfony/options-resolver": "~3.0.1",
-        "iron-io/iron_mq": "~2.0|~4.0"
+        "iron-io/iron_mq": "~2.0|~4.0",
+        "maknz/slack": "*"
     },
     "autoload": {
         "classmap": [

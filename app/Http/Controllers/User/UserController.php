@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
-use App\Jobs\SendReminderEmail;
 use App\Model\User;
 use DB;
 use Illuminate\Http\Request;
@@ -80,9 +79,6 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $user->update($request->all());
-
-        // $job = with(new SendReminderEmail($user))->onQueue('default');
-        // $this->dispatch($job);
 
         return $this->redirectWithSuccessFlash("user/{$user->id}/edit", "您已經更新了<b>{$user->username}</b>的資料");
     }

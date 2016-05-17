@@ -153,7 +153,12 @@ return [
         /**
          * Chinghwa
          */
-        App\Providers\ChinghwaServiceProvider::class
+        App\Providers\ChinghwaServiceProvider::class,
+
+        /**
+         * Slack
+         */
+        Maknz\Slack\SlackServiceProvider
     ],
 
     /*
@@ -205,7 +210,9 @@ return [
         'Form' 		=> Illuminate\Html\FormFacade::class,
       	'Html' 		=> Illuminate\Html\HtmlFacade::class,
         
-        'Chinghwa' => App\Facades\Chinghwa::class
+        'Chinghwa' => App\Facades\Chinghwa::class,
+
+        'Slack'    => Maknz\Slack\Facades\Slack::class
     ],
 
 ];

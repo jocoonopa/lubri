@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Jobs\Job;
 use App\Model\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailer;
@@ -36,7 +37,7 @@ class SendReminderEmail extends Job implements SelfHandling, ShouldQueue
     public function handle(Mailer $mailer)
     {
         $mailer->send('emails.reminder', ['user' => $this->user], function ($m) {
-            $m->to('jocoonopa@chinghwa.com.tw', '小閎')->subject("{$this->user->username}帳號修改通知");
+            $m->to('jocoonopa@chinghwa.com.tw', '小閎')->subject("{$this->user->username}帳號修改通知" . Carbon::now()->format('Y-m-d H:i:s'));
         });
     }
 }

@@ -8,4 +8,6 @@ Route::group(['namespace' => 'Test', 'prefix' => 'test'], function() {
 
     Route::any('/testwatcher', ['uses' => 'TestController@testwatcher']);
     Route::get('/exportfile', ['uses' => 'TestController@exportfile']);
+    Route::get('/iron', ['uses' => 'TestController@iron']);
+    Route::get('/slack', ['uses' => 'TestController@slack']);
 });

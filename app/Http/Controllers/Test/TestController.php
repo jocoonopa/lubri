@@ -4,14 +4,58 @@ namespace App\Http\Controllers\Test;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Jobs\SendReminderEmail;
+use App\Model\User;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Input;
+use IronMQ\IronMQ;
 use Storage;
 
 class TestController extends Controller
 {
+    public function slack()
+    {
+        // Instantiate with defaults, so all messages created
+        // will be sent from 'Cyril' and to the #accounting channel
+        // by default. Any names like @regan or #channel will also be linked.
+        $settings = [
+            'username'   => 'webhookbot',
+            'channel'    => '#japan',
+            'link_names' => true
+        ];
+
+        $client = new \Maknz\Slack\Client(env('SLACK_WEBHOOKS'), $settings);
+
+        $client->send('Hello world!');
+        $client->to('#japan')->send('Are we rich yet?');
+        $client->from('jocoonopa')->to('#japan')->send('Adventure time!');
+
+        return '';
+    }
+
+    /**
+     * php artisan queue:listen --queue=TestQue
+     */
+    public function iron()
+    {
+        // $ironmq = new IronMQ(array(
+        //     'project_id' => env('IRON_PROJECT_ID'),
+        //     'token' => env('IRON_TOJEN'),
+        //     'host' => env('IRON_HOST')
+        // ));
+
+        // $ironmq->ssl_verifypeer = false;
+
+        // $ironmq->postMessage(env('IRON_QUEUE'), "Test Message FROM " . __CLASS__ . ':' . __FUNCTION__);
+
+        $job = with(new SendReminderEmail(User::find(89)))->onQueue(env('IRON_QUEUE'))->delay(15);
+        $this->dispatch($job);
+        
+        return __CLASS__ . ':' . __FUNCTION__ . ':' . env('IRON_QUEUE');
+    }
+
     public function testwatcher()
     {
         //throw new \Exception('error');
