@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Validator;
+use Queue;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Queue::getIron()->ssl_verifypeer = false;
         Validator::extend('cellphone', 'App\Http\Validator\ImportContentValidator@cellphone');
         Validator::extend('tel', 'App\Http\Validator\ImportContentValidator@tel');
     }

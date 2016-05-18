@@ -158,7 +158,7 @@ return [
         /**
          * Slack
          */
-        Maknz\Slack\SlackServiceProvider
+        Maknz\Slack\SlackServiceProvider::class
     ],
 
     /*

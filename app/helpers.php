@@ -1,6 +1,8 @@
 <?php
 
-define('STDIN',fopen("php://stdin","r"));
+if (!defined('STDIN')) {
+    define('STDIN', fopen('php://stdin', 'r'));
+}
 
 function c8($str)
 {

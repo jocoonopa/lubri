@@ -2,6 +2,9 @@
 
 namespace App\Export\DailySaleRecord;
 
+use App\Utility\Chinghwa\ExportExcel;
+use Carbon\Carbon;
+
 class OnlyEcExport extends Export
 {
     protected $to = [
