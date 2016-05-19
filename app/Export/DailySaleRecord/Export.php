@@ -15,10 +15,11 @@ class Export extends \Maatwebsite\Excel\Files\NewExcelFile
     const ERP_OUTTUNNEL       = 'outTunnel';
 
     protected $to = [
-        'linchengpu@chinghwa.com.tw' => '5000林振部',
-        'fengcheng@chinghwa.com.tw'  => '6600馮誠',
-        'swhsu@chinghwa.com.tw'      => '6800徐士偉',
-        'sl@chinghwa.com.tw'         => '6700莊淑玲'
+        'linchengpu@chinghwa.com.tw'    => '5000林振部',
+        'fengcheng@chinghwa.com.tw'     => '6600馮誠',
+        'swhsu@chinghwa.com.tw'         => '6800徐士偉',
+        'sl@chinghwa.com.tw'            => '6700莊淑玲',
+        'irenelee.0801@chinghwa.com.tw' => '6100李如玲'
     ];
 
     protected $cc = [

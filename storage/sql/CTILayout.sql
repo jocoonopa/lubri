@@ -39,4 +39,4 @@ FROM
     LEFT JOIN HRS_Employee WITH(NOLOCK)             ON HRS_Employee.SerNo = CCS_CRMFields.ExploitSerNoStr
     LEFT JOIN FAS_Corp                              ON FAS_Corp.SerNo = HRS_Employee.CorpSerNo 
     LEFT JOIN CCS_ShoppingBehaviorBrief WITH(NOLOCK) ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
-WHERE POS_Member.Code='$memberCode'
+WHERE POS_Member.Code IN ($memberCode)

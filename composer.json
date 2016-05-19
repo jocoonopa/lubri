@@ -20,7 +20,8 @@
         "benconstable/phpspec-laravel": "~2.0",
         "symfony/options-resolver": "~3.0.1",
         "iron-io/iron_mq": "~2.0|~4.0",
-        "maknz/slack": "*"
+        "maknz/slack": "*",
+        "predis/predis": "~1.0"
     },
     "autoload": {
         "classmap": [

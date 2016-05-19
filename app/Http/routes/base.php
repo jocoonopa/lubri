@@ -33,8 +33,7 @@ Route::group(['namespace' => 'Intro', 'prefix' => 'intro'], function() {
     Route::get('/b', ['uses' => 'IntroController@b', 'as' => 'intro_b']);
 });
 
-Route::post('queue/receive', function()
-{
+Route::post('queue/receive', function() {
     $logFile = 'laravel.log';
 
     Log::useDailyFiles(storage_path().'/logs/'.$logFile);

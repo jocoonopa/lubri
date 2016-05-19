@@ -76,15 +76,17 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             $sheet->appendRow($this->getExportHead());
 
             if (empty($callLists)) {
-                $member = array_get($this->getCTILayoutData(Input::get('source_cd')), 0);
+                $members = $this->getCTILayoutData(Input::get('source_cd'));
 
-                if (NULL === $member || !$this->inCorps($member)) {
-                    return;
-                } 
+                foreach ($members as $member) {
+                    if (NULL === $member || !$this->inCorps($member)) {
+                        continue;
+                    } 
 
-                $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
+                    $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
 
-                $sheet->appendRow($this->getFilterMember($member, $hd, []));
+                    $sheet->appendRow($this->getFilterMember($member, $hd, []));
+                }                
             } else {
                 foreach ($callLists as $calllist) {                   
                     $member = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);
@@ -167,7 +169,11 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     public function getCTILayoutData($memberCode)
     {
-        return Processor::getArrayResult(str_replace('$memberCode', $memberCode, Processor::getStorageSql('CTILayout.sql')));        
+        $codes = explode(',', trim($memberCode));
+
+        $sql = str_replace('$memberCode', sqlInWrap($codes), Processor::getStorageSql('CTILayout.sql'));
+
+        return Processor::getArrayResult($sql);        
     }
 
     protected function genVigaFormatFlagStr($member)

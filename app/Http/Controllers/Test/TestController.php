@@ -12,9 +12,19 @@ use Illuminate\Http\Request;
 use Input;
 use IronMQ\IronMQ;
 use Storage;
+use Redis;
 
 class TestController extends Controller
 {
+    public function redis()
+    {
+        Redis::set('user:name', 'Taylor');
+
+        $user = Redis::get('user:name');
+
+        dd($user);
+    }
+
     public function slack()
     {
         // Instantiate with defaults, so all messages created

@@ -268,3 +268,14 @@ function isWrongCodeTel($content)
 {
     return false === strpos($content->hometel, App\Utility\Chinghwa\Flap\POS_Member\Import\Import::WRONG_TELCODE);
 }
+
+function sqlInWrap(array $strs) 
+{
+    $tmp = '';
+
+    foreach ($strs as $str) {
+        $tmp .= "'{$str}',";
+    }
+
+    return substr($tmp, 0, -1);
+}
