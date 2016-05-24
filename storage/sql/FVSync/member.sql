@@ -1,4 +1,4 @@
-SELECT
+SELECT TOP $max
     POS_Member.Code 會員代號,
     POS_Member.Name 會員姓名,
     POS_Member.Sex 性別,
@@ -12,6 +12,7 @@ SELECT
     POS_Member.HomeAddress_ZipCode 郵遞區號,
     POS_Member.HomeAddress_Address 地址,
     POS_Member.E_Mail 'e-mail',
+    POS_Member.LastModifiedDate PMDT_TIME,
     HRS_Employee.Code 開發人代號, 
     HRS_Employee.Name 開發人姓名,
     POS_MemberCategory.Code 會員類別代號,
@@ -29,7 +30,46 @@ SELECT
     CCS_CRMFields.CRMNote1 備註1,
     CCS_CRMFields.CRMNote2 備註2,
     FAS_Corp.Code 部門,
-    CCS_MemberFlags.* 
+    CCS_MemberFlags.Distflags_1,
+    CCS_MemberFlags.Distflags_2,
+    CCS_MemberFlags.Distflags_3,
+    CCS_MemberFlags.Distflags_4,
+    CCS_MemberFlags.Distflags_5,
+    CCS_MemberFlags.Distflags_6,
+    CCS_MemberFlags.Distflags_7,
+    CCS_MemberFlags.Distflags_8, 
+    CCS_MemberFlags.Distflags_9,
+    CCS_MemberFlags.Distflags_10,
+    CCS_MemberFlags.Distflags_11,
+    CCS_MemberFlags.Distflags_12,
+    CCS_MemberFlags.Distflags_13,
+    CCS_MemberFlags.Distflags_14,
+    CCS_MemberFlags.Distflags_15,
+    CCS_MemberFlags.Distflags_16,
+    CCS_MemberFlags.Distflags_17,
+    CCS_MemberFlags.Distflags_18,
+    CCS_MemberFlags.Distflags_19,
+    CCS_MemberFlags.Distflags_20,
+    CCS_MemberFlags.Distflags_21,
+    CCS_MemberFlags.Distflags_22,
+    CCS_MemberFlags.Distflags_23,
+    CCS_MemberFlags.Distflags_24,
+    CCS_MemberFlags.Distflags_25,
+    CCS_MemberFlags.Distflags_26,
+    CCS_MemberFlags.Distflags_27,
+    CCS_MemberFlags.Distflags_28,
+    CCS_MemberFlags.Distflags_29,
+    CCS_MemberFlags.Distflags_30,
+    CCS_MemberFlags.Distflags_31,
+    CCS_MemberFlags.Distflags_32,
+    CCS_MemberFlags.Distflags_33,
+    CCS_MemberFlags.Distflags_34,
+    CCS_MemberFlags.Distflags_35,
+    CCS_MemberFlags.Distflags_36,
+    CCS_MemberFlags.Distflags_37,
+    CCS_MemberFlags.Distflags_38,
+    CCS_MemberFlags.Distflags_39,
+    CCS_MemberFlags.Distflags_40
 FROM 
     POS_Member WITH(NOLOCK)
     LEFT JOIN CCS_MemberFlags WITH(NOLOCK)          ON POS_Member.SerNo = CCS_MemberFlags.MemberSerNoStr 
@@ -39,4 +79,4 @@ FROM
     LEFT JOIN HRS_Employee WITH(NOLOCK)             ON HRS_Employee.SerNo = CCS_CRMFields.ExploitSerNoStr
     LEFT JOIN FAS_Corp                              ON FAS_Corp.SerNo = HRS_Employee.CorpSerNo 
     LEFT JOIN CCS_ShoppingBehaviorBrief WITH(NOLOCK) ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
-WHERE POS_Member.Code IN ($memberCode)
+WHERE POS_Member.LastModifiedDate >= '$mrtTime' ORDER BY POS_Member.LastModifiedDate ASC

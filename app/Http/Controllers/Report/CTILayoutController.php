@@ -16,8 +16,8 @@ class CTILayoutController extends Controller
         $campaignCD = Input::get('campaign_cd', 'OB_6713');
         
         $qStr       = "code={$code}&assign_date={$assignDate}&campaign_cd={$campaignCD}";
-        $flapUrl    = "http://localhost.lubri_dev/report/ctilayout/flap?{$qStr}";
-        $ctiUrl     = "http://localhost.lubri_dev/report/ctilayout/cti?{$qStr}";
+        $flapUrl    = "/report/ctilayout/flap?{$qStr}";
+        $ctiUrl     = "/report/ctilayout/cti?{$qStr}";
 
         return view('report.ctilayout.index', [
             'flapUrl'    => $flapUrl, 

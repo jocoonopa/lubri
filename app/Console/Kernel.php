@@ -15,6 +15,10 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\Inspire::class,
+        \App\Console\Commands\FVSyncOrder::class,
+        \App\Console\Commands\FVSyncProduct::class,
+        \App\Console\Commands\FVSyncMember::class,
+        \App\Console\Commands\FVImportMember::class
     ];
 
     /**

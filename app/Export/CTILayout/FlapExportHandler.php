@@ -8,10 +8,13 @@ use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
 use App\Utility\Chinghwa\ORM\CTI\Campaign;
 use App\Utility\Chinghwa\ORM\CTI\CampaignCallList;
 use App\Utility\Chinghwa\ORM\ERP\HRS_Employee;
+use App\Export\Mould\FVMemberMould;
 use Input;
 
 class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
+    protected $mould;
+
     /**
      * ExcelHelper::rmi('Z') === 25
      * 
@@ -20,11 +23,13 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
      */
     public function handle($export)
     {
-        return 1 === Input::get('is_split') ? $this->split($export)->export() : $this->single($export)->export();
+        return $this->proc($export)->export();
     }
 
-    protected function single($export)
+    protected function proc($export)
     {        
+        $this->setMould(new FVMemberMould);
+
         $callLists = CampaignCallList::fetchCtiRes([
             'agentCD'    => !empty(Input::get('code')) ? explode(',', trim(Input::get('code'))) : [], 
             'sourceCD'   => !empty(Input::get('source_cd')) ? explode(',', trim(Input::get('source_cd'))) : [], 
@@ -32,81 +37,74 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             'assignDate' => trim(Input::get('assign_date'))
         ]);
 
-        $sheetName = 'export';
+        $members = $this->getMembers($callLists, ['sourceCD' => Input::get('source_cd')]);
 
-        $export->sheet($sheetName, $this->getSheetCallback($callLists));           
-
-        return $export;
-    }
-
-    protected function split($export)
-    {
-        $codes = explode(',', trim(Input::get('code')));  
-        $campaignCDs = explode(',', trim(Input::get('campaign_cd')));   
-        
-        $campaigns = $this->getCampaigns();
-
-        foreach ($campaigns as $campaign) {
-            $callLists = CampaignCallList::find([
-                'agentCD' => $codes, 
-                'campaignCD' => array_get($campaign, 'CampaignCD')
-            ]);
-
-            if (!$callLists) {
-                continue;
-            }
-
-            $sheetName = trim(array_get($campaign, 'DefSchemaCD')) . '##' . trim(array_get($campaign, 'CampaignCD'));            
-
-            $export->sheet($sheetName, $this->getSheetCallback($callLists));           
-        }
+        $export->sheet('export', $this->getSheetCallback($members));           
 
         return $export;
     }
 
-    protected function getSheetCallback($callLists)
+    public function getSheetCallback(array $members)
     {
-        return function ($sheet) use ($callLists) {
-            // Set multiple column formats
-            $sheet->setColumnFormat([
-                'A' => '@',
-                'N' => '@'
-            ]);
+        return function ($sheet) use ($members) {
+            $sheet->setColumnFormat(['A' => '@','N' => '@']);
 
-            $sheet->appendRow($this->getExportHead());
+            $sheet->appendRow($this->getMould()->getHead()); 
 
-            if (empty($callLists)) {
-                $members = $this->getCTILayoutData(Input::get('source_cd'));
-
-                foreach ($members as $member) {
-                    if (NULL === $member || !$this->inCorps($member)) {
-                        continue;
-                    } 
-
-                    $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
-
-                    $sheet->appendRow($this->getFilterMember($member, $hd, []));
-                }                
-            } else {
-                foreach ($callLists as $calllist) {                   
-                    $member = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);
-
-                    if (NULL === $member || !$this->inCorps($member)) {
-                        continue;
-                    }                
-
-                    $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
-
-                    $sheet->appendRow($this->getFilterMember($member, $hd, $calllist));
-                }  
-            }
-
+            foreach ($members as $member) {
+                $sheet->appendRow($this->getMould()->getRow($member)); 
+            }              
         };
+    }
+
+    protected function getMembers(array $callLists, array $options)
+    {
+        return empty($callLists) ? $this->getMemberDependOnFlap($options) : $this->getMemberDependBothFlapAndCTI($callLists, $options);   
+    }
+
+    protected function filterMember($member)
+    {
+        return (NULL !== $member && $this->inCorps($member));
+    }
+
+    protected function getMemberDependOnFlap(array $options)
+    {  
+        return array_filter($this->getCTILayoutData(array_get($options, 'sourceCD')), [$this, 'filterMember']);
+    }
+
+    protected function getMemberDependBothFlapAndCTI($callLists, $options)
+    {
+        $members = [];
+
+        foreach ($callLists as $calllist) {           
+            $member              = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);    
+            $member['AgentCD']   = array_get($calllist, 'AgentCD');
+            $member['AgentName'] = array_get($calllist, 'AgentName');
+
+            $members[] = $member;
+        }  
+
+        return array_filter($members, [$this, 'filterMember']);
+    }
+
+    public function getCTILayoutData($memberCode)
+    {
+        $codes = explode(',', trim($memberCode));
+
+        $sql = str_replace('$memberCode', sqlInWrap($codes), Processor::getStorageSql('CTILayout.sql'));
+        
+        return Processor::getArrayResult($sql);        
+    }
+
+    public function getCampaigns()
+    {
+        return Campaign::findValid();
     }
 
     protected function inCorps(array $member)
     {
-        $corps = Input::get('corps');
+        $corpStr = trim(Input::get('corps'));
+        $corps = !empty($corpStr) ? explode(',', $corpStr) : [];
 
         if (empty($corps)) {
             return true;
@@ -115,162 +113,27 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         return in_array(array_get($member, '部門'), $corps);
     }
 
-    protected function getFilterMember($member, $hd, $calllist)
+    /**
+     * Gets the value of mould.
+     *
+     * @return mixed
+     */
+    public function getMould()
     {
-        $this->replaceWithNewCityState($member);
-
-        return [
-            array_get($member, '會員代號'),
-            array_get($member, '會員姓名'),
-            array_get($member, '性別'),
-            array_get($member, '生日'),
-            array_get($member, '身份證號'), 
-            array_get($member, '連絡電話'), 
-            array_get($member, '公司電話'), 
-            array_get($member, '手機號碼'),
-            array_get($member, '縣市'), 
-            array_get($member, '區'),
-            array_get($member, '郵遞區號'),
-            array_get($member, '地址'),
-            array_get($member, 'e-mail'),             
-            array_get($calllist, 'AgentCD', array_get($member, '開發人代號')),    //array_get($member, '開發人代號'),    
-            array_get($calllist, 'AgentName', array_get($member, '開發人姓名')), //array_get($member, '開發人姓名'),
-            array_get($member, '會員類別代號'), 
-            array_get($member, '會員類別名稱'), 
-            array_get($member, '區別代號'),
-            array_get($member, '區別名稱'), 
-            array_get($member, '首次購物金額'),
-            array_get($member, '首次購物日'), 
-            array_get($member, '最後購物金額'),
-            array_get($member, '最後購物日'), 
-            array_get($member, '累積購物金額'),
-            array_get($member, '累積紅利點數'), 
-            array_get($member, '輔翼會員參數'),
-            array_get($hd, 'period'),
-            array_get($hd, 'hospital'),
-            $this->genVigaFormatFlagStr($member)
-        ];
+        return $this->mould;
     }
 
-    public function getCampaigns()
+    /**
+     * Sets the value of mould.
+     *
+     * @param mixed $mould the mould
+     *
+     * @return self
+     */
+    protected function setMould($mould)
     {
-        return Campaign::findValid();
-    }
+        $this->mould = $mould;
 
-    protected function replaceWithNewCityState(&$member) 
-    {
-        $state = State::findByZipcode(array_get($member, '郵遞區號'))->first();
-
-        if ($state) {
-            $member['縣市'] = $state->city()->first()->name;
-            $member['區'] = $state->name;
-        }
-    }
-
-    public function getCTILayoutData($memberCode)
-    {
-        $codes = explode(',', trim($memberCode));
-
-        $sql = str_replace('$memberCode', sqlInWrap($codes), Processor::getStorageSql('CTILayout.sql'));
-
-        return Processor::getArrayResult($sql);        
-    }
-
-    protected function genVigaFormatFlagStr($member)
-    {
-        $flagStr = '';
-
-        for ($i = 1; $i <= 40; $i ++) {
-            $flag = "Distflags_{$i}";
-
-            $flagChar = substr(array_get($member, $flag), 0, 1);
-
-            $flagStr .= empty($flagChar) ? '^' : $flagChar; 
-        }
-
-        return $flagStr;
-    }
-
-    protected function getExportHead()
-    {
-        return [
-            '會員代號', 
-            '會員姓名', 
-            '性別', 
-            '生日', 
-            '身份證號', 
-            '連絡電話', 
-            '公司電話', 
-            '手機號碼', 
-            '縣市', 
-            '區', 
-            '郵遞區號', 
-            '地址', 
-            'e-mail', 
-            '開發人代號', 
-            '開發人姓名', 
-            '會員類別代號', 
-            '會員類別名稱', 
-            '區別代號', 
-            '區別名稱', 
-            '首次購物金額', 
-            '首次購物日', 
-            '最後購物金額', 
-            '最後購物日', 
-            '累積購物金額', 
-            '累積紅利點數', 
-            '輔翼會員參數', 
-            '預產期', 
-            '醫院',
-            '旗標'
-        ];
-    }
-
-    protected function getHospitalAndPeriod($memos)
-    {
-        $arr = $this->convertMemoStrToArr($memos);
-
-        return 4 > count($arr) ? $this->getResproto() : $this->fillRes($arr);
-    }
-
-    protected function convertMemoStrToArr(array $memos)
-    {
-        $arr = [];
-
-        foreach ($memos as $memo) {
-            $arr = explode(';', $memo);
-
-            if (3 >= count($arr)) {
-                $arr = [];
-
-                continue;
-            }
-
-            break;
-        }
-
-        return $arr;
-    }
-
-    protected function getResproto()
-    {
-        return ['hospital' => '', 'period' => ''];
-    }
-
-    protected function fillRes(array $arr)
-    {
-        $res = $this->getResproto();
-
-        foreach ($arr as $val) {
-            if (false !== strpos($val, '生產醫院')) {
-                $res['hospital'] = trim(str_replace('生產醫院:', '', $val));
-            }
-
-            if (false !== strpos($val, '預產期')) {
-                $res['period'] = preg_replace('/[^0-9]/', '', $val);
-            }
-        }
-
-        return $res;
+        return $this;
     }
 }
