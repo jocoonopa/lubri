@@ -78,4 +78,10 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
         Route::get('/', ['uses' => 'DirectSaleCorp3TraceController@index', 'as' => 'directsale_corp3_trace_index']);
         Route::get('/process', ['uses' => 'DirectSaleCorp3TraceController@process', 'as' => 'directsale_corp3_trace_process', 'middleware' => 'report']);
     });
+
+    // 每日業績商品版
+    // DSRProductController
+    Route::group(['prefix' => 'dsr_product'], function () {
+        Route::get('/', ['uses' => 'DSRProductController@index']);
+    });
 });

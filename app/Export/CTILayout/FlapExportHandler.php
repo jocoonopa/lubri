@@ -23,11 +23,6 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
      */
     public function handle($export)
     {
-        return $this->proc($export)->export();
-    }
-
-    protected function proc($export)
-    {        
         $this->setMould(new FVMemberMould);
 
         $callLists = CampaignCallList::fetchCtiRes([
@@ -37,24 +32,29 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             'assignDate' => trim(Input::get('assign_date'))
         ]);
 
-        $members = $this->getMembers($callLists, ['sourceCD' => Input::get('source_cd')]);
-
-        $export->sheet('export', $this->getSheetCallback($members));           
-
-        return $export;
+        return $export->setFile($this->appendToFile( $this->getMembers($callLists, ['sourceCD' => Input::get('source_cd')])));
     }
 
-    public function getSheetCallback(array $members)
+    protected function appendToFile(array $members)
     {
-        return function ($sheet) use ($members) {
-            $sheet->setColumnFormat(['A' => '@','N' => '@']);
+        if (!file_exists(storage_path('excel/exports/ctilayout/'))) {
+            mkdir(storage_path('excel/exports/ctilayout/'), 0777);
+        }
 
-            $sheet->appendRow($this->getMould()->getHead()); 
+        $fname = storage_path('excel/exports/ctilayout/') . str_replace(',', '-', Input::get('campaign_cd')) . '_' . time() . '.csv';
 
-            foreach ($members as $member) {
-                $sheet->appendRow($this->getMould()->getRow($member)); 
-            }              
-        };
+        $file = fopen($fname, 'w');
+
+        foreach ($members as $member) {
+            $appendStr = implode(',', $this->getMould()->getRow($member));
+            $appendStr = cb5($appendStr);
+
+            fwrite($file, $appendStr . "\r\n");
+        }   
+
+        fclose($file);
+
+        return $fname;
     }
 
     protected function getMembers(array $callLists, array $options)

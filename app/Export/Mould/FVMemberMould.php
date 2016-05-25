@@ -45,36 +45,41 @@ class FVMemberMould
         $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
 
         return [
-            array_get($member, '會員代號'),
-            array_get($member, '會員姓名'),
-            array_get($member, '性別'),
-            array_get($member, '生日'),
-            array_get($member, '身份證號'), 
-            array_get($member, '連絡電話'), 
-            array_get($member, '公司電話'), 
-            array_get($member, '手機號碼'),
-            array_get($member, '縣市'), 
-            array_get($member, '區'),
-            array_get($member, '郵遞區號'),
-            array_get($member, '地址'),
-            array_get($member, 'e-mail'),             
-            array_get($member, 'AgentCD', array_get($member, '開發人代號')),    //array_get($member, '開發人代號'),    
-            array_get($member, 'AgentName', array_get($member, '開發人姓名')), //array_get($member, '開發人姓名'),
-            array_get($member, '會員類別代號'), 
-            array_get($member, '會員類別名稱'), 
-            array_get($member, '區別代號'),
-            array_get($member, '區別名稱'), 
-            array_get($member, '首次購物金額'),
-            array_get($member, '首次購物日'), 
-            array_get($member, '最後購物金額'),
-            array_get($member, '最後購物日'), 
-            array_get($member, '累積購物金額'),
-            array_get($member, '累積紅利點數'), 
-            array_get($member, '輔翼會員參數'),
-            array_get($hd, 'period'),
-            array_get($hd, 'hospital'),
+            $this->transfer(array_get($member, '會員代號')),
+            $this->transfer(array_get($member, '會員姓名')),
+            $this->transfer(array_get($member, '性別')),
+            $this->transfer(array_get($member, '生日')),
+            $this->transfer(array_get($member, '身份證號')), 
+            $this->transfer(array_get($member, '連絡電話')), 
+            $this->transfer(array_get($member, '公司電話')), 
+            $this->transfer(array_get($member, '手機號碼')),
+            $this->transfer(array_get($member, '縣市')), 
+            $this->transfer(array_get($member, '區')),
+            $this->transfer(array_get($member, '郵遞區號')),
+            $this->transfer(array_get($member, '地址')),
+            $this->transfer(array_get($member, 'e-mail')),             
+            $this->transfer(array_get($member, 'AgentCD', array_get($member, '開發人代號'))),    //array_get($member, '開發人代號'),    
+            $this->transfer(array_get($member, 'AgentName', array_get($member, '開發人姓名'))), //array_get($member, '開發人姓名'),
+            $this->transfer(array_get($member, '會員類別代號')), 
+            $this->transfer(array_get($member, '會員類別名稱')), 
+            $this->transfer(array_get($member, '區別代號')),
+            $this->transfer(array_get($member, '區別名稱')), 
+            $this->transfer(array_get($member, '首次購物金額')),
+            $this->transfer(array_get($member, '首次購物日')), 
+            $this->transfer(array_get($member, '最後購物金額')),
+            $this->transfer(array_get($member, '最後購物日')), 
+            $this->transfer(array_get($member, '累積購物金額')),
+            $this->transfer(array_get($member, '累積紅利點數')), 
+            $this->transfer(array_get($member, '輔翼會員參數')),
+            $this->transfer(array_get($hd, 'period')),
+            $this->transfer(array_get($hd, 'hospital')),
             $this->genVigaFormatFlagStr($member)
         ];
+    }
+
+    protected function transfer($str)
+    {
+        return trim(nfTowf($str, 0));
     }
 
     public function getHead()
@@ -149,6 +154,10 @@ class FVMemberMould
 
             if (false !== strpos($val, '預產期')) {
                 $res['period'] = preg_replace('/[^0-9]/', '', $val);
+
+                if (6 === mb_strlen($res['period'])) {
+                    $res['period'] .= '01';
+                }
             }
         }
 

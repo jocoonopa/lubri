@@ -17,6 +17,10 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     {
         $this->setMould(new FVMemberMould);
 
+        if (!file_exists(storage_path('excel/exports/fvimport/'))) {
+            mkdir(storage_path('excel/exports/fvimport/'), 0777);
+        }
+        
         $fname = storage_path('excel/exports/fvimport/') . 'member_export_' . time() . '.csv';
 
         $file = fopen($fname, 'w');
@@ -46,7 +50,10 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             }
             
             foreach ($members as $member) {
-                fwrite($file, implode(',', $this->getMould()->getRow($member)) . "\r\n");
+                $appendStr = implode(',', $this->getMould()->getRow($member));
+                $appendStr = cb5($appendStr);
+
+                fwrite($file, $appendStr . "\r\n");
             }
 
             $i = $i + $export->getSize() + 1;

@@ -9,6 +9,7 @@ storage/excel/exports/posmember/
 storage/excel/import
 storage/logs
 public/web.config
+public/Microsoft
 .phpintel/
 composer.lock
 /bin
