@@ -28,6 +28,8 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         $this->proc($export, $file);
 
         fclose($file);
+
+        $export->getCommend()->comment("\r\n\r\n{$fname}");
         
         return $export->setInfo($fname);
     }

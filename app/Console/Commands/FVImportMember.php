@@ -54,6 +54,6 @@ class FVImportMember extends Command
             ->handleExport()
         ;
 
-        $this->comment("\r\nExport Complete!");
+        $this->comment("Export Complete!");
     }
 }
