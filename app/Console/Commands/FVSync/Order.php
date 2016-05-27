@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\FVSync;
 
 use App\Export\FVSync\OrderExport;
 use Illuminate\Console\Command;
 
-class FVSyncOrder extends Command
+class Order extends Command
 {
     /**
      * The name and signature of the console command.

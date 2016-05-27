@@ -1,13 +1,23 @@
 <?php
-
-namespace App\Console\Commands;
+/*
+ * This file is extends of Class Command.
+ *
+ * (c) Jocoonopa <jocoonopa@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace App\Console\Commands\FVSync;
 
 use App\Export\FVSync\MemberExport;
 use App\Model\Log\FVSyncLog;
 use App\Model\Log\FVSyncType;
 use Illuminate\Console\Command;
 
-class FVSyncMember extends Command
+/**
+ * To Sync Flap/Ensound and Viga Member
+ */
+class Member extends Command
 {
     const MAX_LIMIT = 4000;
 
@@ -57,12 +67,12 @@ class FVSyncMember extends Command
 
         $this->comment('Processing, please wait ...');
         
-        $this->_run($export);
+        $this->proc($export);
 
         $this->comment($export->getFilename());
     }
 
-    protected function _run(MemberExport $export)
+    protected function proc(MemberExport $export)
     {
         $startTime = microtime(true);
 

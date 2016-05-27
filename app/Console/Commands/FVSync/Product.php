@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\FVSync;
 
+use App\Export\FVSync\ProductExport;
 use Illuminate\Console\Command;
 
-class FVImportOrder extends Command
+class Product extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'importorder:fv';
+    protected $signature = 'syncproduct:fv';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Export Flap Data and trans to Viga';
 
     /**
      * Create a new command instance.
@@ -35,8 +36,8 @@ class FVImportOrder extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(ProductExport $export)
     {
-        //
+        $this->comment($export->getFilename());
     }
 }

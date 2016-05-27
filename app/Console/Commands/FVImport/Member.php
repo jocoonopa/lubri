@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\FVImport;
 
 use App\Export\FVImport\MemberExport;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class FVImportMember extends Command
+class Member extends Command
 {
     /**
      * The name and signature of the console command.
@@ -41,8 +41,6 @@ class FVImportMember extends Command
     {
         set_time_limit(0);
 
-        //$this->comment(getLastLineOfFile(storage_path('excel/exports/fvimport/') . 'member_export.csv'));
-
         $this->info("\r\n\r\n------------- {$export->getFilename()} MemberExportProcess Begin! -------------\r\n\r\n");
 
         $export
@@ -54,6 +52,6 @@ class FVImportMember extends Command
             ->handleExport()
         ;
 
-        $this->comment("Export Complete!");
+        $this->comment("\r\nExport Complete!");
     }
 }

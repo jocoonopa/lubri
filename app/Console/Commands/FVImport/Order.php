@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\FVImport;
 
 use Illuminate\Console\Command;
 
-class FVImportProduct extends Command
+class Order extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'importproduct:fv';
+    protected $signature = 'importorder:fv';
 
     /**
      * The console command description.

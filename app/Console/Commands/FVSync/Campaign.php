@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\FVSync;
 
-use App\Export\FVSync\ProductExport;
+use App\Export\FVSync\MemberExport;
+use App\Model\Log\FVSyncLog;
+use App\Model\Log\FVSyncType;
 use Illuminate\Console\Command;
 
-class FVSyncProduct extends Command
+class Campaign extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'syncproduct:fv';
+    protected $signature = 'synccampaign:fv {max=500 : The maximum members select once query execute}';
 
     /**
      * The console command description.
@@ -32,12 +34,9 @@ class FVSyncProduct extends Command
     }
 
     /**
-     * Execute the console command.
-     *
      * @return mixed
      */
-    public function handle(ProductExport $export)
+    public function handle(MemberExport $export)
     {
-        $this->comment($export->getFilename());
     }
 }
