@@ -5,14 +5,16 @@ namespace App\Http\Controllers\Flap\POS_Member;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Http\Requests\Flap\POS_Member\ImportTaskRequest;
+use App\Model\Flap\PosMemberImportContent;
 use App\Model\Flap\PosMemberImportKind;
 use App\Model\Flap\PosMemberImportTask;
-use App\Model\Flap\PosMemberImportContent;
 use App\Utility\Chinghwa\Database\Connectors\Connector;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\Export\ImportTaskExport;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\Import;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportFilter;
+use Auth;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Input;
@@ -132,7 +134,14 @@ class ImportTaskController extends Controller
 
     public function importProgress()
     {
-        return PosMemberImportTask::latest()->first()->content->count();
+        return PosMemberImportTask::latest()
+            ->where('user_id', Auth::user()->id)
+            ->where('import_cost_time', 0)
+            ->where('insert_count', 0)
+            ->where('update_count', 0)
+            ->where('created_at', '>=', Carbon::now()->modify('-10 minutes'))
+            ->first()->content->count()
+        ;
     }
 
     public function pullProgress(PosMemberImportTask $task)

@@ -10,7 +10,7 @@ class ImportTaskRequest extends Request
         'name'        => 'required|max:100|unique:pos_member_import_task',
         'category'    => 'required',
         'distinction' => 'required',
-        'file'        => 'required|max:5000|mimes:xls' //a required, max 5000kb, xls
+        'file'        => 'required|max:5000' //a required, max 5000kb, xls
     ];
 
     /**

@@ -10,10 +10,14 @@ use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Lyin\Adapter;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Lyin\ModelFactory;
 use Auth;
 use DB;
+use Excel;
 use Input;
 
 class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler 
 {
+    /**
+     * $this->import->skip(1) is type of \Maatwebsite\Excel\Readers\LaravelExcelReader
+     */
     protected $import;
 
     /**
@@ -59,10 +63,9 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
     {
         $this->import = $import;
 
-        //DB::transaction(function() {
-            $this->task = $this->createNewTask();
-
-            $kind = $this->task->kind()->first();            
+        try {
+            $this->task   = $this->createNewTask();
+            $kind         = $this->task->kind()->first();            
             $factoryClass = $kind->factory;
             $adapterClass = $kind->adapter;
 
@@ -75,12 +78,26 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
                 _Import::OPTIONS_INSERTFLAG  => Input::get(_Import::OPTIONS_INSERTFLAG),
                 _Import::OPTIONS_UPDATEFLAG  => Input::get(_Import::OPTIONS_UPDATEFLAG)
             ]);            
-            
-            $this->import->skip(1)->calculate(false)->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback());
+                        
+            // $this->import->skip(1)->calculate(false)->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback()); 
+            // 無法處理多個 sheets 的 bug，因此改為下面的方式處理:
+            //======================================================//                                   
+            // 取得上傳暫存檔路徑
+            $filePath = $this->import->skip(0)->file;
+
+            // 透過直接指定選擇第一個sheet的方式，繞過 chunk 的 bug
+            Excel::filter('chunk')
+                ->selectSheetsByIndex(0)
+                ->load($filePath)
+                ->skip(1) 
+                ->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback())
+            ;
+            //======================================================//
 
             $this->_removeDuplicate()->_saveTaskStatic();
-        //});        
-
+        } catch (\Exception $e) {
+            $this->task->delete();
+        }
         return $this->task;
     }
 
@@ -103,16 +120,18 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
 
     /**
      * 上傳檔案時須先把多餘的工作表刪除，否則 chunk 會有問題
+     *
+     * Laravel Collection: https://laravel.com/docs/5.1/collections
      * 
      * @return mixed
      */
     protected function getChunkCallback() {
-        return function ($sheet) {
-            foreach ($sheet as $row) {                    
+        return function ($collection) {
+            foreach ($collection as $row) {
                 $this->_iterateProcess($row);
 
                 $this->currentRowNum ++;
-            }             
+            }
         };
     }
 
