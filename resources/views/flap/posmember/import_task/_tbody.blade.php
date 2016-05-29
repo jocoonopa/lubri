@@ -1,16 +1,17 @@
 <tr class=@if(NULL !== $task->executed_at)"success"@endif>
     <td><a href="/flap/pos_member/import_task/{{ $task->id }}">{{ $task->name }}</a></td>
-    <td>{{ $task->import_cost_time . '秒'}}</td>
+    {{--<td>{{ $task->import_cost_time . '秒'}}</td>
     <td>
         @if(NULL !== $task->executed_at){{ $task->execute_cost_time . '秒'}}
         @else <span class="label label-default">NOT YET</span>    
         @endif
-    </td>
+    </td>--}}
     <td>{{ ($task->insert_count + $task->update_count) . '筆' }}</td>
-    <td>{{ $task->content()->isExecuted()->count() . '筆'}}</td>
+    {{-- <td>{{ $task->content()->isExecuted()->count() . '筆'}}</td> --}}
     <td>{{ $task->created_at->format('Y-m-d H:i:s') }}</td>
-    <td>@if(NULL !== $task->executed_at){{ $task->executed_at}}@else <span class="label label-default">NOT YET</span> @endif</td>
+    {{--<td>@if(NULL !== $task->executed_at){{ $task->executed_at}}@else <span class="label label-default">NOT YET</span> @endif</td>--}}
     <td>{{ $task->user->username }}</td>
+    <td>{!! $task->getStatusName() !!}</td>
     @if (NULL === $task->executed_at)
     <td>                            
         {!! Form::open(['method' => 'DELETE', 'action' => ['Flap\POS_Member\ImportTaskController@destroy', $task->id]]) !!}

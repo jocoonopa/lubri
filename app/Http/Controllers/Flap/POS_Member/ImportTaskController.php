@@ -21,6 +21,17 @@ use Input;
 use Response;
 use Session;
 
+/**
+ * --------------------------------------- 匯入部分說明 -----------------------------------------
+ * 
+ * 1. 不論是匯入, 更新, 推送的 progress, 統一在 list 頁面點擊 button 查看(invoke taskProgress(), implement with modal)
+ * 2. 狀態為匯入中, 更新中, 或是推送中，隱藏原本的操作按鈕，改為顯示一動態 css3 loading 圖示, 以及一個查看進度按鈕[B1]
+ * 3. 點擊[B1]會pop 一個 modal[M1], [M1] 有 progress bar, 總處理筆數以及目前已經處理筆數
+ * 
+ * 其中匯入這邊做法流程要稍微調整。
+ * 必須先建立 importProgress
+ * 
+ */
 class ImportTaskController extends Controller
 {
     public function __construct()
@@ -112,6 +123,7 @@ class ImportTaskController extends Controller
         $end = microtime(true);
 
         $task->import_cost_time = floor($end - $start);
+        $task->status_code = PosMemberImportTask::STATUS_IMPORTING;
         $task->save();
 
         Session::flash('success', "成功新增任務{$task->name}@{$task->kind()->first()->name}!");
@@ -132,16 +144,21 @@ class ImportTaskController extends Controller
         return redirect("/flap/pos_member/import_task?kind_id={$task->kind()->first()->id}");
     }
 
-    public function importProgress()
+    /**
+     * Return json string response
+     *
+     * @return mixed json response
+     */
+    public function importProgress(PosMemberImportTask $task)
     {
-        return PosMemberImportTask::latest()
-            ->where('user_id', Auth::user()->id)
-            ->where('import_cost_time', 0)
-            ->where('insert_count', 0)
-            ->where('update_count', 0)
-            ->where('created_at', '>=', Carbon::now()->modify('-10 minutes'))
-            ->first()->content->count()
-        ;
+        $task = PosMemberImportTask::latest()->where('user_id', Auth::user()->id)->where('status_code', PosMemberImportTask::IMPORTING)->first();
+
+        return response()->json([
+            'task_id'        => $task->id, 
+            'task_name'      => $task->name,
+            'total_count'    => $task->total_count,
+            'imported_count' => $task->content->count()
+        ]);
     }
 
     public function pullProgress(PosMemberImportTask $task)

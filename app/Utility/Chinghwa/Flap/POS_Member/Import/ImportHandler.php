@@ -64,7 +64,24 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
         $this->import = $import;
 
         try {
-            $this->task   = $this->createNewTask();
+            // $this->import->skip(1)->calculate(false)->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback()); 
+            // 無法處理多個 sheets 的 bug，因此改為下面的方式處理:
+            //======================================================//                                   
+            // 取得上傳暫存檔路徑
+            $filePath = $this->import->skip(0)->file;
+
+            // 透過直接指定選擇第一個sheet的方式，繞過 chunk 的 bug
+            $reader = Excel::filter('chunk')
+                ->selectSheetsByIndex(0)
+                ->load($filePath)
+                ->skip(1);
+
+            $totalRows = $reader->getTotalRowsOfFile();
+
+            
+            //======================================================//
+            
+            $this->task   = $this->createNewTask($totalRows);
             $kind         = $this->task->kind()->first();            
             $factoryClass = $kind->factory;
             $adapterClass = $kind->adapter;
@@ -77,22 +94,9 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
                 _Import::OPTIONS_CATEGORY    => PosMemberImportTask::getCategorySerNo(Input::get(_Import::OPTIONS_CATEGORY)),
                 _Import::OPTIONS_INSERTFLAG  => Input::get(_Import::OPTIONS_INSERTFLAG),
                 _Import::OPTIONS_UPDATEFLAG  => Input::get(_Import::OPTIONS_UPDATEFLAG)
-            ]);            
-                        
-            // $this->import->skip(1)->calculate(false)->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback()); 
-            // 無法處理多個 sheets 的 bug，因此改為下面的方式處理:
-            //======================================================//                                   
-            // 取得上傳暫存檔路徑
-            $filePath = $this->import->skip(0)->file;
-
-            // 透過直接指定選擇第一個sheet的方式，繞過 chunk 的 bug
-            Excel::filter('chunk')
-                ->selectSheetsByIndex(0)
-                ->load($filePath)
-                ->skip(1) 
-                ->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback())
-            ;
-            //======================================================//
+            ]);                                    
+            
+            $reader->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback());
 
             $this->_removeDuplicate()->_saveTaskStatic();
         } catch (\Exception $e) {
@@ -101,12 +105,14 @@ class ImportHandler implements \Maatwebsite\Excel\Files\ImportHandler
         return $this->task;
     }
 
-    protected function createNewTask()
+    protected function createNewTask($totalRows = 0)
     {
         $task = new PosMemberImportTask;
 
         $task->user_id      = Auth::user()->id;
         $task->name         = Input::get('name');
+        $task->status_code  = PosMemberImportTask::STATUS_IMPORTING;
+        $task->total_count  = $totalRows;
         $task->distinction  = Input::get(_Import::OPTIONS_DISTINCTION);
         $task->category     = Input::get(_Import::OPTIONS_CATEGORY);
         $task->update_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_INSERTFLAG));

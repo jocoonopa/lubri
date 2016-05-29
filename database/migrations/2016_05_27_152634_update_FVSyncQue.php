@@ -43,6 +43,6 @@ class UpdateFVSyncQue extends Migration
      */
     public function down()
     {
-        //
+        
     }
 }

@@ -56,7 +56,7 @@ function getLiStyleListGroupItemString(columnName, colVal)
 
 function submitTaskCreateForm()
 {
-    $blockUI(); 
+    $importBlockUI(); 
     initMsg = '(請勿關閉視窗) 檔案匯入中，請稍後...';
 
     $('form#import-task').submit();
@@ -145,7 +145,7 @@ $('.import-task-push').click(function () {
         }, 
         callback: function(result) {
             if (true === result) {
-                $blockUI();
+                $importBlockUI();
                 window.location.href = $this.attr('href'); 
 
                 var taskId = $this.data('task-id');
@@ -172,7 +172,7 @@ $('.import-task-pull').click(function () {
         }, 
         callback: function(result) {
             if (true === result) {
-                $blockUI();
+                $importBlockUI();
                 window.location.href = $this.attr('href'); 
                 ImportTask_loadPullProgress_init();            
             } else {
@@ -234,7 +234,7 @@ function ImportTask_loadPullProgress(timedistance, taskId) {
 }
 
 function ImportTask_loadImportProgress_init() {
-    $('.blockMsg').text(initMsg);
+    $('.blockMsg').find('p').text(initMsg);
             
     return ImportTask_loadImportProgress(2000);
 }
@@ -245,10 +245,13 @@ function ImportTask_loadImportProgress(timedistance) {
         
         $.get('/flap/pos_member/import_task/import_progesss', function(importedCount){
             if (0 === parseInt(importedCount)) {
-                $('.blockMsg').text(initMsg);
+                $('.blockMsg').find('p').text(initMsg);
+                $('.blockMsg').find('.progress-bar').css('width', '0%');
+
                 nextTimeDis = 5000;
             } else {
-                $('.blockMsg').text('(請勿關閉視窗) 已匯入' + importedCount + '筆');
+                $('.blockMsg').find('p').html('已匯入<b>' + importedCount + '</b>筆');
+                $('.blockMsg').find('.progress-bar').css('width', Math.floor(Math.random() * 100)  + '%');
                 nextTimeDis = 1500;
             }
         })
@@ -258,7 +261,7 @@ function ImportTask_loadImportProgress(timedistance) {
 }
 
 function trick_load_progress(id) {
-    $blockUI(); ImportTask_loadPushProgress_init(id);
+    $importBlockUI(); ImportTask_loadPushProgress_init(id);
 }
 
 $('.check-component').find('.check-all').click(function () {
