@@ -8,7 +8,9 @@ use Carbon\Carbon;
 class OnlyEcExport extends Export
 {
     protected $to = [
-        'darren@chinghwa.com.tw' => '6804張碩'
+        'darren@chinghwa.com.tw'   => '6804張碩',
+        'Merc0918@chinghwa.com.tw' => '羅偉銘',
+        'Tina.lin@chinghwa.com.tw' => '林玉樺'
     ];
 
     protected $cc = [
