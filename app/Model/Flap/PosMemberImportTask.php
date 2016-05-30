@@ -9,6 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class PosMemberImportTask extends Model
 {
+    const STATUS_INIT       = 0;
+    const STATUS_IMPORTING  = 1;
+    const STATUS_TOBEPUSHED = 2;
+    const STATUS_PUSHING    = 3;
+    const STATUS_COMPLETED  = 4;
+    const STATUS_PULLING    = 5;
+
     /**
      * The database table used by the model.
      *
@@ -27,6 +34,8 @@ class PosMemberImportTask extends Model
         'name',
         'user_id',
         'executed_at',
+        'total_count',
+        'status_code',
         'update_count',
         'insert_count',
         'error',
@@ -42,7 +51,7 @@ class PosMemberImportTask extends Model
     ];
 
     protected $casts = [
-        'error' => 'array',
+        'error'        => 'array',
         'insert_flags' => 'array',
         'update_flags' => 'array'
     ];
@@ -56,6 +65,35 @@ class PosMemberImportTask extends Model
         ]), true);
 
         parent::__construct($attributes);
+    }
+
+    /**
+     * 取得任務狀態名稱
+     * 
+     * @return string
+     */
+    public function getStatusName()
+    {
+        $status = [
+            '<span class="text-muted">建立中</span>', 
+            '<span class="text-warning">匯入中</span>', 
+            '<span class="text-primary">等待推送</span>', 
+            '<span class="text-warning">推送中</span>', 
+            '<span class="text-success">推送完成</span>', 
+            '<span class="text-warning">同步中</span>'
+        ];
+
+        return array_get($status, $this->status_code, 'unknown');
+    }
+
+    /**
+     * 判斷任務是否處於處理中狀態
+     * 
+     * @return boolean
+     */
+    public function isProgressing()
+    {
+        return in_array($this->status_code, [self::STATUS_INIT, self::STATUS_IMPORTING, self::STATUS_PUSHING, self::STATUS_PULLING]);
     }
 
     /**

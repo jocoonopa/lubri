@@ -69,18 +69,31 @@ class ImportPushController extends Controller
     {
         set_time_limit(0);
 
-        $task->updated_at = new \DateTime();
-        $task->save();
+        try {
+            $task->updated_at = new \DateTime();
+            $task->status_code = PosMemberImportTask::PULLING;
+            $task->save();
 
-        $task->content()->isNotExecuted()->chunk(Import::CHUNK_SIZE, function ($contents) {           
-            $contents->each(function ($content) {
-                $content->setIsExist(ModelFactory::getExistOrNotByContent($content));
-                $content->save();           
+            $task->content()->isNotExecuted()->chunk(Import::CHUNK_SIZE, function ($contents) {           
+                $contents->each(function ($content) {
+                    $content->setIsExist(ModelFactory::getExistOrNotByContent($content));
+                    $content->save();           
+                });
             });
-        });
 
-        Session::flash('success', "<b>{$task->name}<b> 與ERP資料同步完成!");
+            $task->updated_at = new \DateTime();
+            $task->status_code = PosMemberImportTask::TOBEPUSHED;
+            $task->save();
 
+            Session::flash('success', "<b>{$task->name}<b> 與ERP資料同步完成!");
+        } catch (\Exception $e) {
+            $task->updated_at = new \DateTime();
+            $task->status_code = PosMemberImportTask::TOBEPUSHED;
+            $task->save();
+
+            Session::flash('error', "<b>{$task->name}<b> {$e->getMessage()}");
+        }
+        
         return redirect("/flap/pos_member/import_task/{$task->id}"); 
     }
 

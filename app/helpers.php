@@ -14,6 +14,11 @@ function cb5($str)
     return mb_convert_encoding($str, 'big5', 'UTF-8');
 }
 
+function csvStrFilter($str)
+{
+    return str_replace([',', "\n", "\r"], '', $str);
+}
+
 function srp($str, $placeholder = [])
 {
     return str_replace(getReplaceWords(), $placeholder, $str);
