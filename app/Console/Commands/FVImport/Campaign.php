@@ -156,7 +156,7 @@ class Campaign extends Command
      */
     protected function strProc($str)
     {
-        return str_replace([',', "\n", "\r"], '', trim(nfTowf($str)));
+        return csvStrFilter(trim(nfTowf($str)));
     }
 
     /**

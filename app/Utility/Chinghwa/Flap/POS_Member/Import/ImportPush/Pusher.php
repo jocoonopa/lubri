@@ -27,24 +27,40 @@ abstract class Pusher implements IPusher
     {
         $startTime = microtime(true);
 
+        $task->status_code = PosMemberImportTask::STATUS_COMPLETED;
+        $task->save();
+
         return $this->pushTaskDaemon($task)->taskUpdateProc($task, $startTime);
     }
 
     protected function pushTaskDaemon(PosMemberImportTask $task)
     {
-        $contents = $task->content()->isNotExecuted()->take(Import::CHUNK_SIZE)->get();
-        
-        $contents->each(function ($content) {
-            $this->proc($content);            
-        });
+        try {            
+            $contents = $task->content()->isNotExecuted()->take(Import::CHUNK_SIZE)->get();
+            
+            $contents->each(function ($content) {
+                $this->proc($content);            
+            });
 
-        return 0 === $task->content()->isNotExecuted()->count() ? $this : $this->pushTaskDaemon($task);
+            return $this->hasNotExcuted($task) ? $this->pushTaskDaemon($task) : $this;
+        } catch (\Exception $e) {
+            $task->status_code = PosMemberImportTask::STATUS_TOBEPUSHED;
+            $task->save();
+
+            Log::error($e->getMessage());
+        }        
+    }
+
+    protected function hasNotExcuted(PosMemberImportTask $task)
+    {
+        return 0 < $task->content()->isNotExecuted()->count();
     }
 
     protected function taskUpdateProc(PosMemberImportTask $task, $startTime)
     {
-        $task->executed_at = new \DateTime();
+        $task->executed_at       = new \DateTime();
         $task->execute_cost_time = floor(microtime(true) - $startTime);
+        $task->status_code       = PosMemberImportTask::STATUS_COMPLETED;
         $task->save();
 
         return $task;

@@ -44,7 +44,7 @@ class FVMemberMould
 
         $hd = $this->getHospitalAndPeriod([array_get($member, '備註'), array_get($member, '備註1'), array_get($member, '備註2')]);
 
-        return [
+        $arr = [
             $this->transfer(array_get($member, '會員代號')),
             $this->transfer(array_get($member, '會員姓名')),
             $this->transfer(array_get($member, '性別')),
@@ -72,14 +72,17 @@ class FVMemberMould
             $this->transfer(array_get($member, '累積紅利點數')), 
             $this->transfer(array_get($member, '輔翼會員參數')),
             $this->transfer(array_get($hd, 'period')),
-            $this->transfer(array_get($hd, 'hospital')),
-            $this->genVigaFormatFlagStr($member)
+            $this->transfer(array_get($hd, 'hospital'))
         ];
+
+        $this->injectFlag($arr, $member);
+
+        return $arr;
     }
 
     protected function transfer($str)
     {
-        return trim(nfTowf($str, 0));
+        return csvStrFilter(trim(nfTowf($str, 0)));
     }
 
     public function getHead()
@@ -97,6 +100,27 @@ class FVMemberMould
         }
     }
 
+    /**
+     * 將旗標注入陣列
+     * 
+     * @param  array  &$arr  
+     * @param  array  $member [Query member result array]
+     * @return void
+     */
+    protected function injectFlag(array &$arr, array $member)
+    {
+        for ($i = 1; $i <= 40; $i ++) {
+            $flag = "Distflags_{$i}";
+
+            $flagChar = trim(array_get($member, $flag));
+
+            $arr[] = $flagChar;
+        }
+    }
+
+    /**
+     * @deprecated v20160530 [Viga change import columns, flag need to seperate to 40 independent columns]
+     */
     protected function genVigaFormatFlagStr($member)
     {
         $flagStr = '';

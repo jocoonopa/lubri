@@ -28,6 +28,6 @@
 
 @section('js')
 <script src="/assets/js/jquery.blockui.js"></script>
-<script src="/assets/js/facade.js"></script>
-<script src="/assets/js/importtask.js"></script>
+<script src="/assets/js/facade.js?v={{time()}}"></script>
+<script src="/assets/js/importtask.js?v={{time()}}"></script>
 @stop
