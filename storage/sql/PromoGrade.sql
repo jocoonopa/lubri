@@ -26,7 +26,7 @@ SELECT
     WHEN LEN(p2.Code)>0 THEN '滿額贈' 
     WHEN LEN(p3.Code)>0 THEN '商品配套' 
     WHEN LEN(p4.Code)>0 THEN '組合促銷' ELSE NULL END 促銷種類
-FROM CCS_OrderDetails od
+FROM CCS_OrderDetails od WITH(NOLOCK)
     LEFT JOIN CCS_OrderIndex o ON od.IndexSerNo=o.SerNo
     LEFT JOIN PIS_Goods g ON od.GoodsSerNo=g.SerNo
     LEFT JOIN FAS_Corp c ON o.DeptSerNo=c.SerNo

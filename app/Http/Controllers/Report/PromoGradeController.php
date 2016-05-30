@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Report;
 use App\Http\Controllers\Controller;
 use App\Utility\Chinghwa\ExportExcel;
 use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
+use Carbon\Carbon;
+use Input;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
-use Input;
 
 class PromoGradeController extends Controller
 {
@@ -43,11 +44,13 @@ class PromoGradeController extends Controller
 
     protected function getQuery()
     {
-        $date = new \DateTime;
+        $dateBegin = '1' == Input::get('week') ? Carbon::now()->modify('first day of this month')->format('Ymd'): Carbon::now()->modify('first day of last month')->format('Ymd'); 
+
+        $dateEnd = '1' == Input::get('week') ? Carbon::now()->modify('last day of this month')->format('Ymd'): Carbon::now()->modify('last day of last month')->format('Ymd');
 
         return str_replace(
             ['$dateBegin', '$dateEnd'],
-            [$date->modify('first day of last month')->format('Ymd'), $date->modify('last day of this month')->format('Ymd')],
+            [$dateBegin, $dateEnd],
             file_get_contents(__DIR__ . '/../../../../storage/sql/PromoGrade.sql')
         );
     }
@@ -93,10 +96,7 @@ class PromoGradeController extends Controller
 
     protected function getFileName()
     {
-        $date = new \DateTime;
-        $date->modify('-1 month');
-
-        return ExportExcel::PROMOGRADE_FILENAME . '_' . $date->format('Ym');
+        return ExportExcel::PROMOGRADE_FILENAME;
     }
 
     protected function getFilePath()
@@ -107,7 +107,10 @@ class PromoGradeController extends Controller
     protected function getSubject()
     {
         $date = new \DateTime;
-        $date->modify('-1 month');
+        
+        if ('1' != Input::get('week')) {
+            $date->modify('-1 month');
+        }
 
         return '促銷模組成效' . $date->format('Ym');
     }
