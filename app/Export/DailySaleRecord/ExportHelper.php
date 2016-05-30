@@ -13,11 +13,8 @@ class ExportHelper
     public $totalPospGroup = [];
     public $ctiCallLog     = [];
 
-    protected $date;
-
-    public function __construct(\DateTime $date, $startDate, $endDate)
+    public function __construct($startDate, $endDate)
     {
-        $this->date = $date;
         $this->fetchErpGroups($startDate, $endDate)->fetchCtiCallLog($startDate, $endDate)->fetchPosGroups($startDate, $endDate);
     }
 

@@ -32,9 +32,9 @@ FROM (
         SUM(o.UsedBonus) UsedBonus, 
         SUM(o.PayFees) PayFees
     FROM 
-        CCS_OrderIndex o
-        LEFT JOIN HRS_Employee e ON o.SalesEmpSerNo=e.SerNo
-        LEFT JOIN FAS_Corp c ON e.CorpSerNo=c.Serno
+        CCS_OrderIndex o WITH(NOLOCK)
+        LEFT JOIN HRS_Employee e WITH(NOLOCK) ON o.SalesEmpSerNo=e.SerNo
+        LEFT JOIN FAS_Corp c WITH(NOLOCK) ON e.CorpSerNo=c.Serno
     WHERE 
         o.Status=1 
         AND o.KeyInDate BETWEEN '$startDate' AND '$endDate' 
@@ -48,8 +48,8 @@ LEFT JOIN (
         SUM(ISNULL(r.ReturnTotal,0)) ReturnTotal, 
         SUM(ISNULL(r.PayFees,0)) RTPayFees, 
         SUM(ISNULL(r.UseBonus,0)) RTUseBonus
-    FROM CCS_ReturnGoodsI r
-    LEFT JOIN HRS_Employee e ON r.SalesSerNo=e.SerNo
+    FROM CCS_ReturnGoodsI r WITH(NOLOCK)
+    LEFT JOIN HRS_Employee e WITH(NOLOCK) ON r.SalesSerNo=e.SerNo
     WHERE r.sDate BETWEEN '$startDate' AND '$endDate'
     GROUP BY LEFT(r.sDate,6), e.Code
 ) r1 ON o1.Ymonth=r1.Ymonth AND o1.EmpCode=r1.EmpCode
@@ -65,12 +65,12 @@ LEFT JOIN (
         SUM(o.UsedBonus) UsedBonus, 
         SUM(o.PayFees) PayFees
     FROM 
-        CCS_OrderIndex o
-        LEFT JOIN FAS_Corp c ON o.DeptSerNo=c.SerNo
-        LEFT JOIN POS_Member m ON o.MemberSerNo=m.SerNo
-        LEFT JOIN CCS_CRMFields crm ON m.SerNo=crm.MemberSerNoStr
-        LEFT JOIN hrs_employee e1 ON crm.ExploitSerNoStr=e1.SerNo
-        LEFT JOIN FAS_Corp c1 ON e1.CorpSerNo=c1.SerNo
+        CCS_OrderIndex o WITH(NOLOCK)
+        LEFT JOIN FAS_Corp c WITH(NOLOCK) ON o.DeptSerNo=c.SerNo
+        LEFT JOIN POS_Member m WITH(NOLOCK) ON o.MemberSerNo=m.SerNo
+        LEFT JOIN CCS_CRMFields crm WITH(NOLOCK) ON m.SerNo=crm.MemberSerNoStr
+        LEFT JOIN hrs_employee e1 WITH(NOLOCK) ON crm.ExploitSerNoStr=e1.SerNo
+        LEFT JOIN FAS_Corp c1 WITH(NOLOCK) ON e1.CorpSerNo=c1.SerNo
     WHERE 
         o.Status=1 
         AND o.KeyInDate BETWEEN '$startDate' AND '$endDate'
@@ -87,12 +87,12 @@ LEFT JOIN (
         SUM(ISNULL(r.PayFees,0)) RTPayFees, 
         SUM(ISNULL(r.UseBonus,0)) RTUseBonus
     FROM 
-        CCS_ReturnGoodsI r
-        LEFT JOIN FAS_Corp c ON r.DeptSerNo=c.SerNo
-        LEFT JOIN POS_Member m ON r.MemberSerNo=m.SerNo
-        LEFT JOIN CCS_CRMFields crm ON m.SerNo=crm.MemberSerNoStr
-        LEFT JOIN hrs_employee e1 ON crm.ExploitSerNoStr=e1.SerNo
-        LEFT JOIN FAS_Corp c1 ON e1.CorpSerNo=c1.SerNo
+        CCS_ReturnGoodsI r WITH(NOLOCK)
+        LEFT JOIN FAS_Corp c WITH(NOLOCK) ON r.DeptSerNo=c.SerNo
+        LEFT JOIN POS_Member m WITH(NOLOCK) ON r.MemberSerNo=m.SerNo
+        LEFT JOIN CCS_CRMFields crm WITH(NOLOCK) ON m.SerNo=crm.MemberSerNoStr
+        LEFT JOIN hrs_employee e1 WITH(NOLOCK) ON crm.ExploitSerNoStr=e1.SerNo
+        LEFT JOIN FAS_Corp c1 WITH(NOLOCK) ON e1.CorpSerNo=c1.SerNo
     WHERE 
         r.sDate BETWEEN '$startDate' AND '$endDate'
         AND c.code IN ('CH55110','CH55000')
