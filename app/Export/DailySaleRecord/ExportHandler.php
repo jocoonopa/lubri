@@ -5,18 +5,29 @@ namespace App\Export\DailySaleRecord;
 use App\Utility\Chinghwa\ExportExcel;
 use Carbon\Carbon;
 
+
+/**
+ * 目前每日業績報表發送為早上六點半以及晚上八點，早上要抓昨天的業績，晚上要抓今日的，
+ * 因此用下午兩點"-14 hours" 為分界點, 表示下午兩點以前都是抓"昨天"的業績，之後是抓"今日"的業績
+ */
 class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
-	const BORDER_RIGHT_RANGE = 'L';
-
+    const BORDER_RIGHT_RANGE = 'L';
+    
+    protected $export;
     protected $date;
 	protected $rowIndex = 1;
     protected $targetSheet;
     protected $dataHelper;
+    protected $todayDate;
 
     public function handle($export)
     {
-        $this->date = $export->getDate();
+        $this
+            ->setExport($export)
+            ->setDate($export->getDate())
+            ->setTodayDate(Carbon::now()->modify($export->getCarbonModify()))
+        ;
 
         $export->sheet($this->getSheetToLastOfMonthText(), $this->getSheetToLastOfMonthFunc())
             ->sheet($this->getSheetTodayText(), $this->getSheetTodayFunc())
@@ -34,12 +45,12 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     protected function getSheetTodayText()
     {
-        return '今日業績' . Carbon::now()->modify('-1 days')->format('Ymd');
+        return '今日業績' . $this->getTodayDate()->format('Ymd');
     }
 
     protected function getSheetTilTodayText()
     {
-        return '本月累計至今日業績' . with(new Carbon('first day of this month'))->format('Ymd') . '-' . Carbon::now()->modify('-1 days')->format('Ymd');
+        return '本月累計至今日業績' . with(new Carbon('first day of this month'))->format('Ymd') . '-' . $this->getTodayDate()->format('Ymd');
     }
 
     /**
@@ -62,18 +73,7 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             $startDate = with(new Carbon('first day of this month'))->format('Ymd');
             $endDate = with(new Carbon('last day of this month'))->format('Ymd');
 
-            $this
-                ->setTargetSheet($sheet)
-                ->setSheetBasicStyle()
-                ->appendHead()->next()
-                ->initDataHelper($startDate, $endDate)
-                ->appendByIterateErpTelGroups()->prev()        
-                ->appendTotalErpTelGroup()->next()->next()
-                ->appendErpOuttunnel()
-                ->appendByIteratePosGroups()
-                ->appendTotalPosGroup()->next()
-                ->appendAllSrcTotal()
-            ;   
+            return $this->toLastOfMonthProc($sheet, $startDate, $endDate);
        };
     }
 
@@ -94,53 +94,76 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function getSheetTodayFunc()
     {
         return function ($sheet) {
-            $this->date = Carbon::now()->modify('-1 days');
             $this->rowIndex = 1;
-            $startDate = Carbon::now()->modify('-1 days')->format('Ymd');
+            $startDate = $this->getTodayDate()->format('Ymd');
             $endDate = $startDate;
 
-            $this
-                ->setTargetSheet($sheet)
-                ->setSheetBasicStyle()
-                ->appendHead()->next()
-                ->initDataHelper($startDate, $endDate)
-                ->appendByIterateErpTelGroups()->prev()        
-                ->appendTotalErpTelGroup()->next()->next()
-                ->appendErpOuttunnel()
-                ->appendByIteratePosGroups()
-                ->appendTotalPosGroup()->next()
-                ->appendAllSrcTotal()
-            ;   
+            return $this->todayProc($sheet, $startDate, $endDate);
        };
     }
 
     protected function getSheetTilTodayFunc()
     {
         return function ($sheet) {
-            $this->date = Carbon::now()->modify('-1 days');
             $this->rowIndex = 1;
-
             $startDate = with(new Carbon('first day of this month'))->format('Ymd');
-            $endDate = Carbon::now()->modify('-1 days')->format('Ymd');
+            $endDate = $this->getTodayDate()->format('Ymd');
 
-            $this
-                ->setTargetSheet($sheet)
-                ->setSheetBasicStyle()
-                ->appendHead()->next()
-                ->initDataHelper($startDate, $endDate)
-                ->appendByIterateErpTelGroups()->prev()        
-                ->appendTotalErpTelGroup()->next()->next()
-                ->appendErpOuttunnel()
-                ->appendByIteratePosGroups()
-                ->appendTotalPosGroup()->next()
-                ->appendAllSrcTotal()
-            ;   
+            return $this->sheetTilTodayProc($sheet, $startDate, $endDate);
        };
+    }
+
+    protected function sheetTilTodayProc($sheet, $startDate, $endDate)
+    {
+        return $this
+            ->setTargetSheet($sheet)
+            ->setSheetBasicStyle()
+            ->appendHead()->next()
+            ->initDataHelper($startDate, $endDate)
+            ->appendByIterateErpTelGroups()->prev()        
+            ->appendTotalErpTelGroup()->next()->next()
+            ->appendErpOuttunnel()
+            ->appendByIteratePosGroups()
+            ->appendTotalPosGroup()->next()
+            ->appendAllSrcTotal()
+        ;   
+    }
+
+    protected function toLastOfMonthProc($sheet, $startDate, $endDate)
+    {
+        return $this
+            ->setTargetSheet($sheet)
+            ->setSheetBasicStyle()
+            ->appendHead()->next()
+            ->initDataHelper($startDate, $endDate)
+            ->appendByIterateErpTelGroups()->prev()        
+            ->appendTotalErpTelGroup()->next()->next()
+            ->appendErpOuttunnel()
+            ->appendByIteratePosGroups()
+            ->appendTotalPosGroup()->next()
+            ->appendAllSrcTotal()
+        ;   
+    }
+
+    protected function todayProc($sheet, $startDate, $endDate)
+    {
+        return $this
+            ->setTargetSheet($sheet)
+            ->setSheetBasicStyle()
+            ->appendHead()->next()
+            ->initDataHelper($startDate, $endDate)
+            ->appendByIterateErpTelGroups()->prev()        
+            ->appendTotalErpTelGroup()->next()->next()
+            ->appendErpOuttunnel()
+            ->appendByIteratePosGroups()
+            ->appendTotalPosGroup()->next()
+            ->appendAllSrcTotal()
+        ;
     }
 
     protected function initDataHelper($startDate, $endDate)
     {
-        $this->dataHelper = new ExportHelper($this->date, $startDate, $endDate);
+        $this->dataHelper = new ExportHelper($startDate, $endDate);
 
         return $this;
     }
@@ -365,5 +388,82 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             '撥打秒數',
             '工作日' 
         ];
+    }
+
+    /**
+     * Gets the value of export.
+     *
+     * @return mixed
+     */
+    public function getExport()
+    {
+        return $this->export;
+    }
+
+    /**
+     * Sets the value of export.
+     *
+     * @param mixed $export the export
+     *
+     * @return self
+     */
+    protected function setExport($export)
+    {
+        $this->export = $export;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of date.
+     *
+     * @return mixed
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * Sets the value of date.
+     *
+     * @param mixed $date the date
+     *
+     * @return self
+     */
+    protected function setDate($date)
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getCarbonModify()
+    {
+        return $this->export->getCarbonModify();
+    }
+
+    /**
+     * Gets the value of todayDate.
+     *
+     * @return mixed
+     */
+    public function getTodayDate()
+    {
+        return $this->todayDate;
+    }
+
+    /**
+     * Sets the value of todayDate.
+     *
+     * @param mixed $todayDate the today date
+     *
+     * @return self
+     */
+    protected function setTodayDate($todayDate)
+    {
+        $this->todayDate = $todayDate;
+
+        return $this;
     }
 }
