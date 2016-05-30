@@ -5,7 +5,7 @@ SELECT
     COUNT(TaskCD) AS 撥打通數, 
     SUM(DATEDIFF(second,StartTime,EndTime)) AS 撥打秒數,
     COUNT(DISTINCT(day(starttime))) AS 工作日
-FROM CALLCENTER.dbo.CallLog
+FROM CALLCENTER.dbo.CallLog WITH(NOLOCK)
 WHERE 
     custId NOT LIKE 'CT.' 
     AND starttime BETWEEN '$startDate' AND '$endDate'

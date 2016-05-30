@@ -9,65 +9,45 @@ class OnlyCtiExportHandler extends ExportHandler
     /**
      * @override
      */
-    protected function getSheetToLastOfMonthFunc()
+    protected function sheetTilTodayProc($sheet, $startDate, $endDate)
     {
-        return function ($sheet) {
-            $startDate = with(new Carbon('first day of this month'))->format('Ymd');
-            $endDate = with(new Carbon('last day of this month'))->format('Ymd');
-
-            $this
-                ->setTargetSheet($sheet)
-                ->setSheetBasicStyle()
-                ->appendHead()->next()
-                ->initDataHelper($startDate, $endDate)
-                ->appendByIterateErpTelGroups()->prev()        
-                ->appendTotalErpTelGroup()->next()->next()
-            ;   
-       };
+        return $this
+            ->setTargetSheet($sheet)
+            ->setSheetBasicStyle()
+            ->appendHead()->next()
+            ->initDataHelper($startDate, $endDate)
+            ->appendByIterateErpTelGroups()->prev()        
+            ->appendTotalErpTelGroup()->next()->next()
+        ;
     }
 
     /**
      * @override
      */
-    protected function getSheetTodayFunc()
+    protected function toLastOfMonthProc($sheet, $startDate, $endDate)
     {
-        return function ($sheet) {
-            $this->date = Carbon::now()->modify('-1 days');
-            $this->rowIndex = 1;
-            $startDate = Carbon::now()->modify('-1 days')->format('Ymd');
-            $endDate = $startDate;
-
-            $this
-                ->setTargetSheet($sheet)
-                ->setSheetBasicStyle()
-                ->appendHead()->next()
-                ->initDataHelper($startDate, $endDate)
-                ->appendByIterateErpTelGroups()->prev()        
-                ->appendTotalErpTelGroup()->next()->next()
-            ;   
-       };
+        return $this
+            ->setTargetSheet($sheet)
+            ->setSheetBasicStyle()
+            ->appendHead()->next()
+            ->initDataHelper($startDate, $endDate)
+            ->appendByIterateErpTelGroups()->prev()        
+            ->appendTotalErpTelGroup()->next()->next()
+        ;   
     }
 
     /**
      * @override
      */
-    protected function getSheetTilTodayFunc()
+    protected function todayProc($sheet, $startDate, $endDate)
     {
-        return function ($sheet) {
-            $this->date = Carbon::now()->modify('-1 days');
-            $this->rowIndex = 1;
-
-            $startDate = with(new Carbon('first day of this month'))->format('Ymd');
-            $endDate = Carbon::now()->modify('-1 days')->format('Ymd');
-
-            $this
-                ->setTargetSheet($sheet)
-                ->setSheetBasicStyle()
-                ->appendHead()->next()
-                ->initDataHelper($startDate, $endDate)
-                ->appendByIterateErpTelGroups()->prev()        
-                ->appendTotalErpTelGroup()->next()->next()
-            ;   
-       };
+        return $this
+            ->setTargetSheet($sheet)
+            ->setSheetBasicStyle()
+            ->appendHead()->next()
+            ->initDataHelper($startDate, $endDate)
+            ->appendByIterateErpTelGroups()->prev()        
+            ->appendTotalErpTelGroup()->next()->next()
+        ;   
     }
 }
