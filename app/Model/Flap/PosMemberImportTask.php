@@ -75,7 +75,7 @@ class PosMemberImportTask extends Model
     public function getStatusName()
     {
         $status = [
-            '<span class="text-muted">建立中</span>', 
+            '<span class="text-muted">等待匯入中</span>', 
             '<span class="text-warning">匯入中</span>', 
             '<span class="text-primary">等待推送</span>', 
             '<span class="text-warning">推送中</span>', 

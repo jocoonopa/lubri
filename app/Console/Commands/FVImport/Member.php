@@ -13,7 +13,7 @@ class Member extends Command
      *
      * @var string
      */
-    protected $signature = 'importmember:fv {startat?} {endat?} {--size=100}';
+    protected $signature = 'importmember:fv {startat?} {endat?} {--size=100} {--serno=MEMBR000000000000000000001}';
 
     /**
      * The console command description.
@@ -47,6 +47,7 @@ class Member extends Command
             ->setCommend($this)
             ->setOutput($this->output)
             ->setSize($this->option('size'))
+            ->setSerno($this->option('serno'))
             ->setStartAt($this->argument('startat'))
             ->setEndAt($this->argument('endat'))
             ->handleExport()

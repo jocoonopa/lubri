@@ -76,11 +76,11 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
         if (null !== $export->getEndAt()) {
             $condStr .= " POS_Member.CRT_TIME <= '{$export->getEndAt()}' AND";
-        }  
+        }
 
         $conStr = substr($condStr, 0, -3);
 
-        return 10 < mb_strlen($conStr) ? "WHERE{$conStr}" : '';
+        return 10 < mb_strlen($conStr) ? "WHERE{$conStr} AND POS_Member.SerNo >= '{$export->getSerno()}'" : "POS_Member.SerNo >= '{$export->getSerno()}'";
     }
 
     protected function initBar($sizeOfAll, $export)

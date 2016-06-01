@@ -8,7 +8,8 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
 {
     protected $commend;
     protected $ouput;
-    protected $size = 500;
+    protected $size;
+    protected $serno;
     protected $startAt;
     protected $endAt;
     protected $info;
@@ -158,6 +159,31 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
     public function setCommend($commend)
     {
         $this->commend = $commend;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of sernoi.
+     *
+     * @return mixed
+     */
+    public function getSerno()
+    {
+        return $this->serno;
+    }
+
+    /**
+     * Sets the value of sernoi.
+     * MEMBR000,000,000,000,402020716
+     * 
+     * @param mixed $sernoi the sernoi
+     *
+     * @return self
+     */
+    public function setSerno($serno)
+    {
+        $this->serno = $serno;
 
         return $this;
     }

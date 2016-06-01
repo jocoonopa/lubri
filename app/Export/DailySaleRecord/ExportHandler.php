@@ -19,14 +19,12 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 	protected $rowIndex = 1;
     protected $targetSheet;
     protected $dataHelper;
-    protected $todayDate;
 
     public function handle($export)
     {
         $this
             ->setExport($export)
             ->setDate($export->getDate())
-            ->setTodayDate(Carbon::now()->modify($export->getCarbonModify()))
         ;
 
         $export->sheet($this->getSheetToLastOfMonthText(), $this->getSheetToLastOfMonthFunc())
@@ -40,7 +38,7 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     protected function getSheetToLastOfMonthText()
     {
-        return '本月目前業績' . with(new Carbon('first day of this month'))->format('Ymd') . '-' . with(new Carbon('last day of this month'))->format('Ymd');
+        return '本月目前業績' . $this->getTodayDate()->modify('first day of this month')->format('Ymd') . '-' . $this->getTodayDate()->modify('last day of this month')->format('Ymd');
     }
 
     protected function getSheetTodayText()
@@ -50,7 +48,7 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     protected function getSheetTilTodayText()
     {
-        return '本月累計至今日業績' . with(new Carbon('first day of this month'))->format('Ymd') . '-' . $this->getTodayDate()->format('Ymd');
+        return '本月累計至今日業績' . $this->getTodayDate()->modify('first day of this month')->format('Ymd') . '-' . $this->getTodayDate()->format('Ymd');
     }
 
     /**
@@ -70,8 +68,8 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function getSheetToLastOfMonthFunc()
     {
         return function ($sheet) {
-            $startDate = with(new Carbon('first day of this month'))->format('Ymd');
-            $endDate = with(new Carbon('last day of this month'))->format('Ymd');
+            $startDate = $this->getTodayDate()->modify('first day of this month')->format('Ymd');
+            $endDate = $this->getTodayDate()->modify('last day of this month')->format('Ymd');
 
             return $this->toLastOfMonthProc($sheet, $startDate, $endDate);
        };
@@ -106,7 +104,7 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     {
         return function ($sheet) {
             $this->rowIndex = 1;
-            $startDate = with(new Carbon('first day of this month'))->format('Ymd');
+            $startDate = $this->getTodayDate()->modify('first day of this month')->format('Ymd');
             $endDate = $this->getTodayDate()->format('Ymd');
 
             return $this->sheetTilTodayProc($sheet, $startDate, $endDate);
@@ -450,20 +448,6 @@ class ExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
      */
     public function getTodayDate()
     {
-        return $this->todayDate;
-    }
-
-    /**
-     * Sets the value of todayDate.
-     *
-     * @param mixed $todayDate the today date
-     *
-     * @return self
-     */
-    protected function setTodayDate($todayDate)
-    {
-        $this->todayDate = $todayDate;
-
-        return $this;
+        return Carbon::now()->modify($this->export->getCarbonModify());
     }
 }

@@ -6,27 +6,26 @@ use Input;
 
 class Import extends \App\Import\Flap\POS_Member\Import
 {
-    const I_NAME      = 0;
-    const I_BIRTHDAY  = 1;
-    const I_ADDRESS   = 2;
-    const I_ZIPCODE   = 3;
-    const I_HOMETEL   = 4;
-    const I_OFFICETEL = 5;
-    const I_CELLPHONE = 6;
-    const I_PERIOD    = 7;
-    const I_EMAIL     = 8;
-    const I_HOSPITAL  = 9;
-
-    const A_NAME    = 0;
-    const A_EMAIL   = 1;
-    const A_TEL     = 2;
-    const A_ADDRESS = 3;
-    const A_SEX     = 4;
-
+    const I_NAME       = 0;
+    const I_BIRTHDAY   = 1;
+    const I_ADDRESS    = 2;
+    const I_ZIPCODE    = 3;
+    const I_HOMETEL    = 4;
+    const I_OFFICETEL  = 5;
+    const I_CELLPHONE  = 6;
+    const I_PERIOD     = 7;
+    const I_EMAIL      = 8;
+    const I_HOSPITAL   = 9;
+    const A_NAME       = 0;
+    const A_EMAIL      = 1;
+    const A_TEL        = 2;
+    const A_ADDRESS    = 3;
+    const A_SEX        = 4;
     const TARGET_FLAGS = '["11", "12", "37", "38"]';
 
     protected $fileName;
     protected $destinationPath;
+    protected $task;
 
     /**
      * Used in resources\views\flap\posmember\import_task\_searchnull.blade.php:
@@ -111,6 +110,30 @@ class Import extends \App\Import\Flap\POS_Member\Import
     protected function setDestinationPath($destinationPath)
     {
         $this->destinationPath = $destinationPath;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of task.
+     *
+     * @return mixed
+     */
+    public function getTask()
+    {
+        return $this->task;
+    }
+
+    /**
+     * Sets the value of task.
+     *
+     * @param mixed $task the task
+     *
+     * @return self
+     */
+    public function setTask($task)
+    {
+        $this->task = $task;
 
         return $this;
     }

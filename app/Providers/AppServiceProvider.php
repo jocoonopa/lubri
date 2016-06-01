@@ -15,7 +15,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Queue::getIron()->ssl_verifypeer = false;
+        if ('iron' === env('QUEUE_DRIVER')) {
+            Queue::getIron()->ssl_verifypeer = false;
+        }
+
         Validator::extend('cellphone', 'App\Http\Validator\ImportContentValidator@cellphone');
         Validator::extend('tel', 'App\Http\Validator\ImportContentValidator@tel');
     }

@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Flap\POS_Member;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Http\Requests\Flap\POS_Member\ImportTaskRequest;
+use App\Import\Flap\POS_Member\Import AS _Import;
+use App\Jobs\ImportPosMemberTask;
 use App\Model\Flap\PosMemberImportContent;
 use App\Model\Flap\PosMemberImportKind;
 use App\Model\Flap\PosMemberImportTask;
 use App\Utility\Chinghwa\Database\Connectors\Connector;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\Export\ImportTaskExport;
+use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\Import;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportFilter;
 use Auth;
@@ -29,7 +32,7 @@ use Session;
  * 3. 點擊[B1]會pop 一個 modal[M1], [M1] 有 progress bar, 總處理筆數以及目前已經處理筆數
  * 
  * 其中匯入這邊做法流程要稍微調整。
- * 必須先建立 importProgress
+ * 必須先建立 importProgress 的 Que 機制
  * 
  */
 class ImportTaskController extends Controller
@@ -109,28 +112,42 @@ class ImportTaskController extends Controller
      */
     public function store(ImportTaskRequest $request, Import $import)
     {
-        set_time_limit(0);
-        
-        return redirect()->action('Flap\POS_Member\ImportTaskController@show', ['import_task' => $this->proxyStore($import)->id]);
+        try {
+            $task = $this->createNewTask();
+
+            $path = $import->skip(0)->file;
+
+            if (file_exists($path)) {
+                copy($path, storage_path("exports/posmember/{$task->id}.xls"));
+            }
+
+            $job = with(new ImportPosMemberTask($task))->onQueue('default')->delay(10);
+            $this->dispatch($job);
+
+            Session::flash('success', "成功新增任務{$task->name}@{$task->kind()->first()->name}!");
+
+            return redirect("/flap/pos_member/import_task?kind_id={$task->kind()->first()->id}");
+        } catch (\Exception $e) {
+            $task->delete();
+
+            pr($e->getMessage());
+        }
     }
 
-    protected function proxyStore(Import $import)
+    protected function createNewTask()
     {
-        $start = microtime(true);
-        
-        $task = $import->handleImport();
+        $task = new PosMemberImportTask;
 
-        $end = microtime(true);
-
-        $task->import_cost_time = floor($end - $start);
-        $task->status_code = PosMemberImportTask::STATUS_IMPORTING;
+        $task->user_id      = Auth::user()->id;
+        $task->name         = Input::get('name');
+        $task->status_code  = PosMemberImportTask::STATUS_INIT;
+        $task->distinction  = Input::get(_Import::OPTIONS_DISTINCTION);
+        $task->category     = Input::get(_Import::OPTIONS_CATEGORY);
+        $task->update_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_INSERTFLAG));
+        $task->insert_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_UPDATEFLAG));
+        $task->kind_id      = Input::get('kind_id');
+        $task->memo         = Input::get(_Import::OPTIONS_OBMEMO);
         $task->save();
-
-        Session::flash('success', "成功新增任務{$task->name}@{$task->kind()->first()->name}!");
-
-        if (0 === $task->content->count()) {
-            Session::flash('error', "任務裡面沒有任何內容，請確認上傳 xls 檔案僅有一個工作表");
-        }
 
         return $task;
     }

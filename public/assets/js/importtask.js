@@ -56,12 +56,12 @@ function getLiStyleListGroupItemString(columnName, colVal)
 
 function submitTaskCreateForm()
 {
-    $importBlockUI(); 
-    initMsg = '(請勿關閉視窗) 檔案匯入中，請稍後...';
+    //$importBlockUI(); 
+    //initMsg = '(請勿關閉視窗) 檔案匯入中，請稍後...';
 
     $('form#import-task').submit();
 
-    ImportTask_loadImportProgress_init();
+    //ImportTask_loadImportProgress_init();
 }
 
 $('.import-task-export').click(function () {
