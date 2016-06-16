@@ -38,13 +38,21 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     {
         $export->getCommend()->comment("\r\nGetting whole data count...");
         $sizeOfAll = $this->getCount($export);
-        $export->getCommend()->comment("\r\nStart Writing file");
+
+        if ($sizeOfAll > $export->getLimit()) {
+            $sizeOfAll = $export->getLimit();
+        }
+
+        $export->getCommend()->comment("\r\nInitial progress bar...");
 
         $bar = $this->initBar($sizeOfAll, $export);
 
+        $export->getCommend()->comment("\r\nStart Writing file");
+
+        $this->handleBom($export, $file);
+
         $i = 0;
-        
-        do {
+        while ($i < $sizeOfAll) {
             $members = $this->getMembers($export, $i);
 
             if (empty($members)) {
@@ -53,17 +61,24 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             
             foreach ($members as $member) {
                 $appendStr = implode(',', $this->getMould()->getRow($member));
-                $appendStr = cb5($appendStr);
+                $appendStr = true === $export->getIsBig5() ? cb5($appendStr) : $appendStr;
 
                 fwrite($file, $appendStr . "\r\n");
             }
 
-            $i = $i + $export->getSize() + 1;
+            $i = $i + $export->getSize();
 
             $bar->advance($export->getSize());
-        } while ($i < $sizeOfAll);
+        }
 
         $bar->finish();
+    }
+
+    protected function handleBom($export, $file)
+    {
+        if (false === $export->getIsBig5() && false === $export->getNobom()) {
+            fwrite($file, chr(239) . chr(187) . chr(191));
+        }
     }
 
     protected function getWhereCondition($export)
@@ -78,9 +93,7 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             $condStr .= " POS_Member.CRT_TIME <= '{$export->getEndAt()}' AND";
         }
 
-        $conStr = substr($condStr, 0, -3);
-
-        return 10 < mb_strlen($conStr) ? "WHERE{$conStr} AND POS_Member.SerNo >= '{$export->getSerno()}'" : "POS_Member.SerNo >= '{$export->getSerno()}'";
+        return "WHERE{$condStr} POS_Member.SerNo >= '{$export->getSerno()}' AND POS_Member.SerNo <= '{$export->getUpSerNo()}'";
     }
 
     protected function initBar($sizeOfAll, $export)

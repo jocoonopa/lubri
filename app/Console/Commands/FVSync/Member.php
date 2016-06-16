@@ -65,7 +65,7 @@ class Member extends Command
      *
      * @var string
      */
-    protected $signature = 'syncmember:fv {max=500 : The maximum members select once query execute}';
+    protected $signature = 'syncmember:fv {max=1000 : The maximum members select once query execute --big5}';
 
     /**
      * The console command description.
@@ -117,26 +117,31 @@ class Member extends Command
 
         $max = $this->argument('max') <= self::MAX_LIMIT ? $this->argument('max') : self::MAX_LIMIT; 
 
-        $export->setMax($max)->handleExport();
+        $export
+            ->setChunkSize($max)
+            ->setIsBig5($this->option('big5'))
+            ->handleExport()
+        ;
         
         $cost = microtime(true) - $startTime;
 
-        $this->createLog($export, $cost)->save();
+        $this->createQue($export, $cost)->save();
 
         return $this;
     }
 
-    protected function createLog($export, $cost)
+    protected function createQue($export, $cost)
     {
-        $log = new FVSyncLog;
+        $log = new FVSyncQue;
         
-        $log->exec_cost = $cost;
-        $log->type_id   = FVSyncType::where('name', '=', 'member')->first()->id;
-        $log->filepath  = $export->getInfo()['path'];
-        $log->filename  = $export->getInfo()['file'];
-        $log->count     = $export->getCount();
-        $log->ip        = env('HOST_IP');
-        $log->mrt_time  = $export->getLastMrtTime();
+        $log->exec_cost   = $cost;
+        $log->status_code = 1;
+        $log->type_id     = FVSyncType::where('name', '=', 'member')->first()->id;
+        $log->filepath    = $export->getInfo()['path'];
+        $log->filename    = $export->getInfo()['file'];
+        $log->count       = $export->getCount();
+        $log->ip          = env('HOST_IP');
+        $log->mrt_time    = $export->getLastMrtTime();
 
         return $log;
     }

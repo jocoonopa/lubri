@@ -10,6 +10,8 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
     protected $count;
     protected $info;
     protected $lastMrtTime;
+    protected $chunkSize;
+    protected $isBig5;
 
     public function getFilename()
     {   
@@ -84,25 +86,49 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
     }
 
     /**
-     * Gets the value of max.
+     * Gets the value of chunkSize.
      *
      * @return mixed
      */
-    public function getMax()
+    public function getChunkSize()
     {
-        return $this->max;
+        return $this->chunkSize;
     }
 
     /**
-     * Sets the value of max.
+     * Sets the value of chunkSize.
      *
-     * @param mixed $max the max
+     * @param mixed $chunkSize the chunk size
      *
      * @return self
      */
-    public function setMax($max)
+    public function setChunkSize($chunkSize)
     {
-        $this->max = $max;
+        $this->chunkSize = $chunkSize;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of isBig5.
+     *
+     * @return mixed
+     */
+    public function getIsBig5()
+    {
+        return $this->isBig5;
+    }
+
+    /**
+     * Sets the value of isBig5.
+     *
+     * @param mixed $isBig5 the is big5
+     *
+     * @return self
+     */
+    public function setIsBig5($isBig5)
+    {
+        $this->isBig5 = $isBig5;
 
         return $this;
     }
