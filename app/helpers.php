@@ -274,6 +274,11 @@ function isWrongCodeTel($content)
     return false === strpos($content->hometel, App\Utility\Chinghwa\Flap\POS_Member\Import\Import::WRONG_TELCODE);
 }
 
+function bomstr()
+{
+    return chr(239) . chr(187) . chr(191);
+}
+
 function sqlInWrap(array $strs) 
 {
     $tmp = '';

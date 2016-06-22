@@ -10,7 +10,7 @@
 namespace App\Console\Commands\FVSync;
 
 use App\Export\FVSync\MemberExport;
-use App\Model\Log\FVSyncLog;
+use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use Illuminate\Console\Command;
 
@@ -65,7 +65,7 @@ class Member extends Command
      *
      * @var string
      */
-    protected $signature = 'syncmember:fv {max=1000 : The maximum members select once query execute --big5}';
+    protected $signature = 'syncmember:fv {--big5} {--size=1500 : means the chunk size}';
 
     /**
      * The console command description.
@@ -103,46 +103,34 @@ class Member extends Command
     public function handle(MemberExport $export)
     {
         set_time_limit(0);
-
-        $this->comment('Processing, please wait ...');
         
         $this->proc($export);
-
-        $this->comment($export->getFilename());
     }
 
     protected function proc(MemberExport $export)
     {
-        $startTime = microtime(true);
-
-        $max = $this->argument('max') <= self::MAX_LIMIT ? $this->argument('max') : self::MAX_LIMIT; 
+        $que = $this->createQue($export);
+        $que->save();
 
         $export
-            ->setChunkSize($max)
+            ->setCommend($this)
+            ->setOutput($this->output)
+            ->setChunkSize($this->option('size', self::MAX_LIMIT))
             ->setIsBig5($this->option('big5'))
+            ->setQue($que)
             ->handleExport()
         ;
-        
-        $cost = microtime(true) - $startTime;
-
-        $this->createQue($export, $cost)->save();
 
         return $this;
     }
 
-    protected function createQue($export, $cost)
+    protected function createQue($export)
     {
-        $log = new FVSyncQue;
-        
-        $log->exec_cost   = $cost;
-        $log->status_code = 1;
-        $log->type_id     = FVSyncType::where('name', '=', 'member')->first()->id;
-        $log->filepath    = $export->getInfo()['path'];
-        $log->filename    = $export->getInfo()['file'];
-        $log->count       = $export->getCount();
-        $log->ip          = env('HOST_IP');
-        $log->mrt_time    = $export->getLastMrtTime();
+        $que = new FVSyncQue;
 
-        return $log;
+        $que->status_code = FVSyncQue::STATUS_INIT;
+        $que->type_id     = FVSyncType::where('name', '=', 'member')->first()->id;
+
+        return $que;
     }
 }

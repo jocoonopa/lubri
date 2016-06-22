@@ -37,6 +37,6 @@ FROM
     LEFT JOIN CCS_CRMFields WITH(NOLOCK)            ON POS_Member.SerNo = CCS_CRMFields.MemberSerNoStr
     LEFT JOIN BasicDataDef  WITH(NOLOCK)            ON CCS_CRMFields.Distinction = BasicDataDef.BDSerNo
     LEFT JOIN HRS_Employee WITH(NOLOCK)             ON HRS_Employee.SerNo = CCS_CRMFields.ExploitSerNoStr
-    LEFT JOIN FAS_Corp                              ON FAS_Corp.SerNo = HRS_Employee.CorpSerNo 
+    LEFT JOIN FAS_Corp WITH(NOLOCK)                 ON FAS_Corp.SerNo = HRS_Employee.CorpSerNo 
     LEFT JOIN CCS_ShoppingBehaviorBrief WITH(NOLOCK) ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
 WHERE POS_Member.Code IN ($memberCode)

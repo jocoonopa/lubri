@@ -66,7 +66,7 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
                 fwrite($file, $appendStr . "\r\n");
             }
 
-            $i = $i + $export->getSize();
+            $i += $export->getSize();
 
             $bar->advance($export->getSize());
         }
@@ -77,7 +77,7 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function handleBom($export, $file)
     {
         if (false === $export->getIsBig5() && false === $export->getNobom()) {
-            fwrite($file, chr(239) . chr(187) . chr(191));
+            fwrite($file, bomstr());
         }
     }
 

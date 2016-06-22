@@ -71,7 +71,8 @@ SELECT * FROM (
         CCS_MemberFlags.Distflags_38,
         CCS_MemberFlags.Distflags_39,
         CCS_MemberFlags.Distflags_40,
-        ROW_NUMBER() over (ORDER BY POS_Member.SerNo) AS lineNum,
+        POS_Member.LastModifiedDate,
+        ROW_NUMBER() over (ORDER BY POS_Member.SerNo) AS lineNum
     FROM 
         POS_Member WITH(NOLOCK)
         LEFT JOIN CCS_MemberFlags WITH(NOLOCK)          ON POS_Member.SerNo = CCS_MemberFlags.MemberSerNoStr 
@@ -81,5 +82,6 @@ SELECT * FROM (
         LEFT JOIN HRS_Employee WITH(NOLOCK)             ON HRS_Employee.SerNo = CCS_CRMFields.ExploitSerNoStr
         LEFT JOIN FAS_Corp                              ON FAS_Corp.SerNo = HRS_Employee.CorpSerNo 
         LEFT JOIN CCS_ShoppingBehaviorBrief WITH(NOLOCK) ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
-    WHERE POS_Member.LastModifiedDate >= '$mrtTime' OR CCS_MemberFlags.MDT_TIME >= '$mrtTime' ORDER BY POS_Member.LastModifiedDate ASC
-) AS Members WHERE Members.lineNum BETWEEN $begin AND $end
+    WHERE POS_Member.LastModifiedDate >= '$mrtTime'
+) AS Members WHERE Members.lineNum > $begin AND Members.lineNum <= $end 
+ORDER BY Members.LastModifiedDate ASC

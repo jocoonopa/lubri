@@ -6,12 +6,16 @@ use Carbon\Carbon;
 
 class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
 {
-    protected $max;
+    protected $que;
     protected $count;
     protected $info;
     protected $lastMrtTime;
     protected $chunkSize;
     protected $isBig5;
+    protected $commend;
+    protected $output;
+    protected $importCostTime;
+    protected $selectCostTime;
 
     public function getFilename()
     {   
@@ -129,6 +133,126 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
     public function setIsBig5($isBig5)
     {
         $this->isBig5 = $isBig5;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of commend.
+     *
+     * @return mixed
+     */
+    public function getCommend()
+    {
+        return $this->commend;
+    }
+
+    /**
+     * Sets the value of commend.
+     *
+     * @param mixed $commend the commend
+     *
+     * @return self
+     */
+    public function setCommend($commend)
+    {
+        $this->commend = $commend;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of output.
+     *
+     * @return mixed
+     */
+    public function getOutput()
+    {
+        return $this->output;
+    }
+
+    /**
+     * Sets the value of output.
+     *
+     * @param mixed $output the output
+     *
+     * @return self
+     */
+    public function setOutput($output)
+    {
+        $this->output = $output;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of importCostTime.
+     *
+     * @return mixed
+     */
+    public function getImportCostTime()
+    {
+        return $this->importCostTime;
+    }
+
+    /**
+     * Sets the value of importCostTime.
+     *
+     * @param mixed $importCostTime the import cost time
+     *
+     * @return self
+     */
+    public function setImportCostTime($importCostTime)
+    {
+        $this->importCostTime = $importCostTime;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of selectCostTime.
+     *
+     * @return mixed
+     */
+    public function getSelectCostTime()
+    {
+        return $this->selectCostTime;
+    }
+
+    /**
+     * Sets the value of selectCostTime.
+     *
+     * @param mixed $selectCostTime the select cost time
+     *
+     * @return self
+     */
+    public function setSelectCostTime($selectCostTime)
+    {
+        $this->selectCostTime = $selectCostTime;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of que.
+     *
+     * @return mixed
+     */
+    public function getQue()
+    {
+        return $this->que;
+    }
+
+    /**
+     * Sets the value of que.
+     *
+     * @param mixed $que the que
+     *
+     * @return self
+     */
+    public function setQue($que)
+    {
+        $this->que = $que;
 
         return $this;
     }
