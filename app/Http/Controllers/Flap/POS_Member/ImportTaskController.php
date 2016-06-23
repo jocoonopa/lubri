@@ -121,7 +121,7 @@ class ImportTaskController extends Controller
                 copy($path, storage_path("exports/posmember/{$task->id}.xls"));
             }
 
-            $job = with(new ImportPosMemberTask($task))->onQueue('default')->delay(10);
+            $job = with(new ImportPosMemberTask($task))->onQueue(env('IRON_QUEUE'))->delay(10);
             $this->dispatch($job);
 
             Session::flash('success', "成功新增任務{$task->name}@{$task->kind()->first()->name}!");

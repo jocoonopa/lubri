@@ -82,4 +82,4 @@ FROM
     LEFT JOIN FAS_Corp                              ON FAS_Corp.SerNo = HRS_Employee.CorpSerNo 
     LEFT JOIN CCS_ShoppingBehaviorBrief WITH(NOLOCK) ON POS_Member.SerNo = CCS_ShoppingBehaviorBrief.MemberSerNoStr
 $whereCondition
-) AS Members WHERE Members.lineNum BETWEEN $begin AND $end
+) AS Members WHERE Members.lineNum > $begin AND Members.lineNum <= $end

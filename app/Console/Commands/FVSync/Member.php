@@ -10,7 +10,7 @@
 namespace App\Console\Commands\FVSync;
 
 use App\Export\FVSync\MemberExport;
-use App\Model\Log\FVSyncLog;
+use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use Illuminate\Console\Command;
 
@@ -65,7 +65,7 @@ class Member extends Command
      *
      * @var string
      */
-    protected $signature = 'syncmember:fv {max=500 : The maximum members select once query execute}';
+    protected $signature = 'syncmember:fv {--big5} {--size=1500 : means the chunk size}';
 
     /**
      * The console command description.
@@ -103,41 +103,20 @@ class Member extends Command
     public function handle(MemberExport $export)
     {
         set_time_limit(0);
-
-        $this->comment('Processing, please wait ...');
         
         $this->proc($export);
-
-        $this->comment($export->getFilename());
     }
 
     protected function proc(MemberExport $export)
     {
-        $startTime = microtime(true);
-
-        $max = $this->argument('max') <= self::MAX_LIMIT ? $this->argument('max') : self::MAX_LIMIT; 
-
-        $export->setMax($max)->handleExport();
-        
-        $cost = microtime(true) - $startTime;
-
-        $this->createLog($export, $cost)->save();
+        $export
+            ->setCommend($this)
+            ->setOutput($this->output)
+            ->setChunkSize($this->option('size', self::MAX_LIMIT))
+            ->setIsBig5($this->option('big5'))
+            ->handleExport()
+        ;
 
         return $this;
-    }
-
-    protected function createLog($export, $cost)
-    {
-        $log = new FVSyncLog;
-        
-        $log->exec_cost = $cost;
-        $log->type_id   = FVSyncType::where('name', '=', 'member')->first()->id;
-        $log->filepath  = $export->getInfo()['path'];
-        $log->filename  = $export->getInfo()['file'];
-        $log->count     = $export->getCount();
-        $log->ip        = env('HOST_IP');
-        $log->mrt_time  = $export->getLastMrtTime();
-
-        return $log;
     }
 }

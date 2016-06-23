@@ -1,5 +1,12 @@
 <?php
-
+/*
+ * This file is extends of Class Command.
+ *
+ * (c) Jocoonopa <jocoonopa@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace App\Utility\Chinghwa\ORM\CTI;
 
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;

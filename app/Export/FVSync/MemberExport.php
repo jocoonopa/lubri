@@ -6,10 +6,16 @@ use Carbon\Carbon;
 
 class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
 {
-    protected $max;
+    protected $que;
     protected $count;
     protected $info;
     protected $lastMrtTime;
+    protected $chunkSize;
+    protected $isBig5;
+    protected $commend;
+    protected $output;
+    protected $importCostTime;
+    protected $selectCostTime;
 
     public function getFilename()
     {   
@@ -84,25 +90,188 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
     }
 
     /**
-     * Gets the value of max.
+     * Gets the value of chunkSize.
      *
      * @return mixed
      */
-    public function getMax()
+    public function getChunkSize()
     {
-        return $this->max;
+        return $this->chunkSize;
     }
 
     /**
-     * Sets the value of max.
+     * Sets the value of chunkSize.
      *
-     * @param mixed $max the max
+     * @param mixed $chunkSize the chunk size
      *
      * @return self
      */
-    public function setMax($max)
+    public function setChunkSize($chunkSize)
     {
-        $this->max = $max;
+        $this->chunkSize = $chunkSize;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of isBig5.
+     *
+     * @return mixed
+     */
+    public function getIsBig5()
+    {
+        return $this->isBig5;
+    }
+
+    /**
+     * Sets the value of isBig5.
+     *
+     * @param mixed $isBig5 the is big5
+     *
+     * @return self
+     */
+    public function setIsBig5($isBig5)
+    {
+        $this->isBig5 = $isBig5;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of commend.
+     *
+     * @return mixed
+     */
+    public function getCommend()
+    {
+        return $this->commend;
+    }
+
+    /**
+     * Sets the value of commend.
+     *
+     * @param mixed $commend the commend
+     *
+     * @return self
+     */
+    public function setCommend($commend)
+    {
+        $this->commend = $commend;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of output.
+     *
+     * @return mixed
+     */
+    public function getOutput()
+    {
+        return $this->output;
+    }
+
+    /**
+     * Sets the value of output.
+     *
+     * @param mixed $output the output
+     *
+     * @return self
+     */
+    public function setOutput($output)
+    {
+        $this->output = $output;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of importCostTime.
+     *
+     * @return mixed
+     */
+    public function getImportCostTime()
+    {
+        return $this->importCostTime;
+    }
+
+    /**
+     * Sets the value of importCostTime.
+     *
+     * @param mixed $importCostTime the import cost time
+     *
+     * @return self
+     */
+    public function setImportCostTime($importCostTime)
+    {
+        $this->importCostTime = $importCostTime;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of selectCostTime.
+     *
+     * @return mixed
+     */
+    public function getSelectCostTime()
+    {
+        return $this->selectCostTime;
+    }
+
+    /**
+     * Sets the value of selectCostTime.
+     *
+     * @param mixed $selectCostTime the select cost time
+     *
+     * @return self
+     */
+    public function setSelectCostTime($selectCostTime)
+    {
+        $this->selectCostTime = $selectCostTime;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of que.
+     *
+     * @return mixed
+     */
+    public function getQue()
+    {
+        return $this->que;
+    }
+
+    /**
+     * Sets the value of que.
+     *
+     * @param mixed $que the que
+     *
+     * @return self
+     */
+    public function setQue($que)
+    {
+        $this->que = $que;
+
+        return $this;
+    }
+
+    public function setQueStatus($statusCode)
+    {
+        $this->getQue()->status_code = $statusCode;
+        $this->getQue()->save();
+
+        return $this;
+    }
+
+    public function configQue()
+    {
+        $this->que->import_cost_time = $this->getImportCostTime();
+        $this->que->select_cost_time = $this->getSelectCostTime();
+        $this->que->dest_file        = $this->getInfo()['file'];
+        $this->que->last_modified_at = $this->getLastMrtTime();
+        $this->que->save();
 
         return $this;
     }

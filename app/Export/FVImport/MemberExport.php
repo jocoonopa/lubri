@@ -13,6 +13,10 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
     protected $startAt;
     protected $endAt;
     protected $info;
+    protected $upSerNo;
+    public $isBig5 = false;
+    public $nobom = false;
+    public $limit;
 
     public function getFilename()
     {   
@@ -184,6 +188,102 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
     public function setSerno($serno)
     {
         $this->serno = $serno;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of isBig5.
+     *
+     * @param mixed $isBig5 the is big5
+     *
+     * @return self
+     */
+    public function setIsBig5($isBig5)
+    {
+        $this->isBig5 = $isBig5;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of upSerNo.
+     *
+     * @return mixed
+     */
+    public function getUpSerNo()
+    {
+        return $this->upSerNo;
+    }
+
+    /**
+     * Sets the value of upSerNo.
+     *
+     * @param mixed $upSerNo the up ser no
+     *
+     * @return self
+     */
+    public function setUpSerNo($upSerNo)
+    {
+        $this->upSerNo = $upSerNo;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of isBig5.
+     *
+     * @return mixed
+     */
+    public function getIsBig5()
+    {
+        return $this->isBig5;
+    }
+
+    /**
+     * Gets the value of nobom.
+     *
+     * @return mixed
+     */
+    public function getNobom()
+    {
+        return $this->nobom;
+    }
+
+    /**
+     * Sets the value of nobom.
+     *
+     * @param mixed $nobom the nobom
+     *
+     * @return self
+     */
+    public function setNobom($nobom)
+    {
+        $this->nobom = $nobom;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of limit.
+     *
+     * @return mixed
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Sets the value of limit.
+     *
+     * @param mixed $limit the limit
+     *
+     * @return self
+     */
+    public function setLimit($limit)
+    {
+        $this->limit = $limit;
 
         return $this;
     }

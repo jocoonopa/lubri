@@ -10,6 +10,6 @@ class FVSyncType extends Model
 
     public function log()
     {
-        return $this->hasMany('App\Model\Log\FVSyncLog');
+        return $this->hasMany('App\Model\Log\FVSyncQue');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\FVImport;
 
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Illuminate\Console\Command;
 
 class Product extends Command
@@ -37,6 +38,46 @@ class Product extends Command
      */
     public function handle()
     {
-        //
+        if (!file_exists(storage_path('excel/exports/fvimport/'))) {
+            mkdir(storage_path('excel/exports/fvimport/'), 0777);
+        }
+        
+        $fname = storage_path('excel/exports/fvimport/') . 'product_export_' . time() . '.csv';
+
+        $this->comment("\r\n||||||||||||||||||||||||||  FVImport Product Export ||||||||||||||||||||||||||\r\n");  
+
+        $file = fopen($fname, 'w');
+        
+        fwrite($file, bomstr());
+
+        foreach ($this->getData() as $product) {
+            fwrite($file, implode(',', $this->genMouldProduct($product)) . "\r\n");
+        }
+
+        fclose($file);
+
+        $this->comment("\r\n--------------------------------------------------------\r\n{$fname}");        
+    }
+
+    protected function getData()
+    {
+        $sql = Processor::getStorageSql('FVImport/product.sql');
+
+        return Processor::getArrayResult($sql);
+    }
+
+    /**
+     * GoodsSource 商品來源 (0 : 國內採購 1 : 國外採購 2 : 自製 3 : 委外加工 4 : 其他)
+     * GoodsType 商品性質 (0 : 成品 1 : 半成品 2 : 原料 3 : 物料/零件 4 : 其他 5 : 樣本 6 : 特販)
+     */
+    protected function genMouldProduct(array $product)
+    {
+        $soureceMap = ['國內採購', '國外採購', '自製', '委外加工', '其他'];
+        $typeMap = ['成品', '半成品', '原料', '物料/零件', '其他', '樣本', '特販'];
+        $product['商品來源'] = array_get($soureceMap, $product['商品來源']);
+        $product['商品性質'] = array_get($typeMap, $product['商品性質']);
+        $product['庫存'] = (int) $product['庫存'];
+
+        return $product;
     }
 }
