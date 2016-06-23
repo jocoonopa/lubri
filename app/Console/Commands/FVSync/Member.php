@@ -109,28 +109,14 @@ class Member extends Command
 
     protected function proc(MemberExport $export)
     {
-        $que = $this->createQue($export);
-        $que->save();
-
         $export
             ->setCommend($this)
             ->setOutput($this->output)
             ->setChunkSize($this->option('size', self::MAX_LIMIT))
             ->setIsBig5($this->option('big5'))
-            ->setQue($que)
             ->handleExport()
         ;
 
         return $this;
-    }
-
-    protected function createQue($export)
-    {
-        $que = new FVSyncQue;
-
-        $que->status_code = FVSyncQue::STATUS_INIT;
-        $que->type_id     = FVSyncType::where('name', '=', 'member')->first()->id;
-
-        return $que;
     }
 }

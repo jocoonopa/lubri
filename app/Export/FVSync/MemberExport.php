@@ -256,4 +256,23 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
 
         return $this;
     }
+
+    public function setQueStatus($statusCode)
+    {
+        $this->getQue()->status_code = $statusCode;
+        $this->getQue()->save();
+
+        return $this;
+    }
+
+    public function configQue()
+    {
+        $this->que->import_cost_time = $this->getImportCostTime();
+        $this->que->select_cost_time = $this->getSelectCostTime();
+        $this->que->dest_file        = $this->getInfo()['file'];
+        $this->que->last_modified_at = $this->getLastMrtTime();
+        $this->que->save();
+
+        return $this;
+    }
 }

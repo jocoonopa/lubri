@@ -14,7 +14,9 @@ use Carbon\Carbon;
  */
 class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
-    const START_DATE = '2016-05-31 00:00:00';
+    const QUE_TYPE            = 'member';
+    const START_DATE          = '2016-05-31 00:00:00';
+    const FVSYNC_STORAGE_PATH = 'excel/exports/fvsync/' . self::QUE_TYPE . '/';
 
     protected $mould;
     protected $members;
@@ -24,59 +26,69 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
      */
     public function handle($export)
     {
-        $export->getCommend()->comment("\r\nFVSyncMember is processing, please wait ...");
+        $export->getCommend()->comment("\r\n|||||||||||||||||  FVSyncMember is ready for processing |||||||||||||||||");
 
-        if ($this->hasProcessingQue()) {
-            $export->getQue()->delete();
-
-            return $export->getCommend()->comment("\r\nThere is another is executing, skip this que!");
+        if ($this->hasProcessingQue(self::QUE_TYPE)) {
+            return $export->getCommend()->comment("\r\nThere's another que is executing now, so scheduler will skip this execution!");
         }
 
         $export
-            ->setLastMrtTime($this->getFVSyncQueLastMdtTime())
+            ->setQue($this->createQue($export))
+            ->setLastMrtTime($this->getFVSyncQueLastMdtTime(self::QUE_TYPE))
             ->setCount($this->getMembersCount($export))
-            ->setInfo(['file' => $this->genCsvFilePath()])
         ;
 
-        if (0 == $export->getCount()) {
+        if (0 === (int) $export->getCount()) {
             $export->getQue()->status_code = FVSyncQue::STATUS_SKIP;
             $export->getQue()->save();
 
-            return $export->getCommend()->comment("Nothing need to be imported.");
+            return $export->getCommend()->comment("\r\nNothing need to be imported.");
         }
 
-        $export->getCommend()->comment("Time range start from: {$export->getLastMrtTime()->format('Y-m-d H:i:s')}");
-        $export->getCommend()->comment("Has {$export->getCount()} rows");
+        $export->getCommend()->comment("======================================================\r\nTime range start from: {$export->getLastMrtTime()->format('Y-m-d H:i:s')}");
+        $export->getCommend()->comment("Has {$export->getCount()} rows\r\n======================================================");
         
         return $this->proc($export);
     }
 
-    protected function hasProcessingQue()
+    protected function createQue($export)
     {
-        $num = FVSyncQue::where('type_id', '=', FVSyncType::where('name', '=', 'member')->first()->id)
-            ->whereIn('status_code', [FVSyncQue::STATUS_INIT, FVSyncQue::STATUS_WRITING, FVSyncQue::STATUS_IMPORTING])
-            ->count();
+        $que = new FVSyncQue;
 
-        return 1 < $num;
+        $que->status_code = FVSyncQue::STATUS_INIT;
+        $que->type_id     = FVSyncType::where('name', '=', 'member')->first()->id;
+
+        $que->save();
+
+        return $que;
     }
 
-    protected function getFVSyncQueLastMdtTime()
+    protected function hasProcessingQue($type)
     {
-        $que = FVSyncQue::latest()
-            ->where('type_id', '=', FVSyncType::where('name', '=', 'member')->first()->id)
+        $num = FVSyncQue::where('type_id', '=', FVSyncType::where('name', '=', $type)->first()->id)
+            ->whereIn('status_code', [FVSyncQue::STATUS_WRITING, FVSyncQue::STATUS_IMPORTING])
+            ->count();
+
+        return 0 < $num;
+    }
+
+    protected function getFVSyncQueLastMdtTime($type)
+    {
+        $lastQue = FVSyncQue::latest()
+            ->where('type_id', '=', FVSyncType::where('name', '=', $type)->first()->id)
             ->whereNotNull('last_modified_at')
             ->first();
         
-        return !$que ? Carbon::instance(with(new \DateTime(self::START_DATE))) : $que->last_modified_at->addSecond();
+        return !$lastQue ? Carbon::instance(with(new \DateTime(self::START_DATE))) : $lastQue->last_modified_at->addSecond();
     }
 
-    protected function genCsvFilePath()
+    protected function genExportFilePath()
     {
-        if (!file_exists(storage_path('excel/exports/fvimport/'))) {
-            mkdir(storage_path('excel/exports/fvimport/'), 0777);
+        if (!file_exists(storage_path(self::FVSYNC_STORAGE_PATH))) {
+            mkdir(storage_path(self::FVSYNC_STORAGE_PATH), 0777, true);
         }
         
-        return storage_path('excel/exports/fvimport/') . 'membersync_export_' . time() . '.csv';
+        return storage_path(self::FVSYNC_STORAGE_PATH) . self::QUE_TYPE . 'sync_export_' . time() . '.csv';
     }
 
     /**
@@ -90,13 +102,12 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         // 注入 Mould 物件以方便處理會員資料
         $this->setMould(new FVMemberMould);
 
-        $export->getCommend()->comment("Getting whole data count...");
+        $export->setInfo(['file' => $this->genExportFilePath()]);
 
         $bar = $this->initBar($export);
         $bar->setMessage("Start Writing file {$export->getInfo()['file']}");
 
-        $export->getQue()->status_code = FVSyncQue::STATUS_WRITING;
-        $export->getQue()->save();
+        $export->setQueStatus(FVSyncQue::STATUS_WRITING);
 
         //--- 開始執行Query撈取資料寫入匯出檔案 //
         $writeStartAt = microtime(true);
@@ -110,22 +121,20 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         //---//
         
         try {
-            $export->getQue()->status_code = FVSyncQue::STATUS_IMPORTING;
-            $export->getQue()->save();
+            $export->setQueStatus(FVSyncQue::STATUS_IMPORTING);
 
             //--- 開始呼叫偉特程序，讀取匯出檔案寫入資料庫 //
-            $export->getCommend()->comment("\r\nBegin Import File");
+            $export->getCommend()->comment("\r\n\r\n-----------------------------------------------------------\r\nBegin Import File...");
             $this->importFile($export);
-            $export->getCommend()->comment('Import completed!');
+            $export->getCommend()->comment("Import completed!\r\n-----------------------------------------------------------\r\n");
             //---//
             
             // 紀錄最後一筆取得的會員之異動時間，此時間之後會用來當作下次Query 執行的其中一個條件
-            $export->getCommend()->comment('Record the last mdt time');
+            $export->getCommend()->comment("-----------------------------------------------------------\r\nRecord the last mdt time");
             $export->setLastMrtTime(Carbon::instance(new \DateTime($this->getMembers()[count($this->getMembers()) - 1]['PMDT_TIME'])));
-            $export->getCommend()->comment('Record completed!');
+            $export->getCommend()->comment("Record completed!\r\n-----------------------------------------------------------\r\n");
         } catch (\Exception $e) {
-            $export->getQue()->status_code = FVSyncQue::STATUS_EXCEPTION;
-            $export->getQue()->save();
+            $export->setQueStatus(FVSyncQue::STATUS_EXCEPTION);
 
             Log::error($export->getInfo()['file'] . '匯入失敗!');
             $export->getCommend()->comment('Exception happend when doing the import task!');
@@ -133,13 +142,7 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             throw $e;
         }        
 
-        $export->getQue()->status_code = FVSyncQue::STATUS_COMPLETE;
-        $export->getQue()->import_cost_time = $export->getImportCostTime();
-        $export->getQue()->select_cost_time = $export->getSelectCostTime();
-        $export->getQue()->dest_file        = $export->getInfo()['file'];
-        $export->getQue()->last_modified_at = $export->getLastMrtTime();
-        $export->getQue()->save();
-        
+        $export->setQueStatus(FVSyncQue::STATUS_COMPLETE)->configQue();
         $export->getCommend()->comment('All process completed!');
 
         return $this;
@@ -170,7 +173,7 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
                 $appendStr = implode(',', $this->getMould()->getRow($member));
                 $appendStr = true === $export->getIsBig5() ? cb5($appendStr) : $appendStr;
 
-                fwrite($file, $appendStr . "\r\n");
+                fwrite($file, "{$appendStr}\r\n");
             }
 
             $i += $export->getChunkSize();
@@ -211,19 +214,6 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         if (false === $export->getIsBig5()) {
             fwrite($file, bomstr());
         }
-    }
-
-    public function getSheetCallback(array $members)
-    {
-        return function ($sheet) use ($members) {
-            $sheet->setColumnFormat(['A' => '@','N' => '@']);
-
-            $sheet->appendRow($this->getMould()->getHead()); 
-
-            foreach ($members as $member) {
-                $sheet->appendRow($this->getMould()->getRow($member)); 
-            }              
-        };
     }
 
     protected function fetchMembers($export, $i)
