@@ -17,8 +17,7 @@ use Mail;
 class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
     const QUE_TYPE            = 'member';
-    const START_DATE          = '2016-06-14 00:00:00';
-    const FVSYNC_STORAGE_PATH = 'C:\FlapSync/Contact/Incoming/';
+    const START_DATE          = '2016-06-24 12:00:00';
 
     protected $mould;
     protected $members;
@@ -91,11 +90,11 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     protected function genExportFilePath()
     {
-        if (!file_exists(storage_path(self::FVSYNC_STORAGE_PATH))) {
-            mkdir(storage_path(self::FVSYNC_STORAGE_PATH), 0777, true);
+        if (!file_exists(env('FVSYNC_STORAGE_PATH'))) {
+            mkdir(env('FVSYNC_STORAGE_PATH'), 0777, true);
         }
         
-        return storage_path(self::FVSYNC_STORAGE_PATH) . self::QUE_TYPE . 'sync_export_' . time() . '.csv';
+        return env('FVSYNC_STORAGE_PATH') . self::QUE_TYPE . 'sync_export_' . time() . '.csv';
     }
 
     /**
