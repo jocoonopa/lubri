@@ -18,7 +18,7 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 {
     const QUE_TYPE            = 'member';
     const START_DATE          = '2016-06-14 00:00:00';
-    const FVSYNC_STORAGE_PATH = 'excel/exports/fvsync/' . self::QUE_TYPE . '/';
+    const FVSYNC_STORAGE_PATH = 'C:\FlapSync/Contact/Incoming/';
 
     protected $mould;
     protected $members;
@@ -86,7 +86,7 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             ->whereNotNull('last_modified_at')
             ->first();
         
-        return !$lastQue ? Carbon::instance(with(new \DateTime(self::START_DATE))) : $lastQue->last_modified_at->addSecond();
+        return !$lastQue ? Carbon::instance(with(new \DateTime(self::START_DATE))) : $lastQue->last_modified_at;
     }
 
     protected function genExportFilePath()
@@ -203,10 +203,15 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     /**
      * Import file to viga db with powerShell and viga .exe
      * 
-     * @param  object $file
+     * @param  object $export
      * @return boolean      
      */
-    protected function importFile($file){}
+    protected function importFile($export)
+    {
+        $output = [];
+        
+        return exec('"C:\Program Files (x86)\Pivotal\Relation\Relation.exe" /d ' . env('VIG_SYS') . ' /agent CHContactSync ' . basename($export->getInfo()['file']), $output, $status);
+    }
 
     protected function getMembersCount($export)
     {
