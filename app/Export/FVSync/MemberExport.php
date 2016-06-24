@@ -270,7 +270,7 @@ class MemberExport extends \Maatwebsite\Excel\Files\NewExcelFile
         $this->que->import_cost_time = $this->getImportCostTime();
         $this->que->select_cost_time = $this->getSelectCostTime();
         $this->que->dest_file        = $this->getInfo()['file'];
-        $this->que->last_modified_at = $this->getLastMrtTime();
+        $this->que->last_modified_at = $this->que->created_at;
         $this->que->save();
 
         return $this;
