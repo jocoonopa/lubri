@@ -7,6 +7,8 @@ use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Carbon\Carbon;
+use Log;
+use Mail;
 
 /**
  * todo:
@@ -15,18 +17,23 @@ use Carbon\Carbon;
 class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
     const QUE_TYPE            = 'member';
-    const START_DATE          = '2016-05-31 00:00:00';
+    const START_DATE          = '2016-06-14 00:00:00';
     const FVSYNC_STORAGE_PATH = 'excel/exports/fvsync/' . self::QUE_TYPE . '/';
 
     protected $mould;
     protected $members;
+    protected $exceptionObserver = [
+        'selfindex@chinghwa.com.tw'  => 'Van',
+        'john.cheung@vigasia.com.tw' => 'John',
+        'jocoonopa@chinghwa.com.tw'  => '小洪'
+    ];
 
     /**
      * The main function
      */
     public function handle($export)
     {
-        $export->getCommend()->comment("\r\n|||||||||||||||||  FVSyncMember is ready for processing |||||||||||||||||");
+        $export->getCommend()->comment("\r\n|||||||||||| FVSyncMember is ready for processing ||||||||||||\r\n");
 
         if ($this->hasProcessingQue(self::QUE_TYPE)) {
             return $export->getCommend()->comment("\r\nThere's another que is executing now, so scheduler will skip this execution!");
@@ -107,36 +114,36 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         $bar = $this->initBar($export);
         $bar->setMessage("Start Writing file {$export->getInfo()['file']}");
 
-        $export->setQueStatus(FVSyncQue::STATUS_WRITING);
-
-        //--- 開始執行Query撈取資料寫入匯出檔案 //
-        $writeStartAt = microtime(true);
-
-        $this->writeExportFile($export, $bar);
-
-        $export->setSelectCostTime(microtime(true) - $writeStartAt);
-
-        $bar->setMessage('File writing completed');
-        $bar->finish();
-        //---//
-        
         try {
+            //--- 開始執行Query撈取資料寫入匯出檔案 //
+            $export->setQueStatus(FVSyncQue::STATUS_WRITING);
+            $writeStartAt = microtime(true);
+
+            $this->writeExportFile($export, $bar);
+
+            $export->setSelectCostTime(microtime(true) - $writeStartAt);
+
+            $bar->setMessage('File writing completed');
+            $bar->finish();
+            //---//
+        
             $export->setQueStatus(FVSyncQue::STATUS_IMPORTING);
 
             //--- 開始呼叫偉特程序，讀取匯出檔案寫入資料庫 //
             $export->getCommend()->comment("\r\n\r\n-----------------------------------------------------------\r\nBegin Import File...");
+            
+            $importStartAt = microtime(true);
             $this->importFile($export);
+            $export->setImportCostTime(microtime(true) - $importStartAt);    
+
             $export->getCommend()->comment("Import completed!\r\n-----------------------------------------------------------\r\n");
             //---//
-            
-            // 紀錄最後一筆取得的會員之異動時間，此時間之後會用來當作下次Query 執行的其中一個條件
-            $export->getCommend()->comment("-----------------------------------------------------------\r\nRecord the last mdt time");
-            $export->setLastMrtTime(Carbon::instance(new \DateTime($this->getMembers()[count($this->getMembers()) - 1]['PMDT_TIME'])));
-            $export->getCommend()->comment("Record completed!\r\n-----------------------------------------------------------\r\n");
         } catch (\Exception $e) {
             $export->setQueStatus(FVSyncQue::STATUS_EXCEPTION);
 
             Log::error($export->getInfo()['file'] . '匯入失敗!');
+            $this->mail($e);
+            
             $export->getCommend()->comment('Exception happend when doing the import task!');
 
             throw $e;
@@ -146,6 +153,13 @@ class MemberExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         $export->getCommend()->comment('All process completed!');
 
         return $this;
+    }
+
+    public function mail($e)
+    {
+        return Mail::raw(__CLASS__ . '###' . $e->getMessage(), function ($m) {
+            $m->to($this->exceptionObserver)->subject('FVSyncQue_Error_' . date('Y-m-d H:i:s'));
+        });
     }
 
     /**

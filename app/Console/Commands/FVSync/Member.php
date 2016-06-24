@@ -87,17 +87,6 @@ class Member extends Command
     /**
      * Execute the console command.
      *
-     * 0. 目前遇到一個問題，不論用 MDT_TIME 或是 LastModifiedDate, 都會遇到一秒有幾十萬筆資料的狀況，
-     * 單純用時間條件走會原地打轉，要再想一下應該加入那些條件讓資料迭代正常。
-     *
-     * Ans: 應該將資料一次匯入的部分切開成另一個 command, 按照 pkey 直接抓
-     *
-     * 1. 考慮到麻煩的一次性匯入，想設計一個可以不受記憶體限制的chunk機制。
-     * 打造ing |=====>------|
-     *
-     * 2. 不確定偉特那邊吃不吃 utf-8, 若否，要在改變一下程式碼為可設定編碼
-     * 3. 246 安裝 PowerShell 
-     *
      * @return mixed
      */
     public function handle(MemberExport $export)
