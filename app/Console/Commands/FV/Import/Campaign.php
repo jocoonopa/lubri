@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace App\Console\Commands\FVImport;
+namespace App\Console\Commands\FV\Import;
 
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Carbon\Carbon;
@@ -52,7 +52,7 @@ class Campaign extends Command
         set_time_limit(0);
 
         if (!file_exists(storage_path('excel/exports/fvimport/'))) {
-            mkdir(storage_path('excel/exports/fvimport/'), 0777);
+            mkdir(storage_path('excel/exports/fvimport/'), 0777, true);
         }
 
         $fileName = 'import_campaign_' . time() . '.csv';

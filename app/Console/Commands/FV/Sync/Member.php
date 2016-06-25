@@ -7,9 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace App\Console\Commands\FVSync;
+namespace App\Console\Commands\FV\Sync;
 
-use App\Export\FVSync\MemberExport;
+use App\Export\FV\Sync\MemberExport;
 use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use Illuminate\Console\Command;
@@ -19,7 +19,7 @@ use Illuminate\Console\Command;
  */
 class Member extends Command
 {
-    const MAX_LIMIT = 4000;
+    const MAX_LIMIT_CHUNKSIZE = 4000;
 
     /**
      * The name and signature of the console command.
@@ -62,7 +62,7 @@ class Member extends Command
         $export
             ->setCommend($this)
             ->setOutput($this->output)
-            ->setChunkSize($this->option('size', self::MAX_LIMIT))
+            ->setChunkSize($this->option('size', self::MAX_LIMIT_CHUNKSIZE))
             ->handleExport()
         ;
 

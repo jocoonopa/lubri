@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Export\FVSync;
+namespace App\Export\FV\Sync;
 
-use App\Export\FVSync\Helper\DataHelper;
-use App\Export\FVSync\Helper\QueHelper;
+use App\Export\FV\FVExportHandler;
+use App\Export\FV\Sync\Helper\DataHelper;
+use App\Export\FV\Sync\Helper\QueHelper;
 use Log;
 use Mail;
 
-/**
- * todo:
- * - 根據狀態判斷是否要執行
- */
-class FVSyncExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
+abstract class FVSyncExportHandler extends FVExportHandler
 {
     const PROCESS_NAME = 'ProcessNameYouNeedToOverride';
 
@@ -28,7 +25,7 @@ class FVSyncExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         $this
             ->setMould($export->getMould())
             ->setQueHelper(new QueHelper($export))
-            ->setDataHelper(new DataHelper($export->getQueType(), $this->queHelper->getLastMrtTime(), $export->getChunkSize()))
+            ->setDataHelper(new DataHelper($export->getType(), $this->queHelper->getLastMrtTime(), $export->getChunkSize()))
         ;
 
         $export->getCommend()->comment("\r\n|||||||||||| " . self::PROCESS_NAME . " is ready for processing ||||||||||||\r\n");
@@ -55,7 +52,7 @@ class FVSyncExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             mkdir(env('FVSYNC_STORAGE_PATH'), 0777, true);
         }
         
-        return env('FVSYNC_STORAGE_PATH') . $export->getQueType() . 'sync_export_' . time() . '.csv';
+        return env('FVSYNC_STORAGE_PATH') . $export->getType() . 'sync_export_' . time() . '.csv';
     }
 
     /**

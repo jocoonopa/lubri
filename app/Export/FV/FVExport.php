@@ -1,45 +1,27 @@
 <?php
 
-namespace App\Export\FVSync;
+namespace App\Export\FV;
 
-use Carbon\Carbon;
-
-class FVSyncExport extends \Maatwebsite\Excel\Files\NewExcelFile
+abstract class FVExport extends \Maatwebsite\Excel\Files\NewExcelFile
 {
     protected $chunkSize;
     protected $commend;
     protected $output;
     protected $info;
-    protected $exceptionObserver = [
-        'selfindex@chinghwa.com.tw'  => 'Van',
-        'john.cheung@vigasia.com.tw' => 'John',
-        'jocoonopa@chinghwa.com.tw'  => '小洪'
-    ];
 
     /**
      * Must be overrided
      */
-    public function getMould(){}
-
-    public function getFilename()
-    {
-        return __CLASS__;
-    }
+    abstract public function getMould();
 
     /**
      * Decide which type of que would be use, must override this constant
      */
-    public function getQueType()
-    {
-        return 'SomeTypeYouMustOverride';
-    }
+    abstract public function getType();
 
-    /**
-     * The fetch start date, must override this constant
-     */
-    public function getStartDate()
+    public function getFilename()
     {
-        return '2222-12-31 23:59:59';
+        return __CLASS__;
     }
 
     /**
@@ -134,30 +116,6 @@ class FVSyncExport extends \Maatwebsite\Excel\Files\NewExcelFile
     public function setInfo($info)
     {
         $this->info = $info;
-
-        return $this;
-    }
-
-    /**
-     * Gets the value of exceptionObserver.
-     *
-     * @return mixed
-     */
-    public function getExceptionObserver()
-    {
-        return $this->exceptionObserver;
-    }
-
-    /**
-     * Sets the value of exceptionObserver.
-     *
-     * @param mixed $exceptionObserver the exception observer
-     *
-     * @return self
-     */
-    protected function setExceptionObserver($exceptionObserver)
-    {
-        $this->exceptionObserver = $exceptionObserver;
 
         return $this;
     }

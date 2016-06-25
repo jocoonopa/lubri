@@ -6,6 +6,9 @@ use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 class MemberCode
 {
+    const SERNO_PREFIX = 'MEMBR';
+    const CODE_LENGTH  = 21;
+
 	protected $code = '';
 
 	public function setStartCode()
@@ -37,4 +40,10 @@ class MemberCode
 
         return $this->code;
     }
+
+    static public function genSerNoStr($serno)
+    {
+        return self::SERNO_PREFIX . str_pad($serno, self::CODE_LENGTH, '0', STR_PAD_LEFT);
+    }
+
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Export\FVSync\Helper;
+namespace App\Export\FV\Sync\Helper;
 
 use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
@@ -21,7 +21,7 @@ class QueHelper
     public function __construct($export)
     {
         $this->export = $export;
-        $this->setType($export->getQueType())->createQue()->initLastMrtTime();
+        $this->setType($export->getType())->createQue()->initLastMrtTime();
     }
 
     protected function createQue()
@@ -48,7 +48,7 @@ class QueHelper
 
     public function hasProcessingQue()
     {
-        $num = FVSyncQue::where('type_id', '=', FVSyncType::where('name', '=', $this->export->getQueType())->first()->id)
+        $num = FVSyncQue::where('type_id', '=', FVSyncType::where('name', '=', $this->getType())->first()->id)
             ->whereIn('status_code', [FVSyncQue::STATUS_WRITING, FVSyncQue::STATUS_IMPORTING])
             ->count();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\FVImport;
+namespace App\Console\Commands\FV\Import;
 
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Illuminate\Console\Command;
@@ -39,7 +39,7 @@ class Product extends Command
     public function handle()
     {
         if (!file_exists(storage_path('excel/exports/fvimport/'))) {
-            mkdir(storage_path('excel/exports/fvimport/'), 0777);
+            mkdir(storage_path('excel/exports/fvimport/'), 0777, true);
         }
         
         $fname = storage_path('excel/exports/fvimport/') . 'product_export_' . time() . '.csv';
@@ -61,7 +61,7 @@ class Product extends Command
 
     protected function getData()
     {
-        $sql = Processor::getStorageSql('FVImport/product.sql');
+        $sql = Processor::getStorageSql('FV/Import/product.sql');
 
         return Processor::getArrayResult($sql);
     }

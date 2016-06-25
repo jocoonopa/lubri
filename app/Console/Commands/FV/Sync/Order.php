@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Console\Commands\FVSync;
+namespace App\Console\Commands\FV\Sync;
 
-use App\Export\FVSync\OrderExport;
+use App\Export\FV\Sync\OrderExport;
 use Illuminate\Console\Command;
 
 class Order extends Command

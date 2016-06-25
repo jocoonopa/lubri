@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Export\FVSync\Helper;
+namespace App\Export\FV\Helper;
 
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 
 /**
  * Help ExportHandler deal with data from flap, cti
  */
-class DataHelper
+abstract class DataHelper
 {
     protected $chunkSize;
     protected $type;
     protected $count;
-    protected $mdtTime;
     protected $map = [
         'member'    => 'Members', 
         'order'     => 'Orders', 
@@ -21,12 +20,18 @@ class DataHelper
         'product'   => 'Products'
     ]; 
 
-    public function __construct($type, $mdtTime, $chunkSize)
-    {
-        $this->setType($type)->setMdtTime($mdtTime)->setChunkSize($chunkSize)->initCount($mdtTime);
-    }
+    abstract protected function fetchMembers($i);
+    abstract protected function fetchOrders($i);
+    abstract protected function fetchProducts($i);
+    abstract protected function fetchCampaigns($i);
+    abstract protected function fetchCTIRecords($i);
+    abstract protected function fetchMembersCount();
+    abstract protected function getOrdersCount();
+    abstract protected function getProductsCount();
+    abstract protected function getCampaignsCount();
+    abstract protected function getCTIRecordsCount();
 
-    protected function initCount($mdtTime)
+    protected function initCount()
     {
         $this->setCount($this->fetchCount());
     }
@@ -40,6 +45,7 @@ class DataHelper
     {
         return call_user_func([$this, 'fetch' .  array_get($this->map, $this->type)], $i);
     }
+
 
     /**
      * Gets the value of count.
@@ -65,58 +71,6 @@ class DataHelper
         return $this;
     }
 
-    protected function fetchMembers($i)
-    {
-        $sql = str_replace(
-            ['$mrtTime', '$begin', '$end'], 
-            [$this->mdtTime->format('Y-m-d H:i:s'), $i, $i + $this->getChunkSize()], 
-            Processor::getStorageSql('/FVSync/member.sql')
-        );
-
-        return Processor::getArrayResult($sql);
-    }
-
-    protected function fetchOrders($i)
-    {
-        
-    }
-
-    protected function fetchProducts($i)
-    {
-        
-    }
-
-    protected function fetchCampaigns($i)
-    {
-        
-    }
-
-    protected function fetchCTIRecords($i)
-    {
-        
-    }
-
-    protected function fetchMembersCount()
-    {
-        return array_get(Processor::getArrayResult("SELECT COUNT(*) AS _count FROM POS_Member WITH(NOLOCK) WHERE LastModifiedDate >= '{$this->mdtTime->format('Y-m-d H:i:s')}'"), 0)['_count'];
-    }
-
-    protected function getOrdersCount($export)
-    {
-    }
-
-    protected function getProductsCount($export)
-    {
-    }
-
-    protected function getCampaignsCount($export)
-    {
-    }
-
-    protected function getCTIRecordsCount($export)
-    {
-    }
-
     /**
      * Gets the value of type.
      *
@@ -137,30 +91,6 @@ class DataHelper
     protected function setType($type)
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Gets the value of mdtTime.
-     *
-     * @return mixed
-     */
-    public function getMdtTime()
-    {
-        return $this->mdtTime;
-    }
-
-    /**
-     * Sets the value of mdtTime.
-     *
-     * @param mixed $mdtTime the mdt time
-     *
-     * @return self
-     */
-    protected function setMdtTime($mdtTime)
-    {
-        $this->mdtTime = $mdtTime;
 
         return $this;
     }

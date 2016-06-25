@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Export\FVSync;
+namespace App\Export\FV\Sync;
 
 use Carbon\Carbon;
 

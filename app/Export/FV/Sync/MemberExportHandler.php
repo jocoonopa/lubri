@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Export\FVSync;
-
-use App\Export\Mould\FVMemberMould;
+namespace App\Export\FV\Sync;
 
 /**
  * todo:

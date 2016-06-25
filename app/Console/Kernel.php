@@ -15,14 +15,14 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\Inspire::class,        
-        \App\Console\Commands\FVSync\Campaign::class,
-        \App\Console\Commands\FVSync\Order::class,
-        \App\Console\Commands\FVSync\Product::class,
-        \App\Console\Commands\FVSync\Member::class,
-        \App\Console\Commands\FVImport\Campaign::class,
-        \App\Console\Commands\FVImport\Order::class,
-        \App\Console\Commands\FVImport\Product::class,
-        \App\Console\Commands\FVImport\Member::class
+        \App\Console\Commands\FV\Sync\Campaign::class,
+        \App\Console\Commands\FV\Sync\Order::class,
+        \App\Console\Commands\FV\Sync\Product::class,
+        \App\Console\Commands\FV\Sync\Member::class,
+        \App\Console\Commands\FV\Import\Campaign::class,
+        \App\Console\Commands\FV\Import\Order::class,
+        \App\Console\Commands\FV\Import\Product::class,
+        \App\Console\Commands\FV\Import\Member::class
     ];
 
     /**
