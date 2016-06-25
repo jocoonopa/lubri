@@ -19,14 +19,12 @@ use Illuminate\Console\Command;
  */
 class Member extends Command
 {
-    const MAX_LIMIT_CHUNKSIZE = 4000;
-
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'syncmember:fv {--size=1500 : means the chunk size}';
+    protected $signature = 'syncmember:fv {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
@@ -62,7 +60,8 @@ class Member extends Command
         $export
             ->setCommend($this)
             ->setOutput($this->output)
-            ->setChunkSize($this->option('size', self::MAX_LIMIT_CHUNKSIZE))
+            ->setChunkSize($this->option('size'))
+            ->setLimit($this->option('limit'))
             ->handleExport()
         ;
 

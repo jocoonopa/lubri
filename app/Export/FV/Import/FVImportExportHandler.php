@@ -18,7 +18,7 @@ abstract class FVImportExportHandler extends FVExportHandler
             ->setDataHelper(new DataHelper($export->getType(), $export->getCondition(), $export->getChunkSize()))
         ;
 
-        $export->getCommend()->comment("\r\n|||||||||||| " . self::PROCESS_NAME . " is ready for processing ||||||||||||\r\n");
+        $export->getCommend()->comment("\r\n|||||||||||| " . $export->getType() . "_import is ready for processing ||||||||||||\r\n");
         $export->getCommend()->comment("Has {$this->dataHelper->getCount()} rows\r\n======================================================");
         
         return $this->proc($export);
@@ -44,14 +44,13 @@ abstract class FVImportExportHandler extends FVExportHandler
         $export->setInfo(['file' => $this->genExportFilePath($export)]);
         
         $bar = $this->initBar($export);
-        $bar->setMessage("Start Writing file {$export->getInfo()['file']}");
+        $export->getCommend()->comment("\r\nStart Writing file {$export->getInfo()['file']}");
 
         try {
             //--- 開始執行Query撈取資料寫入匯出檔案 //            
             $this->writeExportFile($export, $bar);
-
-            $bar->setMessage('File writing completed');
             $bar->finish();
+            $export->getCommend()->comment("\r\n{$export->getInfo()['file']} has been wroted completly.");
             //---//
         } catch (\Exception $e) {
             throw $e;

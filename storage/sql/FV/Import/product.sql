@@ -1,4 +1,6 @@
+SELECT * FROM (
 SELECT 
+    ROW_NUMBER() over (ORDER BY PIS_Goods.SerNo) AS lineNum,
     PIS_Goods.Name AS 品名,
     PIS_Goods.SpecName AS 規格,
     PIS_Goods.Code AS 商品代碼,
@@ -38,6 +40,7 @@ FROM PIS_Goods WITH(NOLOCK)
     LEFT JOIN PIS_Color WITH(NOLOCK) ON PIS_Goods.ColorSerNo = PIS_Color.SerNo
     LEFT JOIN PIS_InitialWarehouseAmount WITH(NOLOCK) ON PIS_Goods.SerNo = PIS_InitialWarehouseAmount.GoodsSerNo AND PIS_InitialWarehouseAmount.WarehouseSerNo = 'WAREH000000000000000001063'
 WHERE PIS_Goods.IsStop = 0
+) AS Products WHERE Products.lineNum > $begin AND Products.lineNum <= $end
 
 
 

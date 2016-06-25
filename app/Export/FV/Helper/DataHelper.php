@@ -26,10 +26,10 @@ abstract class DataHelper
     abstract protected function fetchCampaigns($i);
     abstract protected function fetchCTIRecords($i);
     abstract protected function fetchMembersCount();
-    abstract protected function getOrdersCount();
-    abstract protected function getProductsCount();
-    abstract protected function getCampaignsCount();
-    abstract protected function getCTIRecordsCount();
+    abstract protected function fetchOrdersCount();
+    abstract protected function fetchProductsCount();
+    abstract protected function fetchCampaignsCount();
+    abstract protected function fetchCTIRecordsCount();
 
     protected function initCount()
     {

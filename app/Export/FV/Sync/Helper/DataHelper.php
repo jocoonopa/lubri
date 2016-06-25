@@ -34,13 +34,19 @@ class DataHelper extends DH
     protected function fetchCTIRecords($i){}
     protected function fetchMembersCount()
     {
-        return array_get(Processor::getArrayResult("SELECT COUNT(*) AS _count FROM POS_Member WITH(NOLOCK) WHERE LastModifiedDate >= '{$this->mdtTime->format('Y-m-d H:i:s')}'"), 0)['_count'];
+        $sql = str_replace(
+            ['$mrtTime'], 
+            [$this->mdtTime->format('Y-m-d H:i:s')], 
+            Processor::getStorageSql('FV/Sync/member_count.sql')
+        );
+
+        return array_get(Processor::getArrayResult($sql), 0)['_count'];
     }
 
-    protected function getOrdersCount(){}
-    protected function getProductsCount(){}
-    protected function getCampaignsCount(){}
-    protected function getCTIRecordsCount(){}
+    protected function fetchOrdersCount(){}
+    protected function fetchProductsCount(){}
+    protected function fetchCampaignsCount(){}
+    protected function fetchCTIRecordsCount(){}
 
     /**
      * Gets the value of mdtTime.

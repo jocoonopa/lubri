@@ -10,10 +10,6 @@ use Mail;
 
 abstract class FVSyncExportHandler extends FVExportHandler
 {
-    const PROCESS_NAME = 'ProcessNameYouNeedToOverride';
-
-    protected $mould;
-    protected $dataHelper;
     protected $queHelper;
 
     /**
@@ -28,7 +24,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
             ->setDataHelper(new DataHelper($export->getType(), $this->queHelper->getLastMrtTime(), $export->getChunkSize()))
         ;
 
-        $export->getCommend()->comment("\r\n|||||||||||| " . self::PROCESS_NAME . " is ready for processing ||||||||||||\r\n");
+        $export->getCommend()->comment("\r\n|||||||||||| " . $export->getType() . "_sync is ready for processing ||||||||||||\r\n");
 
         if ($this->queHelper->hasProcessingQue()) {
             return $export->getCommend()->comment("\r\nThere's another que is executing now, so scheduler will skip this execution!");
@@ -66,7 +62,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
         $export->setInfo(['file' => $this->genExportFilePath($export)]);
 
         $bar = $this->initBar($export);
-        $bar->setMessage("Start Writing file {$export->getInfo()['file']}");
+        $export->getCommend()->comment("Start Writing file {$export->getInfo()['file']}");
 
         try {
             //--- 開始執行Query撈取資料寫入匯出檔案 //
@@ -78,8 +74,8 @@ abstract class FVSyncExportHandler extends FVExportHandler
 
             $this->queHelper->setSelectCostTime(microtime(true) - $writeStartAt);
 
-            $bar->setMessage('File writing completed');
             $bar->finish();
+            $export->getCommend()->comment("\r\nFile writing completed");
             //---//
             $this->queHelper->toImportingStatus();
 
@@ -117,43 +113,6 @@ abstract class FVSyncExportHandler extends FVExportHandler
     }
 
     /**
-     * Write export file by iterate fetch data, which will be used to import in viga db
-     * 
-     * @param  object $export
-     * @return $this
-     */
-    protected function writeExportFile($export, $bar)
-    {
-        $file  = fopen($export->getInfo()['file'], 'w');
-        $count = $this->dataHelper->getCount();
-        $i = 0;
-        
-        fwrite($file, bomstr());
-
-        while ($i < $count) {
-            $entitys = $this->dataHelper->fetchEntitys($export, $i);
-
-            if (empty($entitys)) {
-                break;
-            }
-            
-            foreach ($entitys as $entity) {
-                $appendStr = implode(',', $this->getMould()->getRow($entity));
-
-                fwrite($file, "{$appendStr}\r\n");
-            }
-
-            $i += $export->getChunkSize();
-
-            $bar->advance($count < $export->getChunkSize() ? $count : $export->getChunkSize());
-        }
-
-        fclose($file);
-
-        return $this;
-    }
-
-    /**
      * Import file to viga db with powerShell and viga .exe
      * 
      * @param  object $export
@@ -164,54 +123,6 @@ abstract class FVSyncExportHandler extends FVExportHandler
         $output = [];
         
         return exec('"C:\Program Files (x86)\Pivotal\Relation\Relation.exe" /d ' . env('VIG_SYS') . ' /agent CHContactSync ' . basename($export->getInfo()['file']), $output, $status);
-    }
-
-    protected function initBar($export)
-    {
-        $bar = $export->getOutput()->createProgressBar($this->dataHelper->getCount());
-        $bar->setRedrawFrequency(1);
-        $bar->setFormat('verbose');
-        $bar->setOverwrite(true);
-
-        return $bar;
-    }
-
-    /**
-     * Gets the value of mould.
-     *
-     * @return mixed
-     */
-    public function getMould()
-    {
-        return $this->mould;
-    }
-
-    /**
-     * Sets the value of mould.
-     *
-     * @param mixed $mould the mould
-     *
-     * @return self
-     */
-    protected function setMould($mould)
-    {
-        $this->mould = $mould;
-
-        return $this;
-    }
-
-    /**
-     * Sets the value of dataHelper.
-     *
-     * @param mixed $dataHelper the data helper
-     *
-     * @return self
-     */
-    protected function setDataHelper($dataHelper)
-    {
-        $this->dataHelper = $dataHelper;
-
-        return $this;
     }
 
     /**

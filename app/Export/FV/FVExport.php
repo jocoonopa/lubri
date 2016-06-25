@@ -8,6 +8,7 @@ abstract class FVExport extends \Maatwebsite\Excel\Files\NewExcelFile
     protected $commend;
     protected $output;
     protected $info;
+    protected $limit;
 
     /**
      * Must be overrided
@@ -116,6 +117,30 @@ abstract class FVExport extends \Maatwebsite\Excel\Files\NewExcelFile
     public function setInfo($info)
     {
         $this->info = $info;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of limit.
+     *
+     * @return mixed
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Sets the value of limit.
+     *
+     * @param mixed $limit the limit
+     *
+     * @return self
+     */
+    public function setLimit($limit)
+    {
+        $this->limit = $limit;
 
         return $this;
     }

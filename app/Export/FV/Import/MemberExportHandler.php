@@ -3,9 +3,6 @@
 namespace App\Export\FV\Import;
 
 /**
- * Fetch all member into an export file, limit per select count under 1500
+ * Fetch members into an export file
  */
-class MemberExportHandler extends FVImportExportHandler
-{
-    const PROCESS_NAME = 'FVMemberImport';
-}
+class MemberExportHandler extends FVImportExportHandler{}

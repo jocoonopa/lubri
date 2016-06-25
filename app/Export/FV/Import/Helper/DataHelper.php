@@ -34,10 +34,6 @@ class DataHelper extends DH
         return Processor::getArrayResult($sql);
     }
 
-    protected function fetchOrders($i){}
-    protected function fetchProducts($i){}
-    protected function fetchCampaigns($i){}
-    protected function fetchCTIRecords($i){}
     protected function fetchMembersCount()
     {
         $lowerSerno = MemberCode::genSerNoStr($this->getCondition()['serno']);
@@ -46,10 +42,28 @@ class DataHelper extends DH
         return array_get(Processor::getArrayResult("SELECT COUNT(*) AS _count FROM POS_Member WITH(NOLOCK) WHERE POS_Member.SerNo >= '{$lowerSerno}' AND POS_Member.SerNo <= '{$upperSerno}'"), 0)['_count'];
     }
 
-    protected function getOrdersCount(){}
-    protected function getProductsCount(){}
-    protected function getCampaignsCount(){}
-    protected function getCTIRecordsCount(){}
+    protected function fetchOrders($i){}
+    protected function fetchProducts($i)
+    {
+        $sql = str_replace(
+            ['$begin', '$end'], 
+            [$i, $i + $this->getChunkSize()], 
+            Processor::getStorageSql('FV/Import/product.sql')
+        );
+
+        return Processor::getArrayResult($sql);
+    }
+
+    protected function fetchProductsCount()
+    {
+        return array_get(Processor::getArrayResult("SELECT COUNT(*) AS _count FROM PIS_Goods WITH(NOLOCK) WHERE PIS_Goods.IsStop=0"), 0)['_count'];
+    }
+
+    protected function fetchCampaigns($i){}
+    protected function fetchCTIRecords($i){}
+    protected function fetchOrdersCount(){}
+    protected function fetchCampaignsCount(){}
+    protected function fetchCTIRecordsCount(){}
 
     /**
      * Gets the value of condition.

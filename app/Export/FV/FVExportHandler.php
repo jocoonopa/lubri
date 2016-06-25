@@ -4,8 +4,6 @@ namespace App\Export\FV;
 
 abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
-    const PROCESS_NAME = 'ProcessNameYouNeedToOverride';
-
     protected $mould;
     protected $dataHelper;
 
@@ -30,7 +28,7 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function writeExportFile($export, $bar)
     {
         $file  = fopen($export->getInfo()['file'], 'w');
-        $count = $this->dataHelper->getCount();
+        $count = $export->getLimit() < $this->dataHelper->getCount() ? $export->getLimit() : $this->dataHelper->getCount();
         $i = 0;
         
         fwrite($file, bomstr());
@@ -50,7 +48,7 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
             $i += $export->getChunkSize();
 
-            $bar->advance($count < $export->getChunkSize() ? $count : $export->getChunkSize());
+            $bar->advance($count < $i ? $count - ($i - $export->getChunkSize()) : $export->getChunkSize());
         }
 
         fclose($file);
@@ -62,7 +60,7 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     {
         $bar = $export->getOutput()->createProgressBar($this->dataHelper->getCount());
         $bar->setRedrawFrequency(1);
-        $bar->setFormat('verbose');
+        $bar->setFormat('debug');
         $bar->setOverwrite(true);
 
         return $bar;
