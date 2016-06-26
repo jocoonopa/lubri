@@ -12,7 +12,7 @@ class Product extends Command
      *
      * @var string
      */
-    protected $signature = 'syncproduct:fv';
+    protected $signature = 'syncproduct:fv  {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
@@ -38,6 +38,21 @@ class Product extends Command
      */
     public function handle(ProductExport $export)
     {
-        $this->comment($export->getFilename());
+        set_time_limit(0);
+        
+        $this->proc($export);
+    }
+
+    protected function proc(ProductExport $export)
+    {
+        $export
+            ->setCommend($this)
+            ->setOutput($this->output)
+            ->setChunkSize($this->option('size'))
+            ->setLimit($this->option('limit'))
+            ->handleExport()
+        ;
+
+        return $this;
     }
 }

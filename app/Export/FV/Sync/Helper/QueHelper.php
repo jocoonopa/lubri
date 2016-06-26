@@ -43,7 +43,7 @@ class QueHelper
             ->whereNotNull('last_modified_at')
             ->first();
         
-        return $this->setLastMrtTime(!$lastQue ? Carbon::instance(with(new \DateTime($export->getStartDate()))) : $lastQue->last_modified_at);
+        return $this->setLastMrtTime(!$lastQue ? Carbon::instance(with(new \DateTime($this->export->getStartDate()))) : $lastQue->last_modified_at);
     }
 
     public function hasProcessingQue()

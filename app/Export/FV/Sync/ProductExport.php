@@ -2,12 +2,28 @@
 
 namespace App\Export\FV\Sync;
 
-use Carbon\Carbon;
+use App\Export\Mould\FVProductMould;
 
-class ProductExport extends \Maatwebsite\Excel\Files\NewExcelFile
+class ProductExport extends FVSyncExport
 {
-    public function getFilename()
-    {   
-        return 'Product_' . time();
+    protected $exceptionObserver = [
+        'selfindex@chinghwa.com.tw'  => 'Van',
+        'john.cheung@vigasia.com.tw' => 'John',
+        'jocoonopa@chinghwa.com.tw'  => '小洪'
+    ];
+
+    public function getMould()
+    {
+        return new FVProductMould;
+    }
+
+    public function getType()
+    {
+        return 'product';
+    }
+
+    public function getStartDate()
+    {
+        return '2016-06-14 00:00:00';
     }
 }

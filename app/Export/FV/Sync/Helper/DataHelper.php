@@ -17,36 +17,117 @@ class DataHelper extends DH
         $this->setType($type)->setMdtTime($mdtTime)->setChunkSize($chunkSize)->initCount();
     }
 
-    protected function fetchMembers($i)
+    protected function fetchEntitysImplement($i, $flag = 'Erp')
     {
         $sql = str_replace(
-            ['$mrtTime', '$begin', '$end'], 
+            ['$mdtTime', '$begin', '$end'], 
             [$this->mdtTime->format('Y-m-d H:i:s'), $i, $i + $this->getChunkSize()], 
-            Processor::getStorageSql('FV/Sync/member.sql')
+            Processor::getStorageSql("FV/Sync/{$this->type}.sql")
         );
 
         return Processor::getArrayResult($sql);
     }
 
-    protected function fetchOrders($i){}
-    protected function fetchProducts($i){}
-    protected function fetchCampaigns($i){}
-    protected function fetchCTIRecords($i){}
-    protected function fetchMembersCount()
+    protected function fetchEntitysCountImplement($flag = 'Erp')
     {
         $sql = str_replace(
-            ['$mrtTime'], 
+            ['$mdtTime'], 
             [$this->mdtTime->format('Y-m-d H:i:s')], 
-            Processor::getStorageSql('FV/Sync/member_count.sql')
+            Processor::getStorageSql("FV/Sync/{$this->type}_count.sql")
         );
 
-        return array_get(Processor::getArrayResult($sql), 0)['_count'];
+        return array_get(Processor::getArrayResult($sql, $flag), 0)['_count'];
     }
 
-    protected function fetchOrdersCount(){}
-    protected function fetchProductsCount(){}
-    protected function fetchCampaignsCount(){}
-    protected function fetchCTIRecordsCount(){}
+    protected function fetchMembers($i)
+    {
+        if ('member' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysImplement($i);
+    }
+
+    protected function fetchOrders($i)
+    {
+        if ('order' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysImplement($i);
+    }
+
+    protected function fetchProducts($i)
+    {
+        if ('product' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysImplement($i);
+    }
+
+    protected function fetchCampaigns($i)
+    {
+        if ('campaign' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysImplement($i, 'Cti');
+    }
+
+    protected function fetchCTIRecords($i)
+    {
+        if ('ctirecord' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysImplement($i, 'Cti');
+    }
+
+    protected function fetchMembersCount()
+    {
+        if ('member' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysCountImplement();
+    }
+
+    protected function fetchOrdersCount()
+    {
+        if ('order' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysCountImplement();
+    }
+
+    protected function fetchProductsCount()
+    {
+        if ('product' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysCountImplement();
+    }
+
+    protected function fetchCampaignsCount()
+    {
+        if ('campaign' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysCountImplement('Cti');
+    }
+
+    protected function fetchCTIRecordsCount()
+    {
+        if ('ctirecord' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysCountImplement('Cti');
+    }
 
     /**
      * Gets the value of mdtTime.

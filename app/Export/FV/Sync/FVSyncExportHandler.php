@@ -33,7 +33,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
         if (0 === (int) $this->dataHelper->getCount()) {
             $this->queHelper->toSkipStatus();
 
-            return $export->getCommend()->comment("\r\nNothing need to be imported.");
+            return $export->getCommend()->comment("\r\nNothing need to be handled with.");
         }
 
         $export->getCommend()->comment("======================================================\r\nTime range start from: {$this->queHelper->getLastMrtTime()->format('Y-m-d H:i:s')}");

@@ -2,7 +2,7 @@
 
 namespace App\Export\Mould;
 
-class FVMProductMould extends FVMould
+class FVProductMould extends FVMould
 {
     protected $head =  [
         '品名',
