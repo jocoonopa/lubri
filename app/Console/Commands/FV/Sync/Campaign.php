@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands\FV\Sync;
 
-use App\Export\FVSync\MemberExport;
-use App\Model\Log\FVSyncLog;
-use App\Model\Log\FVSyncType;
+use App\Export\FV\Sync\CampaignExport;
 use Illuminate\Console\Command;
 
 class Campaign extends Command
@@ -14,14 +12,14 @@ class Campaign extends Command
      *
      * @var string
      */
-    protected $signature = 'synccampaign:fv {max=500 : The maximum members select once query execute}';
+    protected $signature = 'synccampaign:fv  {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Export Flap Data and trans to Viga';
+    protected $description = 'Sync CTI Campaigns with Viga';
 
     /**
      * Create a new command instance.
@@ -34,9 +32,27 @@ class Campaign extends Command
     }
 
     /**
+     * Execute the console command.
+     *
      * @return mixed
      */
-    public function handle(MemberExport $export)
+    public function handle(CampaignExport $export)
     {
+        set_time_limit(0);
+        
+        $this->proc($export);
+    }
+
+    protected function proc(CampaignExport $export)
+    {
+        $export
+            ->setCommend($this)
+            ->setOutput($this->output)
+            ->setChunkSize($this->option('size'))
+            ->setLimit($this->option('limit'))
+            ->handleExport()
+        ;
+
+        return $this;
     }
 }

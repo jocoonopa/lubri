@@ -72,7 +72,7 @@ class DataHelper extends DH
             throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
         }
 
-        return $this->fetchEntitysImplement($i, 'Cti');
+        return $this->fetchEntitysImplement($i, Processor::DB_CTI);
     }
 
     protected function fetchCTIRecords($i)
@@ -81,7 +81,7 @@ class DataHelper extends DH
             throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
         }
 
-        return $this->fetchEntitysImplement($i, 'Cti');
+        return $this->fetchEntitysImplement($i, Processor::DB_CTI);
     }
 
     protected function fetchMembersCount()
@@ -117,7 +117,7 @@ class DataHelper extends DH
             throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
         }
 
-        return $this->fetchEntitysCountImplement('Cti');
+        return $this->fetchEntitysCountImplement(Processor::DB_CTI);
     }
 
     protected function fetchCTIRecordsCount()
@@ -126,7 +126,7 @@ class DataHelper extends DH
             throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
         }
 
-        return $this->fetchEntitysCountImplement('Cti');
+        return $this->fetchEntitysCountImplement(Processor::DB_CTI);
     }
 
     /**

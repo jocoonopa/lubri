@@ -3,7 +3,6 @@
 namespace App\Console\Commands\FV\Import;
 
 use App\Export\FV\Import\MemberExport;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 /**
@@ -30,7 +29,7 @@ class Member extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Export Flap Members';
 
     /**
      * Create a new command instance.

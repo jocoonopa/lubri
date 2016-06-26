@@ -10,8 +10,6 @@
 namespace App\Console\Commands\FV\Sync;
 
 use App\Export\FV\Sync\MemberExport;
-use App\Model\Log\FVSyncQue;
-use App\Model\Log\FVSyncType;
 use Illuminate\Console\Command;
 
 /**

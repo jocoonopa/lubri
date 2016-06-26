@@ -3,7 +3,6 @@
 namespace App\Console\Commands\FV\Import;
 
 use App\Export\FV\Import\ProductExport;
-use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use Illuminate\Console\Command;
 
 class Product extends Command
@@ -23,7 +22,7 @@ class Product extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Export Flap Products';
 
     /**
      * Create a new command instance.

@@ -2,7 +2,7 @@
 
 namespace App\Export\FV\Import;
 
-use App\Export\Mould\FVMProductMould;
+use App\Export\Mould\FVProductMould;
 
 class ProductExport extends FVImportExport
 {
@@ -13,6 +13,6 @@ class ProductExport extends FVImportExport
 
     public function getMould()
     {
-        return new FVMProductMould;
+        return new FVProductMould;
     }
 }

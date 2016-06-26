@@ -5,6 +5,7 @@ namespace App\Export\FV\Import\Helper;
 use App\Export\FV\Helper\DataHelper AS DH;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\Helper\Flap\PosMember\MemberCode;
+use Carbon\Carbon;
 
 /**
  * Help ExportHandler deal with data from flap, cti
@@ -59,10 +60,29 @@ class DataHelper extends DH
         return array_get(Processor::getArrayResult("SELECT COUNT(*) AS _count FROM PIS_Goods WITH(NOLOCK) WHERE PIS_Goods.IsStop=0"), 0)['_count'];
     }
 
-    protected function fetchCampaigns($i){}
+    protected function fetchCampaigns($i)
+    {
+        $sql = str_replace(
+            ['$yesterday', '$tomorrow', '$begin', '$end'], 
+            [Carbon::yesterday()->format('Y-m-d H:i:s'), Carbon::tomorrow()->format('Y-m-d H:i:s'), $i, $i + $this->getChunkSize()], 
+            Processor::getStorageSql('FV/Import/campaign.sql')
+        );
+
+        return Processor::getArrayResult($sql, Processor::DB_CTI);
+    }
+
     protected function fetchCTIRecords($i){}
     protected function fetchOrdersCount(){}
-    protected function fetchCampaignsCount(){}
+    protected function fetchCampaignsCount()
+    {
+        $sql = str_replace(
+            ['$yesterday', '$tomorrow'], 
+            [Carbon::yesterday()->format('Y-m-d H:i:s'), Carbon::tomorrow()->format('Y-m-d H:i:s')], 
+            Processor::getStorageSql('FV/Import/campaign_count.sql')
+        );
+
+        return array_get(Processor::getArrayResult($sql, Processor::DB_CTI), 0)['_count'];
+    }
     protected function fetchCTIRecordsCount(){}
 
     /**
