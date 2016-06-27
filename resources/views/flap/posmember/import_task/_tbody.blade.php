@@ -12,7 +12,7 @@
     {{--<td>@if(NULL !== $task->executed_at){{ $task->executed_at}}@else <span class="label label-default">NOT YET</span> @endif</td>--}}
     <td>{{ $task->user->username }}</td>
     <td>{!! $task->getStatusName() !!}</td>
-    @if (NULL === $task->executed_at)
+    @if (\App\Model\Flap\PosMemberImportTask::STATUS_TOBEPUSHED === $task->status_code)
     <td>                            
         {!! Form::open(['method' => 'DELETE', 'action' => ['Flap\POS_Member\ImportTaskController@destroy', $task->id]]) !!}
 

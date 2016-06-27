@@ -148,9 +148,9 @@ $('.import-task-push').click(function () {
                 $importBlockUI();
                 window.location.href = $this.attr('href'); 
 
-                var taskId = $this.data('task-id');
+                //var taskId = $this.data('task-id');
                 
-                ImportTask_loadPushProgress_init(taskId);            
+                //ImportTask_loadPushProgress_init(taskId);            
             } else {
                 this.modal('hide');
             }
@@ -174,7 +174,7 @@ $('.import-task-pull').click(function () {
             if (true === result) {
                 $importBlockUI();
                 window.location.href = $this.attr('href'); 
-                ImportTask_loadPullProgress_init();            
+                //ImportTask_loadPullProgress_init();            
             } else {
                 this.modal('hide');
             }

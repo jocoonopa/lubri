@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Flap\POS_Member;
 
 use App\Http\Controllers\Controller;
 use App\Import\Flap\POS_Member\Import;
-use App\Model\Flap\PosMemberImportTask;
+use App\Jobs\PushPosMemberTask;
 use App\Model\Flap\PosMemberImportContent;
+use App\Model\Flap\PosMemberImportTask;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Lyin\ModelFactory;
 use Session;
@@ -16,9 +17,13 @@ class ImportPushController extends Controller
     {
         set_time_limit(0);
 
-        $this->getPusher($task)->pushTask($task);
+        $job = with(new PushPosMemberTask($task))->onQueue(env('IRON_QUEUE'))->delay(10);
+        $this->dispatch($job);
 
-        Session::flash('success', "<b>{$task->name}<b> 執行完成!，費時 {$task->execute_cost_time} 秒");
+        $task->status_code = PosMemberImportTask::STATUS_PUSHING;
+        $task->save();
+
+        Session::flash('success', "<b>{$task->name}<b> 推送中，完成後系統會發送通知信件.");
 
         return redirect("/flap/pos_member/import_task?kind_id={$task->kind()->first()->id}"); 
     }

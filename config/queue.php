@@ -38,7 +38,7 @@ return [
         'database' => [
             'driver' => 'database',
             'table' => 'jobs',
-            'queue' => 'default',
+            'queue' => env('IRON_QUEUE'),
             'expire' => 60,
         ],
 

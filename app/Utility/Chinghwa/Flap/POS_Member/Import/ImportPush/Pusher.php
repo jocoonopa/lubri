@@ -6,9 +6,9 @@ use App\Import\Flap\POS_Member\Import;
 use App\Model\Flap\PosMemberImportContent;
 use App\Model\Flap\PosMemberImportTask;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
-use App\Utility\Chinghwa\Flap\CCS_MemberFlags\Flater;
 use App\Utility\Chinghwa\ORM\ERP\CCS_MemberFlags;
 use App\Utility\Chinghwa\Flap\POS_Member\Import\ImportHandler\Act\ModelFactory;
+use Mail;
 use Log;
 
 abstract class Pusher implements IPusher
@@ -28,10 +28,12 @@ abstract class Pusher implements IPusher
     {
         $startTime = microtime(true);
 
-        $task->status_code = PosMemberImportTask::STATUS_COMPLETED;
+        $task->status_code = PosMemberImportTask::STATUS_PUSHING;
         $task->save();
 
-        return $this->pushTaskDaemon($task)->taskUpdateProc($task, $startTime);
+        $this->pushTaskDaemon($task)->taskUpdateProc($task, $startTime);
+        
+        return $this->notify($task);
     }
 
     protected function pushTaskDaemon(PosMemberImportTask $task)
@@ -50,6 +52,13 @@ abstract class Pusher implements IPusher
 
             Log::error($e->getMessage());
         }        
+    }
+
+    protected function notify(PosMemberImportTask $task)
+    {
+        return Mail::send('emails.pushTask', ['task' => $task], function ($m) use ($task) {
+            $m->to([$task->user->email => $task->user->username])->subject("{$task->name}推送完成!");
+        });
     }
 
     protected function hasNotExcuted(PosMemberImportTask $task)

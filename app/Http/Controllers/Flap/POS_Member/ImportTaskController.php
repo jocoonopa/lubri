@@ -124,6 +124,9 @@ class ImportTaskController extends Controller
             $job = with(new ImportPosMemberTask($task))->onQueue(env('IRON_QUEUE'))->delay(10);
             $this->dispatch($job);
 
+            $task->status_code = PosMemberImportTask::STATUS_IMPORTING;
+            $task->save();
+
             Session::flash('success', "成功新增任務{$task->name}@{$task->kind()->first()->name}!");
 
             return redirect("/flap/pos_member/import_task?kind_id={$task->kind()->first()->id}");

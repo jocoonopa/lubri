@@ -44,7 +44,7 @@ class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
 
         $end = microtime(true);
 
-        return $this->updateTaskState($this->getTask(), $start, $end);
+        return $this->updateTaskState($this->getTask(), $start, $end)->notify($this->getTask());
     }
 
     protected function updateTaskState($task, $start, $end)
@@ -54,6 +54,13 @@ class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
         $task->save();
 
         return $task;
+    }
+
+    protected function notify(PosMemberImportTask $task)
+    {
+        return Mail::send('emails.importTask', ['task' => $task], function ($m) use ($task) {
+            $m->to([$task->user->email => $task->user->username])->->subject("{$task->name}匯入完成!");
+        });
     }
 
     public function proc()
