@@ -19,6 +19,18 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     abstract protected function genExportFilePath($export);
 
+    protected function initBar($export)
+    {
+        $count = $export->getLimit() < $this->dataHelper->getCount() ? $export->getLimit() : $this->dataHelper->getCount();
+
+        $bar = $export->getOutput()->createProgressBar($count);
+        $bar->setRedrawFrequency(1);
+        $bar->setFormat('debug');
+        $bar->setOverwrite(true);
+
+        return $bar;
+    }
+
     /**
      * Write export file by iterate fetch data, which will be used to import in viga db
      * 
@@ -28,11 +40,11 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function writeExportFile($export, $bar)
     {
         $file  = fopen($export->getInfo()['file'], 'w');
-        $count = $export->getLimit() < $this->dataHelper->getCount() ? $export->getLimit() : $this->dataHelper->getCount();
-        $i = 0;
-        
-        fwrite($file, bomstr());
+        $count = $bar->getMaxSteps();
 
+        fwrite($file, bomstr());
+        
+        $i = 0;
         while ($i < $count) {
             $entitys = $this->dataHelper->fetchEntitys($export, $i);
 
@@ -54,16 +66,6 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         fclose($file);
 
         return $this;
-    }
-
-    protected function initBar($export)
-    {
-        $bar = $export->getOutput()->createProgressBar($this->dataHelper->getCount());
-        $bar->setRedrawFrequency(1);
-        $bar->setFormat('debug');
-        $bar->setOverwrite(true);
-
-        return $bar;
     }
 
     /**

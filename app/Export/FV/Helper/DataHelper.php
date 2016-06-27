@@ -46,7 +46,6 @@ abstract class DataHelper
         return call_user_func([$this, 'fetch' .  array_get($this->map, $this->type)], $i);
     }
 
-
     /**
      * Gets the value of count.
      *

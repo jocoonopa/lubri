@@ -1,10 +1,20 @@
 <?php
-
+/*
+ * This file is extends of Class Command.
+ *
+ * (c) Jocoonopa <jocoonopa@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace App\Console\Commands\FV\Sync;
 
 use App\Export\FV\Sync\OrderExport;
 use Illuminate\Console\Command;
 
+/**
+ * To Sync Flap/Ensound and Viga Member
+ */
 class Order extends Command
 {
     /**
@@ -12,7 +22,7 @@ class Order extends Command
      *
      * @var string
      */
-    protected $signature = 'syncorder:fv';
+    protected $signature = 'syncorder:fv {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
@@ -38,16 +48,21 @@ class Order extends Command
      */
     public function handle(OrderExport $export)
     {
-        $bar = $this->output->createProgressBar(50000);
-        $bar->setRedrawFrequency(1);
-        $bar->setFormat('verbose');
-        $bar->setOverwrite(true);
+        set_time_limit(0);
+        
+        $this->proc($export);
+    }
 
-        $i = 0;
-        while ($i++ < 50000) {
-            $bar->advance();            
-        }
-        $bar->finish();
-        $this->comment("\r\n{$export->getFilename()}");
+    protected function proc(OrderExport $export)
+    {
+        $export
+            ->setCommend($this)
+            ->setOutput($this->output)
+            ->setChunkSize($this->option('size'))
+            ->setLimit($this->option('limit'))
+            ->handleExport()
+        ;
+
+        return $this;
     }
 }

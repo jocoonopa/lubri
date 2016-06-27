@@ -6,6 +6,7 @@ use App\Export\FV\Helper\DataHelper AS DH;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\Helper\Flap\PosMember\MemberCode;
 use Carbon\Carbon;
+use Log;
 
 /**
  * Help ExportHandler deal with data from flap, cti
@@ -43,7 +44,16 @@ class DataHelper extends DH
         return array_get(Processor::getArrayResult("SELECT COUNT(*) AS _count FROM POS_Member WITH(NOLOCK) WHERE POS_Member.SerNo >= '{$lowerSerno}' AND POS_Member.SerNo <= '{$upperSerno}'"), 0)['_count'];
     }
 
-    protected function fetchOrders($i){}
+    protected function fetchOrders($i)
+    {
+        $placeholder = ['$serno', '$upserno', '$crtTime', '$begin', '$end'];
+        $replace = [$this->getCondition()['serno'], $this->getCondition()['upserno'], $this->getCondition()['crttime'], $i, $i + $this->getChunkSize()];
+
+        $sql = str_replace($placeholder, $replace, Processor::getStorageSql('FV/Import/order.sql'));
+
+        return Processor::getArrayResult($sql);
+    }
+
     protected function fetchProducts($i)
     {
         $sql = str_replace(
@@ -72,7 +82,17 @@ class DataHelper extends DH
     }
 
     protected function fetchCTIRecords($i){}
-    protected function fetchOrdersCount(){}
+    
+    protected function fetchOrdersCount()
+    {
+        $placeholder = ['$serno', '$upserno', '$crtTime'];
+        $replace = [$this->getCondition()['serno'], $this->getCondition()['upserno'], $this->getCondition()['crttime']];
+
+        $sql = str_replace($placeholder, $replace, Processor::getStorageSql('FV/Import/order_count.sql'));
+
+        return array_get(Processor::getArrayResult($sql), 0)['_count'];
+    }
+
     protected function fetchCampaignsCount()
     {
         $sql = str_replace(

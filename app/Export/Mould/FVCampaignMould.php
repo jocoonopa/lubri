@@ -4,7 +4,7 @@ namespace App\Export\Mould;
 
 class FVCampaignMould extends FVMould
 {
-    protected $ingoreHeads = ['modified_at', 'created_at'];
+    protected $ingoreHeads = ['modified_at', 'created_at', 'lineNum'];
     protected $dateFileds = ['StartDate', 'EndDate'];
 
     /**
@@ -23,21 +23,6 @@ class FVCampaignMould extends FVMould
         }
 
         return $campaign;
-    }
-
-    /**
-     * 移除不必要的欄位
-     * 
-     * @param  string  $attr 
-     * @return boolean      
-     */
-    protected function removeIgnoreColumn(&$campaign)
-    {
-        foreach ($this->ingoreHeads as $head) {
-            unset($campaign[$head]);
-        }
-
-        return $this;
     }
 
     /**

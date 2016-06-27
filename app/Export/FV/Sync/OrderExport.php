@@ -2,6 +2,8 @@
 
 namespace App\Export\FV\Sync;
 
+use App\Export\Mould\FVOrderMould;
+
 class OrderExport extends FVSyncExport
 {
     protected $exceptionObserver = [
