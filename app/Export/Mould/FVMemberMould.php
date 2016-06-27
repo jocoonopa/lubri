@@ -4,40 +4,8 @@ namespace App\Export\Mould;
 
 use App\Model\State;
 
-class FVMemberMould 
+class FVMemberMould extends FVMould
 {
-    protected $head =  [
-        '會員代號', 
-        '會員姓名', 
-        '性別', 
-        '生日', 
-        '身份證號', 
-        '連絡電話', 
-        '公司電話', 
-        '手機號碼', 
-        '縣市', 
-        '區', 
-        '郵遞區號', 
-        '地址', 
-        'e-mail', 
-        '開發人代號', 
-        '開發人姓名', 
-        '會員類別代號', 
-        '會員類別名稱', 
-        '區別代號', 
-        '區別名稱', 
-        '首次購物金額', 
-        '首次購物日', 
-        '最後購物金額', 
-        '最後購物日', 
-        '累積購物金額', 
-        '累積紅利點數', 
-        '輔翼會員參數', 
-        '預產期', 
-        '醫院',
-        '旗標'
-    ];
-
     public function getRow(array $member)
     {
         $this->replaceWithNewCityState($member);
@@ -79,17 +47,7 @@ class FVMemberMould
 
         return $arr;
     }
-
-    protected function transfer($str)
-    {
-        return csvStrFilter(trim(nfTowf($str, 0)));
-    }
-
-    public function getHead()
-    {
-        return $this->head;
-    }
-
+    
     protected function replaceWithNewCityState(&$member) 
     {
         $state = State::findByZipcode(array_get($member, '郵遞區號'))->first();

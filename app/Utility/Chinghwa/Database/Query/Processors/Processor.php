@@ -7,6 +7,10 @@ use Illuminate\Database\Query\Builder;
 
 class Processor
 {
+    const DB_ERP = 'Erp';
+    const DB_POS = 'Pos';
+    const DB_CTI = 'Cti';
+
     public static function table($name)
     {
         return app()->make('db')->table($name);
@@ -87,7 +91,7 @@ class Processor
      * @param  string $dbFlag
      * @return array        
      */
-    public static function getArrayResult($query, $dbFlag = 'Erp')
+    public static function getArrayResult($query, $dbFlag = self::DB_ERP)
     {
         $data = [];
 
