@@ -50,10 +50,20 @@ class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
         return $this->notify($this->getTask());
     }
 
+    /**
+     * 匯入完成後，修改任務狀態為等待推送，並且更新總數(總數一開始是使用Excel行數，
+     * 但這數字會有誤差，因為資料可能有重複)
+     * 
+     * @param  App\Model\Flap\PosMemberImportTask $task
+     * @param  integer $start
+     * @param  integer $end  
+     * @return App\Model\Flap\PosMemberImportTask $task      
+     */
     protected function updateTaskState($task, $start, $end)
     {
         $task->import_cost_time = floor($end - $start);
         $task->status_code = PosMemberImportTask::STATUS_TOBEPUSHED;
+        $task->total_count = $task->content->count();
         $task->save();
 
         return $task;
@@ -68,8 +78,6 @@ class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
 
     public function proc()
     {
-        // $this->import->skip(1)->calculate(false)->chunk(_Import::CHUNK_SIZE, $this->getChunkCallback()); 
-        // 無法處理多個 sheets 的 bug，因此改為下面的方式處理:
         //======================================================//                                   
         // 取得上傳暫存檔路徑
         $filePath = storage_path("exports/posmember/{$this->getTask()->id}.xls");
@@ -86,12 +94,9 @@ class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
 
         $totalRows = $reader->getTotalRowsOfFile();
         $this->getTask()->status_code = PosMemberImportTask::STATUS_IMPORTING;
-        $this->getTask()->total_count = $totalRows;
+        $this->getTask()->total_count = $totalRows - 1;
         $this->getTask()->save(); 
-        //======================================================//
-        
-        $this->injectTask($totalRows);
-        
+        //======================================================//        
         $kind         = $this->getTask()->kind()->first();            
         $factoryClass = $kind->factory;
         $adapterClass = $kind->adapter;
@@ -111,18 +116,6 @@ class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
         $this->_removeDuplicate();
         $this->_saveTaskStatic();
     }
-
-    protected function injectTask($totalRows = 0)
-    {
-        $task = $this->getTask();
-
-        $task->status_code  = PosMemberImportTask::STATUS_IMPORTING;
-        $task->total_count  = $totalRows;
-        $task->save();
-
-        return $task;
-    }
-
     /**
      * 上傳檔案時須先把多餘的工作表刪除，否則 chunk 會有問題
      *

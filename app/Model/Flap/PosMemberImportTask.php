@@ -14,7 +14,8 @@ class PosMemberImportTask extends Model
     const STATUS_TOBEPUSHED = 2;
     const STATUS_PUSHING    = 3;
     const STATUS_COMPLETED  = 4;
-    const STATUS_PULLING    = 5;
+
+    const BEEN_PUSHED_FLAG  = 32;
 
     /**
      * The database table used by the model.

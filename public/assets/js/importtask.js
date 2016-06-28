@@ -149,28 +149,6 @@ $('.import-task-push').click(function () {
     return false;
 });
 
-$('.import-task-pull').click(function () {
-    var $this = $(this);
-
-    bootbox.confirm({
-        size: 'small',
-        message: '確定更新任務&nbsp;<b>' + $this.data('task-name') + '</b>&nbsp;的狀態嗎?', 
-        buttons: {
-            "confirm": {
-                className: 'btn btn-raised btn-primary'
-            }
-        }, 
-        callback: function(result) {
-            if (true === result) {
-                window.location.href = $this.attr('href');            
-            } else {
-                this.modal('hide');
-            }
-        }}); 
-
-    return false;
-});
-
 $('.check-component').find('.check-all').click(function () {
     $(this).closest('form').find('[type="checkbox"]').prop('checked', true);
 });

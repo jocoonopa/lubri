@@ -28,15 +28,6 @@ class ImportPushController extends Controller
         return redirect("/flap/pos_member/import_task?kind_id={$task->kind()->first()->id}"); 
     }
 
-    protected function getPusher(PosMemberImportTask $task)
-    {
-        $importKind = $task->kind()->first();
-
-        $pushClass = $importKind->pusher;
-
-        return with(new $pushClass);
-    }
-
     /**
      * use chinghwa;
      * GO
@@ -60,46 +51,13 @@ class ImportPushController extends Controller
         return redirect("/flap/pos_member/import_task/{$task->id}"); 
     }
 
-    /**
-     * use chinghwa;
-     * GO
-     *
-     * DECLARE @serNo VARCHAR(40)
-     *
-     * SET @serNo = 'MEMBR000000000000787392200'
-     *
-     * exec [dbo].[sp_DeleteHBMember] @serNo
-     */ 
-    public function pull(PosMemberImportTask $task)
+    protected function getPusher(PosMemberImportTask $task)
     {
-        set_time_limit(0);
+        $importKind = $task->kind()->first();
 
-        try {
-            $task->updated_at = new \DateTime();
-            $task->status_code = PosMemberImportTask::PULLING;
-            $task->save();
+        $pushClass = $importKind->pusher;
 
-            $task->content()->isNotExecuted()->chunk(Import::CHUNK_SIZE, function ($contents) {           
-                $contents->each(function ($content) {
-                    $content->setIsExist(ModelFactory::getExistOrNotByContent($content));
-                    $content->save();           
-                });
-            });
-
-            $task->updated_at = new \DateTime();
-            $task->status_code = PosMemberImportTask::TOBEPUSHED;
-            $task->save();
-
-            Session::flash('success', "<b>{$task->name}<b> 與ERP資料同步完成!");
-        } catch (\Exception $e) {
-            $task->updated_at = new \DateTime();
-            $task->status_code = PosMemberImportTask::TOBEPUSHED;
-            $task->save();
-
-            Session::flash('error', "<b>{$task->name}<b> {$e->getMessage()}");
-        }
-        
-        return redirect("/flap/pos_member/import_task/{$task->id}"); 
+        return with(new $pushClass);
     }
 
     public function rollback()

@@ -6,7 +6,7 @@
 		<div class="col-md-12">
 			<h1>{{$title}} 
 			<small>
-				{{ '共' . $tasks->total() . '筆' }}
+				{{ '共' . $tasks->total() . '件任務' }}
 				<a href="/flap/pos_member/import_task/create?kind_id={{Input::get('kind_id')}}" class="btn btn-raised btn-sm btn-primary">
 				<i class="glyphicon glyphicon-plus"></i>
 			新增任務</a>

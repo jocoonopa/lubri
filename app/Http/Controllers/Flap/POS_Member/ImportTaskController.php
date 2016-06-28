@@ -169,26 +169,19 @@ class ImportTaskController extends Controller
      *
      * @return mixed json response
      */
-    public function importProgress(PosMemberImportTask $task)
+    public function progress(PosMemberImportTask $task)
     {
-        $task = PosMemberImportTask::latest()->where('user_id', Auth::user()->id)->where('status_code', PosMemberImportTask::IMPORTING)->first();
-
         return response()->json([
-            'task_id'        => $task->id, 
-            'task_name'      => $task->name,
-            'total_count'    => $task->total_count,
-            'imported_count' => $task->content->count()
+            'id'             => $task->id, 
+            'name'           => $task->name,
+            'kind_name'      => $task->kind->name,
+            'status_code'    => $task->status_code,
+            'status_name'    => strip_tags($task->getStatusName()),
+            'total'          => $task->total_count,
+            'imported_count' => $task->content->count(),
+            'pushed_count'   => $task->content()->where(DB::raw(PosMemberImportTask::BEEN_PUSHED_FLAG . '&Status'), '=', PosMemberImportTask::BEEN_PUSHED_FLAG)->count(),
+            'is_acting' => in_array($task->status_code, [PosMemberImportTask::STATUS_IMPORTING, PosMemberImportTask::STATUS_PUSHING])
         ]);
-    }
-
-    public function pullProgress(PosMemberImportTask $task)
-    {
-        return $task->content()->isNotExecuted()->where('updated_at', '>=', $task->updated_at->format('Y-m-d H:i:s'))->count();
-    }
-
-    public function pushProgress(PosMemberImportTask $task)
-    {
-        return $task->content()->where(DB::raw('32&Status'), '=', 32)->count();        
     }
 
     public function export(Request $request, ImportTaskExport $export, PosMemberImportTask $task)

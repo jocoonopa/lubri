@@ -13,13 +13,13 @@
     </thead>
     <tbody>
         @foreach ($contents as $content)
-        <tr class="@if(32 === ($content->status&32)){{'success'}}@endif" 
+        <tr class="@if(\App\Model\Flap\PosMemberImportTask::BEEN_PUSHED_FLAG === ($content->status&\App\Model\Flap\PosMemberImportTask::BEEN_PUSHED_FLAG)){{'success'}}@endif" 
             data-toggle="popover" 
             data-placement="left" 
             data-trigger="hover"
             data-content="{{$content->memo}}"
             
-            @if(32 !== ($content->status&32))
+            @if(\App\Model\Flap\PosMemberImportTask::BEEN_PUSHED_FLAG !== ($content->status&\App\Model\Flap\PosMemberImportTask::BEEN_PUSHED_FLAG))
             style="background-color: rgba(255, 5, 0, {{ $content->getOpacity() }});"
             @endif
         >
@@ -43,7 +43,7 @@
             <td>{{ $content->homeaddress }}</td>
             <td>{{ $content->updated_at->format('Y-m-d H:i')}}</td>
             <td>    
-                @if(32 !== ($content->status&32))
+                @if(\App\Model\Flap\PosMemberImportTask::BEEN_PUSHED_FLAG !== ($content->status&\App\Model\Flap\PosMemberImportTask::BEEN_PUSHED_FLAG))
                 <a href="/flap/pos_member/import_push/{{ $task->id }}/content/{{ $content->id }}" class="pull-left btn btn-xs btn-raised btn-primary import-content-push" data-content-id="{{$content->id}}" data-content-name="{{$content->name}}">
                         <i class="glyphicon glyphicon-play"></i>                                
                 </a>   

@@ -16,27 +16,31 @@
                     </a>
                 
                     @if (NULL === $task->executed_at)
-                    <a href="/flap/pos_member/import_task/{{$task->id}}/edit" class="btn btn-sm btn-default">
+                    <a href="/flap/pos_member/import_task/{{$task->id}}/edit" class="btn btn-sm btn-default citem">
                         <i class="glyphicon glyphicon-pencil"></i>
                         編輯任務{{ '&nbsp;' . $task->name}}
                     </a>
 
-                    <a href="/flap/pos_member/import_task/{{$task->id}}/content/create" class="btn btn-sm btn-default">
+                    <a href="/flap/pos_member/import_task/{{$task->id}}/content/create" class="btn btn-sm btn-default citem">
                         <i class="glyphicon glyphicon-plus"></i>
                         {{ '新增&nbsp;' . $task->name . '&nbsp;項目'}}
-                    </a>
-
-                    <a href="/flap/pos_member/import_push/pull/{{$task->id}}" class="pull-right btn btn-sm btn-info import-task-pull" data-task-id="{{$task->id}}" data-task-name="{{$task->name}}">
-                        <i class="glyphicon glyphicon-refresh"></i>
-                        同步
-                    </a>            
+                    </a>         
                     
-                    <a href="/flap/pos_member/import_push/{{ $task->id }}" class="pull-right btn btn-sm btn-raised btn-primary import-task-push" data-task-id="{{$task->id}}" data-task-name="{{$task->name}}">
+                    <a href="/flap/pos_member/import_push/{{ $task->id }}" class="pull-right btn btn-sm btn-raised btn-primary import-task-push citem" data-task-id="{{$task->id}}" data-task-name="{{$task->name}}">
                         <i class="glyphicon glyphicon-play"></i>
                         推送</a>
                     @endif
                 </small>
-                <p><small><b>{!! $task->getStatusName() !!}</b></small></p>
+                <p>
+                    <small class="ratio hide">
+                        <b>{!! $task->getStatusName() !!}</b>
+                        <span class="badge current"></span>/<span class="badge total"></span>
+                    </small>
+                    
+                    <div class="progress hide">                        
+                        <div class="progress-bar progress-bar-warning" style="width: 0%"></div>
+                    </div>
+                </p>
             </h1><hr>
 
             @include('common.successmsg')
@@ -70,6 +74,50 @@ setTimeout(function () {
     $('.my-snackbar').snackbar('show');
 }, 1000);
 @endif
-</script>
 
+
+@if (in_array($task->status_code, [\App\Model\Flap\PosMemberImportTask::STATUS_IMPORTING, \App\Model\Flap\PosMemberImportTask::STATUS_PUSHING]))
+
+function loadProgress(id)
+{
+    $('.citem').addClass('hide');
+    $('.progress').add('.ratio').removeClass('hide');
+
+    var current = 0;
+    var currentStep = 0;
+
+    $.getJSON('/flap/pos_member/import_task/' + id +'/progress', function (res) {
+        if ({{\App\Model\Flap\PosMemberImportTask::STATUS_IMPORTING}} === res.status_code) {
+            current = res.imported_count;
+
+            currentStep = Math.floor((res.imported_count/res.total) * 100);
+        } 
+
+        if ({{\App\Model\Flap\PosMemberImportTask::STATUS_PUSHING}} === res.status_code) {
+            current = res.pushed_count;
+
+            currentStep = Math.floor((res.pushed_count/res.total) * 100);
+        }
+
+        if (true === res.is_acting) {
+            $('.ratio').find('.current').text(current);
+            $('.ratio').find('.total').text(res.total);
+            $('.progress-bar').css('width', currentStep + '%');
+
+            setTimeout(function () {loadProgress(id)}, 1500);
+        } else {
+            $('.ratio').find('.current').text(res.total);
+            $('.ratio').find('.total').text(res.total);
+            $('.progress-bar').css('width', '100%');
+            
+            setTimeout(function () {location.reload();}, 1500);
+        }
+    });
+}
+
+loadProgress({{$task->id}});
+
+@endif
+
+</script>
 @stop
