@@ -8,6 +8,7 @@ use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Mail;
 
 class PushPosMemberTask extends Job implements SelfHandling, ShouldQueue
 {
@@ -36,6 +37,8 @@ class PushPosMemberTask extends Job implements SelfHandling, ShouldQueue
         $this->_proc();
 
         $end = microtime(true);
+
+        return $this->notify($this->getTask());
     }
 
     protected function _proc()
@@ -45,11 +48,16 @@ class PushPosMemberTask extends Job implements SelfHandling, ShouldQueue
 
     protected function getPusher(PosMemberImportTask $task)
     {
-        $importKind = $task->kind()->first();
-
-        $pushClass = $importKind->pusher;
+        $pushClass = $task->kind->pusher;
 
         return with(new $pushClass);
+    }
+
+    protected function notify(PosMemberImportTask $task)
+    {
+        return Mail::send('emails.pushTask', ['task' => $task], function ($m) use ($task) {
+            $m->to([$task->user->email => $task->user->username])->subject("{$task->kind->name}任務{$task->name}推送完成!");
+        });
     }
 
     /**

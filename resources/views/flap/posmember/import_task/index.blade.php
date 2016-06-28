@@ -4,9 +4,13 @@
 <div class="bs-docs-section clearfix">
 	<div class="row">
 		<div class="col-md-12">
-			<h1>{{$title}} <small><a href="/flap/pos_member/import_task/create?kind_id={{Input::get('kind_id')}}" class="btn btn-raised btn-sm btn-primary">
-			<i class="glyphicon glyphicon-plus"></i>
-			新增任務</a></small>
+			<h1>{{$title}} 
+			<small>
+				{{ '共' . $tasks->total() . '筆' }}
+				<a href="/flap/pos_member/import_task/create?kind_id={{Input::get('kind_id')}}" class="btn btn-raised btn-sm btn-primary">
+				<i class="glyphicon glyphicon-plus"></i>
+			新增任務</a>
+			</small>
 
 			<small><a href="/flap/pos_member/import_kind" class="pull-right btn btn-raised btn-sm btn-default">
 			<i class="glyphicon glyphicon-arrow-left"></i>
@@ -15,7 +19,7 @@
 
 			@include('common.successmsg')
 			@include('common.errormsg')
-
+			
 			<table class="table">
 				<thead>
 					<tr>
@@ -35,6 +39,10 @@
 					@each('flap.posmember.import_task._tbody', $tasks, 'task')
 				</tbody>					
 			</table>
+		</div>
+
+		<div class="col-md-12">
+			{!! $tasks->appends(['kind_id' => Input::get('kind_id')])->render() !!}
 		</div>
 	</div>	
 </div>

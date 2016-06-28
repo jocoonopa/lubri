@@ -31,9 +31,7 @@ abstract class Pusher implements IPusher
         $task->status_code = PosMemberImportTask::STATUS_PUSHING;
         $task->save();
 
-        $this->pushTaskDaemon($task)->taskUpdateProc($task, $startTime);
-        
-        return $this->notify($task);
+        return $this->pushTaskDaemon($task)->taskUpdateProc($task, $startTime);
     }
 
     protected function pushTaskDaemon(PosMemberImportTask $task)
@@ -52,13 +50,6 @@ abstract class Pusher implements IPusher
 
             Log::error($e->getMessage());
         }        
-    }
-
-    protected function notify(PosMemberImportTask $task)
-    {
-        return Mail::send('emails.pushTask', ['task' => $task], function ($m) use ($task) {
-            $m->to([$task->user->email => $task->user->username])->subject("{$task->name}推送完成!");
-        });
     }
 
     protected function hasNotExcuted(PosMemberImportTask $task)

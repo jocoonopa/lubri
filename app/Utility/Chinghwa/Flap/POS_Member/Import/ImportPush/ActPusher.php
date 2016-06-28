@@ -39,6 +39,6 @@ class ActPusher extends Pusher
 
     protected function getUpdateProcQuery(PosMemberImportContent $content)
     {
-        return "UPDATE CCS_CRMFields SET CRMNote2='{$content->memo}' WHERE MemberSerNoStr='{$content->serno}'";
+        return "UPDATE CCS_CRMFields SET CRMNote2='{$content->memo}' WHERE MemberSerNoStr = '{$content->serno}'";
     }
 }

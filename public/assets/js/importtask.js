@@ -56,12 +56,7 @@ function getLiStyleListGroupItemString(columnName, colVal)
 
 function submitTaskCreateForm()
 {
-    //$importBlockUI(); 
-    //initMsg = '(請勿關閉視窗) 檔案匯入中，請稍後...';
-
     $('form#import-task').submit();
-
-    //ImportTask_loadImportProgress_init();
 }
 
 $('.import-task-export').click(function () {
@@ -145,12 +140,7 @@ $('.import-task-push').click(function () {
         }, 
         callback: function(result) {
             if (true === result) {
-                $importBlockUI();
-                window.location.href = $this.attr('href'); 
-
-                //var taskId = $this.data('task-id');
-                
-                //ImportTask_loadPushProgress_init(taskId);            
+                window.location.href = $this.attr('href');       
             } else {
                 this.modal('hide');
             }
@@ -172,9 +162,7 @@ $('.import-task-pull').click(function () {
         }, 
         callback: function(result) {
             if (true === result) {
-                $importBlockUI();
-                window.location.href = $this.attr('href'); 
-                //ImportTask_loadPullProgress_init();            
+                window.location.href = $this.attr('href');            
             } else {
                 this.modal('hide');
             }
@@ -182,87 +170,6 @@ $('.import-task-pull').click(function () {
 
     return false;
 });
-
-function ImportTask_loadPushProgress_init(taskId) {
-    initMsg =  '推送中，請稍後...';
-    $('.blockMsg').text(initMsg);
-            
-    return ImportTask_loadPushProgress(4000, taskId);
-}
-
-function ImportTask_loadPushProgress(timedistance, taskId) {
-    return setTimeout(function () {
-        var nextTimeDis = 1500;
-        
-        $.get('/flap/pos_member/import_task/' + taskId + '/push_progress', function(importedCount){
-            if (0 === parseInt(importedCount)) {
-                $('.blockMsg').text(initMsg);
-                nextTimeDis = 5000;
-            } else {
-                $('.blockMsg').text('已推送' + importedCount + '筆');
-                nextTimeDis = 1500;
-            }
-        })
-
-        return ImportTask_loadPushProgress(nextTimeDis, taskId);
-    }, timedistance);
-}
-
-function ImportTask_loadPullProgress_init() {
-    initMsg =  '更新中，請稍後...';
-    $('.blockMsg').text(initMsg);
-            
-    return ImportTask_loadPullProgress(4000, $('.import-task-pull').first().data('task-id'));
-}
-
-function ImportTask_loadPullProgress(timedistance, taskId) {
-    return setTimeout(function () {
-        var nextTimeDis = 2500;
-        
-        $.get('/flap/pos_member/import_task/' + taskId + '/pull_progress', function(importedCount){
-            if (0 === parseInt(importedCount)) {
-                $('.blockMsg').text(initMsg);
-                nextTimeDis = 5000;
-            } else {
-                $('.blockMsg').text('已更新' + importedCount + '筆');
-                nextTimeDis = 2500;
-            }
-        })
-
-        return ImportTask_loadPullProgress(nextTimeDis, taskId);
-    }, timedistance);
-}
-
-function ImportTask_loadImportProgress_init() {
-    $('.blockMsg').find('p').text(initMsg);
-            
-    return ImportTask_loadImportProgress(2000);
-}
-
-function ImportTask_loadImportProgress(timedistance) {
-    return setTimeout(function () {
-        var nextTimeDis = 1500;
-        
-        $.get('/flap/pos_member/import_task/import_progesss', function(importedCount){
-            if (0 === parseInt(importedCount)) {
-                $('.blockMsg').find('p').text(initMsg);
-                $('.blockMsg').find('.progress-bar').css('width', '0%');
-
-                nextTimeDis = 5000;
-            } else {
-                $('.blockMsg').find('p').html('已匯入<b>' + importedCount + '</b>筆');
-                $('.blockMsg').find('.progress-bar').css('width', Math.floor(Math.random() * 100)  + '%');
-                nextTimeDis = 1500;
-            }
-        })
-
-        return ImportTask_loadImportProgress(nextTimeDis);
-    }, timedistance);
-}
-
-function trick_load_progress(id) {
-    $importBlockUI(); ImportTask_loadPushProgress_init(id);
-}
 
 $('.check-component').find('.check-all').click(function () {
     $(this).closest('form').find('[type="checkbox"]').prop('checked', true);

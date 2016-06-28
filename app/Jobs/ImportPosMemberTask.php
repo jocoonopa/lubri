@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
+use Mail;
 
 class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
 {
@@ -44,7 +45,9 @@ class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
 
         $end = microtime(true);
 
-        return $this->updateTaskState($this->getTask(), $start, $end)->notify($this->getTask());
+        $this->updateTaskState($this->getTask(), $start, $end);
+        
+        return $this->notify($this->getTask());
     }
 
     protected function updateTaskState($task, $start, $end)
@@ -59,7 +62,7 @@ class ImportPosMemberTask extends Job implements SelfHandling, ShouldQueue
     protected function notify(PosMemberImportTask $task)
     {
         return Mail::send('emails.importTask', ['task' => $task], function ($m) use ($task) {
-            $m->to([$task->user->email => $task->user->username])->->subject("{$task->name}匯入完成!");
+            $m->to([$task->user->email => $task->user->username])->subject("{$task->kind->name}任務{$task->name}匯入完成!");
         });
     }
 

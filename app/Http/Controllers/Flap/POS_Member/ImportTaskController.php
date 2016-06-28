@@ -72,7 +72,7 @@ class ImportTaskController extends Controller
     public function index(Request $request)
     {
         return view('flap.posmember.import_task.index', [
-            'tasks' => PosMemberImportTask::findByKind(Input::get('kind_id'))->latest()->paginate(20),
+            'tasks' => PosMemberImportTask::findByKind(Input::get('kind_id'))->latest()->paginate(10),
             'title' => PosMemberImportKind::find($request->get('kind_id'))->name
         ]);
     }
