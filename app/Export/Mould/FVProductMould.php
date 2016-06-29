@@ -5,6 +5,7 @@ namespace App\Export\Mould;
 class FVProductMould extends FVMould
 {
     protected $head =  [
+        '商品主鍵',
         '品名',
         '規格',
         '商品代碼',
@@ -17,11 +18,14 @@ class FVProductMould extends FVMould
         '中單位名稱',
         '中單位主鍵',
         '中單位數量',
+        '大分類代號',
         '大分類名稱',
         '大分類主鍵',
+        '中分類代號',
         '中分類名稱',
         '中分類連接大分類外鍵',
         '中分類主鍵',
+        '小分類代號',
         '小分類名稱',
         '小分類連接中分類外鍵',
         '小分類主鍵',

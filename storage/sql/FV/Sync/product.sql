@@ -1,6 +1,7 @@
 SELECT * FROM (
 SELECT 
     ROW_NUMBER() over (ORDER BY PIS_Goods.SerNo) AS lineNum,
+    PIS_Goods.SerNo AS 商品主鍵,
     PIS_Goods.Name AS 品名,
     PIS_Goods.SpecName AS 規格,
     PIS_Goods.Code AS 商品代碼,
@@ -13,11 +14,14 @@ SELECT
     PU2.Name AS 中單位名稱,
     PU2.SerNo AS 中單位主鍵,
     PIS_Goods.MiddleExchangeRate AS 中單位數量,
+    PIS_GoodsLargeCategory.Code AS 大分類代號,
     PIS_GoodsLargeCategory.Name AS 大分類名稱,
     PIS_GoodsLargeCategory.SerNo AS 大分類主鍵,
+    PIS_GoodsMiddleCategory.Code AS 中分類代號,
     PIS_GoodsMiddleCategory.Name AS 中分類名稱,
     PIS_GoodsMiddleCategory.LargeCategorySerNo AS 中分類連接大分類外鍵,
     PIS_GoodsMiddleCategory.SerNo AS 中分類主鍵,
+    PIS_GoodsLittleCategory.Code AS 小分類代號,
     PIS_GoodsLittleCategory.Name AS 小分類名稱,
     PIS_GoodsLittleCategory.MiddleCategorySerNo AS 小分類連接中分類外鍵,
     PIS_GoodsLittleCategory.SerNo AS 小分類主鍵,
