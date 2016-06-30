@@ -29,6 +29,7 @@ class FVProductMould extends FVMould
         '小分類名稱',
         '小分類連接中分類外鍵',
         '小分類主鍵',
+        '類別主鍵',
         '類別代碼',
         '類別名稱',
         '含稅售價',
@@ -41,6 +42,8 @@ class FVProductMould extends FVMould
 
     public function getRow(array $product)
     {
+        $this->removeIgnoreColumn($product);
+
         $product = $this->convertAttrVal($product);
 
         foreach ($this->head as $columnName) {

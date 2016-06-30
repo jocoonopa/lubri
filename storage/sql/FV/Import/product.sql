@@ -25,6 +25,7 @@ SELECT
     PIS_GoodsLittleCategory.Name AS 小分類名稱,
     PIS_GoodsLittleCategory.MiddleCategorySerNo AS 小分類連接中分類外鍵,
     PIS_GoodsLittleCategory.SerNo AS 小分類主鍵,
+    PIS_Color.SerNo AS 類別主鍵,
     PIS_Color.Code AS 類別代碼,
     PIS_Color.Name AS 類別名稱,
     PIS_Goods.TaxedUpsetPrice AS 含稅售價,
