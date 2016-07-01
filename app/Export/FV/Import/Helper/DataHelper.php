@@ -113,7 +113,7 @@ class DataHelper extends DH
 
         Log::info($sql);
 
-        return Processor::getArrayResult($sql);
+        return Processor::getArrayResult($sql, Processor::DB_CTI);
     }
 
     public function updateLLTarget($i)
@@ -152,7 +152,7 @@ class DataHelper extends DH
 
         $sql = str_replace(['$mdtTime', '$sourcecds'], [Carbon::now()->subYears(2)->modify('first day of january')->format('Y-m-d H:i:s'), sqlInWrap($this->getCondition()['targets'])], Processor::getStorageSql('FV/Import/list_count.sql'));
 
-        return array_get(Processor::getArrayResult($sql), 0)['_count'];
+        return array_get(Processor::getArrayResult($sql, Processor::DB_CTI), 0)['_count'];
     }
 
     protected function fetchCalllogs($i)
@@ -162,7 +162,7 @@ class DataHelper extends DH
 
         $sql = str_replace($placeholder, $replace, Processor::getStorageSql('FV/Import/calllog.sql'));
 
-        return Processor::getArrayResult($sql);
+        return Processor::getArrayResult($sql, Processor::DB_CTI);
     }
 
     protected function fetchCalllogsCount()
@@ -173,7 +173,7 @@ class DataHelper extends DH
 
         $sql = str_replace('$mdtTime', Carbon::now()->subYears(2)->modify('first day of january')->format('Y-m-d H:i:s'), Processor::getStorageSql('FV/Import/calllog_count.sql'));
 
-        return array_get(Processor::getArrayResult($sql), 0)['_count'];
+        return array_get(Processor::getArrayResult($sql, Processor::DB_CTI), 0)['_count'];
     }
 
     /**
