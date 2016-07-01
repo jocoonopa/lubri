@@ -19,10 +19,14 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\FV\Sync\Order::class,
         \App\Console\Commands\FV\Sync\Product::class,
         \App\Console\Commands\FV\Sync\Member::class,
+        \App\Console\Commands\FV\Sync\CallList::class,
+        \App\Console\Commands\FV\Sync\Calllog::class,        
         \App\Console\Commands\FV\Import\Campaign::class,
         \App\Console\Commands\FV\Import\Order::class,
         \App\Console\Commands\FV\Import\Product::class,
-        \App\Console\Commands\FV\Import\Member::class
+        \App\Console\Commands\FV\Import\Member::class,
+        \App\Console\Commands\FV\Import\CallList::class,
+        \App\Console\Commands\FV\Import\Calllog::class
     ];
 
     /**

@@ -75,9 +75,18 @@ class DataHelper extends DH
         return $this->fetchEntitysImplement($i, Processor::DB_CTI);
     }
 
-    protected function fetchCTIRecords($i)
+    protected function fetchLists($i)
     {
-        if ('ctirecord' !== $this->type) {
+        if ('list' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysImplement($i, Processor::DB_CTI);
+    }
+
+    protected function fetchCalllogs($i)
+    {
+        if ('calllog' !== $this->type) {
             throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
         }
 
@@ -120,9 +129,18 @@ class DataHelper extends DH
         return $this->fetchEntitysCountImplement(Processor::DB_CTI);
     }
 
-    protected function fetchCTIRecordsCount()
+    protected function fetchListsCount()
     {
-        if ('ctirecord' !== $this->type) {
+        if ('list' !== $this->type) {
+            throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
+        }
+
+        return $this->fetchEntitysCountImplement(Processor::DB_CTI);
+    }
+
+    protected function fetchCalllogCount()
+    {
+        if ('calllog' !== $this->type) {
             throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");
         }
 

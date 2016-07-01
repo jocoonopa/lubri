@@ -16,7 +16,8 @@ abstract class DataHelper
         'member'    => 'Members', 
         'order'     => 'Orders', 
         'campaign'  => 'Campaigns', 
-        'ctirecord' => 'CTIRecords', 
+        'list'      => 'Lists', 
+        'calllog'   => 'Calllogs',
         'product'   => 'Products'
     ]; 
 
@@ -24,12 +25,14 @@ abstract class DataHelper
     abstract protected function fetchOrders($i);
     abstract protected function fetchProducts($i);
     abstract protected function fetchCampaigns($i);
-    abstract protected function fetchCTIRecords($i);
+    abstract protected function fetchCalllogs($i);
+    abstract protected function fetchLists($i);
     abstract protected function fetchMembersCount();
     abstract protected function fetchOrdersCount();
     abstract protected function fetchProductsCount();
     abstract protected function fetchCampaignsCount();
-    abstract protected function fetchCTIRecordsCount();
+    abstract protected function fetchCalllogsCount();
+    abstract protected function fetchListsCount();
 
     protected function initCount()
     {

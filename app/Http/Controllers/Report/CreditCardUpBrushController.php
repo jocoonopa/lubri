@@ -42,6 +42,7 @@ class CreditCardUpBrushController extends Controller
         Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $filePath) {
             $m
                 ->to('judysu@chinghwa.com.tw', '怡華')
+                ->to('migo@chinghwa.com.tw', '惠子')
                 ->cc('tonyvanhsu@chinghwa.com.tw', '士弘')
                 ->cc('jocoonopa@chinghwa.com.tw', '小閎')
                 ->subject($subject)

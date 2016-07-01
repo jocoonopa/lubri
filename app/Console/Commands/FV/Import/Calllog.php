@@ -1,25 +1,35 @@
 <?php
+/*
+ * This file is extends of Class Command.
+ *
+ * (c) Jocoonopa <jocoonopa@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace App\Console\Commands\FV\Import;
 
-namespace App\Console\Commands\FV\Sync;
-
-use App\Export\FV\Sync\CampaignExport;
+use App\Export\FV\Import\CalllogExport;
 use Illuminate\Console\Command;
 
-class Campaign extends Command
+/**
+ * This class is used for the Campaign dump purpose
+ */
+class Calllog extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'synccampaign:fv {--size=1500 : means the chunk size} {--limit=300000}';
+    protected $signature = 'importcalllog:fv {--size=1500} {--limit=300000} {--startat=2016-07-01}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sync CTI Campaigns with Viga';
+    protected $description = 'Export Ensound Calllogs';
 
     /**
      * Create a new command instance.
@@ -36,23 +46,18 @@ class Campaign extends Command
      *
      * @return mixed
      */
-    public function handle(CampaignExport $export)
+    public function handle(CalllogExport $export)
     {
         set_time_limit(0);
-        
-        $this->proc($export);
-    }
 
-    protected function proc(CampaignExport $export)
-    {
         $export
             ->setCommend($this)
             ->setOutput($this->output)
             ->setChunkSize($this->option('size'))
             ->setLimit($this->option('limit'))
+            ->setCondition([])
+            ->setStartDate($this->option('startat'))
             ->handleExport()
         ;
-
-        return $this;
     }
 }

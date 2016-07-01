@@ -131,7 +131,8 @@ class EmpPurchaseController extends Controller
     {
         return [
             'lingying3025@chinghwa.com.tw' => '6521吳俐穎',            
-            'judysu@chinghwa.com.tw'       => '6532蘇怡華'
+            'judysu@chinghwa.com.tw'       => '6532蘇怡華',
+            'migo@chinghwa.com.tw'         => '惠子'
         ];
     }
 

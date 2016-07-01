@@ -2,9 +2,9 @@
 
 namespace App\Export\FV\Sync;
 
-use App\Export\Mould\FVOrderMould;
+use App\Export\Mould\FVListMould;
 
-class OrderExport extends FVSyncExport
+class ListExport extends FVSyncExport
 {
     protected $exceptionObserver = [
         'selfindex@chinghwa.com.tw'  => 'Van',
@@ -14,12 +14,12 @@ class OrderExport extends FVSyncExport
 
     public function getMould()
     {
-        return new FVOrderMould;
+        return new FVListMould;
     }
 
     public function getType()
     {
-        return 'order';
+        return 'list';
     }
 
     public function getStartDate()

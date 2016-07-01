@@ -13,6 +13,8 @@ use Log;
  */
 class DataHelper extends DH
 {
+    const TARGET_CHUNK_SIZE = 300;
+
     protected $condition;
 
     public function __construct($type, array $condition, $chunkSize)
@@ -80,8 +82,6 @@ class DataHelper extends DH
 
         return Processor::getArrayResult($sql, Processor::DB_CTI);
     }
-
-    protected function fetchCTIRecords($i){}
     
     protected function fetchOrdersCount()
     {
@@ -103,7 +103,78 @@ class DataHelper extends DH
 
         return array_get(Processor::getArrayResult($sql, Processor::DB_CTI), 0)['_count'];
     }
-    protected function fetchCTIRecordsCount(){}
+
+    protected function fetchLists($i)
+    { 
+        $placeholder = ['$sourcecds', '$mdtTime', '$begin', '$end'];
+        $replace = [sqlInWrap($this->getCondition()['targets']), $this->getCondition()['mdtTime'], $i, $i + $this->getChunkSize()];
+
+        $sql = str_replace($placeholder, $replace, Processor::getStorageSql('FV/Import/list.sql'));
+
+        Log::info($sql);
+
+        return Processor::getArrayResult($sql);
+    }
+
+    public function updateLLTarget($i)
+    {
+        $cds = [];
+
+        $sql = str_replace(
+            ['$date', '$begin', '$end'], 
+            [Carbon::now()->subYears(2)->modify('first day of january')->format('Y-m-d H:i:s'), $i, $i + self::TARGET_CHUNK_SIZE], 
+            Processor::getStorageSql('FV/Import/list_and_log_target.sql')
+        );
+
+        $this->condition['targets'] = array_pluck(Processor::getArrayResult($sql), 'Code');
+
+        return $this;
+    }
+
+    public function fetchLLTargetCount()
+    {
+        $cds = [];
+
+        $sql = str_replace(
+            ['$date'], 
+            [Carbon::now()->subYears(2)->modify('first day of january')->format('Y-m-d H:i:s')], 
+            Processor::getStorageSql('FV/Import/list_and_log_target_count.sql')
+        );
+
+        return array_get(Processor::getArrayResult($sql), 0)['_count'];
+    }
+
+    protected function fetchListsCount()
+    {
+        if (!array_key_exists('targets', $this->getCondition())) {
+            return $this->fetchLLTargetCount();
+        }
+
+        $sql = str_replace(['$mdtTime', '$sourcecds'], [Carbon::now()->subYears(2)->modify('first day of january')->format('Y-m-d H:i:s'), sqlInWrap($this->getCondition()['targets'])], Processor::getStorageSql('FV/Import/list_count.sql'));
+
+        return array_get(Processor::getArrayResult($sql), 0)['_count'];
+    }
+
+    protected function fetchCalllogs($i)
+    {
+        $placeholder = ['$codes', '$mdtTime', '$begin', '$end'];
+        $$replace = [sqlInWrap($this->getCondition()['targets']), $this->getCondition()['mdttime'], $i, $i + $this->getChunkSize()];
+
+        $sql = str_replace($placeholder, $replace, Processor::getStorageSql('FV/Import/calllog.sql'));
+
+        return Processor::getArrayResult($sql);
+    }
+
+    protected function fetchCalllogsCount()
+    {
+        if (!array_key_exists('targets', $this->getCondition())) {
+            return $this->fetchLLTargetCount();
+        }
+
+        $sql = str_replace('$mdtTime', Carbon::now()->subYears(2)->modify('first day of january')->format('Y-m-d H:i:s'), Processor::getStorageSql('FV/Import/calllog_count.sql'));
+
+        return array_get(Processor::getArrayResult($sql), 0)['_count'];
+    }
 
     /**
      * Gets the value of condition.
