@@ -30,3 +30,6 @@ http://carbon.nesbot.com/docs/
 -- ) AS CallLog 
 -- FROM CampaignCallList p1 WITH(NOLOCK) WHERE p1.SourceCD='553576'
 -- GROUP BY p1.SourceCD
+
+calllog 1000人:4分鐘, 174016 => 50000人: 200分鐘, 約850萬
+list: 1000人:4分鐘, 32099  => 50000人: 200分鐘, 約150萬

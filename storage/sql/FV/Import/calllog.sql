@@ -1,6 +1,6 @@
 SELECT * FROM (
     SELECT 
-        ROW_NUMBER() over (ORDER BY Campaign.UID) AS lineNum,
+        ROW_NUMBER() over (ORDER BY CallLog.CallID) AS lineNum,
         CallLog.CampaignCD AS  活動代號,
         CallLog.CustID AS 客戶代號,
         CallLog.AgentCD AS 專員代號,
@@ -15,7 +15,7 @@ SELECT * FROM (
         CallLog WITH(NOLOCK) 
         LEFT JOIN Campaign WITH(NOLOCK) ON Campaign.CampaignCD = CallLog.CampaignCD
         LEFT JOIN Status WITH(NOLOCK) ON Status.StatusCD = CallLog.StatusCD
-        LEFT JOIN StatusResult WITH(NOLOCK) ON StatusResult.ResultCD = CallLog.ResultCD
+        LEFT JOIN StatusResult WITH(NOLOCK) ON Status.StatusCD = StatusResult.StatusCD AND StatusResult.ResultCD = CallLog.ResultCD
     WHERE CallLog.CustID IN ($codes) AND CallLog.StartTime <= '$mdtTime'
 ) AS CallLogs WHERE CallLogs.lineNum > $begin AND CallLogs.lineNum <= $end 
 ORDER BY CallLogs.活動代號 ASC 

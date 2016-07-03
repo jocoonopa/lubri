@@ -20,9 +20,14 @@ class Calllog extends Command
     /**
      * The name and signature of the console command.
      *
+     * --size: means the chunk size
+     * --serno: means the lower(start) POS_Member.Serno
+     * --limit: limit of the fetch count of result
+     * --startat: The sync start day we assume
+     * 
      * @var string
      */
-    protected $signature = 'importcalllog:fv {--size=1500} {--limit=300000} {--startat=2016-07-01}';
+    protected $signature = 'importcalllog:fv {--serno=1} {--inchunk=50} {--size=1500} {--limit=300000} {--startat=2016-07-01}';
 
     /**
      * The console command description.
@@ -55,8 +60,7 @@ class Calllog extends Command
             ->setOutput($this->output)
             ->setChunkSize($this->option('size'))
             ->setLimit($this->option('limit'))
-            ->setCondition([])
-            ->setStartDate($this->option('startat'))
+            ->setCondition(['mdtTime' => "{$this->option('startat')} 00:00:00", 'inchunk' => $this->option('inchunk')])
             ->handleExport()
         ;
     }

@@ -2,10 +2,17 @@
 
 namespace App\Export\FV\Import;
 
-use App\Export\FV\Import\Helper\DataHelper;
+use App\Export\FV\Import\Helper\CallDataHelper as DataHelper;
+use App\Utility\Console\MyProgressBar;
 
 /**
  * Fetch lists into an export file
+ *
+ * todo: 
+ * 
+ * 1. sub progress bar
+ * 2. Find out why data count would be different if we use diefferent chunksize
+ * 
  */
 class ListExportHandler extends FVImportExportHandler
 {
@@ -21,54 +28,72 @@ class ListExportHandler extends FVImportExportHandler
         ;
 
         $export->getCommend()->comment("\r\n|||||||||||| " . $export->getType() . "_import is ready for processing ||||||||||||\r\n");
-        $export->getCommend()->comment("Has {$this->dataHelper->getCount()} valid members\r\n======================================================");
+        $export->getCommend()->comment("Has {$this->dataHelper->getTargetCount()} valid members\r\n======================================================");
         
         return $this->proc($export);
     }
 
-    /**
-     * Write export file by iterate fetch data, which will be used to import in viga db
-     * 
-     * @param  object $export
-     * @return $this
-     */
-    protected function writeExportFile($export, $bar)
+    protected function initBar($export)
     {
-        $file  = fopen($export->getInfo()['file'], 'w');
-        $count = $this->dataHelper->fetchLLTargetCount();
+        $count = min($export->getLimit(), $this->dataHelper->getTargetCount());
+        $bar   = $export->getOutput()->createProgressBar($count);
         
-        fwrite($file, bomstr());
-        
-        $i = 0;
-        while ($i < $count) {
-            $this->dataHelper->updateLLTarget($i);
+        $bar->setRedrawFrequency(1);
+        $bar->setFormat(" [%bar%]t:%current:6s%/%max:-6s% %message:20s% %elapsed:9s%");
+        $bar->setOverwrite(true);
+        $bar->setMessage('s:0/0 c:0');
+        $bar->setBarWidth(25);
 
-            $_count = $this->dataHelper->fetchCount();
+        return $bar;
+    }
 
-            $j = 0;
-            while ($j < $_count) {
-                $entitys = $this->dataHelper->fetchEntitys($export, $j);
+    protected function iterateEntitys($export, $bar, $file)
+    {
+        $bar->start();
+        $validMemberCount = $bar->getMaxSteps();
+        $rowCount         = 0;
+        $i                = 0;
 
-                if (empty($entitys)) {
-                    break;
-                }
+        while ($i < $validMemberCount) {
+            $chunkSize = min(($validMemberCount - $i), $export->getCondition()['inchunk']);
+            $this->dataHelper->updateTarget($i, $chunkSize);
+            $this->_iterateEntitys($export, $bar, $file, $chunkSize, $rowCount);
 
-                foreach ($entitys as $entity) {
-                    $appendStr = implode(',', $this->getMould()->getRow($entity));
+            $i += $export->getCondition()['inchunk'];
 
-                    fwrite($file, "{$appendStr}\r\n");
-                }
-
-                $j += $export->getChunkSize();
-            }
-            
-            $i += DataHelper::TARGET_CHUNK_SIZE;
-
-            $bar->advance($count < $i ? $count - ($i - DataHelper::TARGET_CHUNK_SIZE) : DataHelper::TARGET_CHUNK_SIZE);
+            $bar->setCurrent(min($validMemberCount, $i));
         }
+    }
 
-        fclose($file);
+    private function _iterateEntitys($export, &$bar, $file, $chunkCount, &$rowCount)
+    {
+        $j         = 0;
+        $listCount = $this->dataHelper->fetchCount();
+        $perUnit   = floor(($chunkCount/$listCount)*10000)/10000;
+        $threshold = 0;
+        
+        $bar->setMessage("s:{$j}/{$listCount} c:{$rowCount}");
 
-        return $this;
+        while ($j < $listCount) {
+            $entitys = $this->dataHelper->fetchEntitys($export, $j);
+
+            if (empty($entitys)) {
+                break;
+            }
+
+            $this->writeRow($file, $entitys);
+
+            $j         += count($entitys);
+            $rowCount  += count($entitys);
+            $threshold += count($entitys)*$perUnit;
+
+            $bar->setMessage("s:{$j}/{$listCount} c:{$rowCount}");
+
+            if (1 <= $threshold) {
+                $bar->advance(floor($threshold));
+
+                $threshold -= floor($threshold);
+            }
+        }        
     }
 }

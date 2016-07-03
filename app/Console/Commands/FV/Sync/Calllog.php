@@ -12,7 +12,7 @@ class Calllog extends Command
      *
      * @var string
      */
-    protected $signature = 'synccalllog:fv {--size=1500 : means the chunk size} {--limit=300000} {--startat=2016-07-01}';
+    protected $signature = 'synccalllog:fv {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
@@ -50,7 +50,6 @@ class Calllog extends Command
             ->setOutput($this->output)
             ->setChunkSize($this->option('size'))
             ->setLimit($this->option('limit'))
-            ->setStartDate($this->option('startat'))
             ->handleExport()
         ;
 

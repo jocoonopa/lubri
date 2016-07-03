@@ -4,6 +4,7 @@ namespace App\Export\FV\Sync\Helper;
 
 use App\Export\FV\Helper\DataHelper AS DH;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use Log;
 
 /**
  * Help ExportHandler deal with data from flap, cti
@@ -25,7 +26,9 @@ class DataHelper extends DH
             Processor::getStorageSql("FV/Sync/{$this->type}.sql")
         );
 
-        return Processor::getArrayResult($sql);
+        Log::info($sql);
+
+        return Processor::getArrayResult($sql, $flag);
     }
 
     protected function fetchEntitysCountImplement($flag = 'Erp')
@@ -138,7 +141,7 @@ class DataHelper extends DH
         return $this->fetchEntitysCountImplement(Processor::DB_CTI);
     }
 
-    protected function fetchCalllogCount()
+    protected function fetchCalllogsCount()
     {
         if ('calllog' !== $this->type) {
             throw new \Exception(__METHOD__ . " found exception! {$this->type} givend!");

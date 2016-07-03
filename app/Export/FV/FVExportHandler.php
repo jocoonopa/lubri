@@ -21,7 +21,7 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     protected function initBar($export)
     {
-        $count = $export->getLimit() < $this->dataHelper->getCount() ? $export->getLimit() : $this->dataHelper->getCount();
+        $count = min($export->getLimit(), $this->dataHelper->getCount());
 
         $bar = $export->getOutput()->createProgressBar($count);
         $bar->setRedrawFrequency(1);
@@ -40,11 +40,24 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function writeExportFile($export, $bar)
     {
         $file  = fopen($export->getInfo()['file'], 'w');
-        $count = $bar->getMaxSteps();
 
         fwrite($file, bomstr());
         
+        $this->iterateEntitys($export, $bar, $file);
+
+        fclose($file);
+
+        return $this;
+    }
+
+    protected function iterateEntitys($export, $bar, $file)
+    {
+        $bar->start();
+
         $i = 0;
+
+        $count = $bar->getMaxSteps();
+
         while ($i < $count) {
             $entitys = $this->dataHelper->fetchEntitys($export, $i);
 
@@ -52,20 +65,21 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
                 break;
             }
             
-            foreach ($entitys as $entity) {
-                $appendStr = implode(',', $this->getMould()->getRow($entity));
-
-                fwrite($file, "{$appendStr}\r\n");
-            }
+            $this->writeRow($file, $entitys);
 
             $i += $export->getChunkSize();
 
             $bar->advance($count < $i ? $count - ($i - $export->getChunkSize()) : $export->getChunkSize());
         }
+    }
 
-        fclose($file);
+    protected function writeRow($file, $entitys)
+    {
+        foreach ($entitys as $entity) {
+            $appendStr = implode(',', $this->getMould()->getRow($entity));
 
-        return $this;
+            fwrite($file, "{$appendStr}\r\n");
+        }
     }
 
     /**
