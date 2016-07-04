@@ -36,7 +36,14 @@ class Handler extends ExceptionHandler
 
         $client = new Client(env('SLACK_WEBHOOKS'), $settings);
 
-        $client->send(env('APP_ENV') . ":{$e->getMessage()}");
+        $msgArr = [
+            'From'    => env('APP_ENV') ,
+            'Message' => $e->getMessage(),
+            'File'    => $e->getFile(),
+            'Line'    => $e->getLine()
+        ];
+
+        $client->send(urldecode(json_encode($msgArr, JSON_PRETTY_PRINT)));
 
         return parent::report($e);
     }
