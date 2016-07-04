@@ -22,7 +22,7 @@ class Campaign extends Command
      *
      * @var string
      */
-    protected $signature = 'importcampaign:fv {--size=1500} {--limit=300000}';
+    protected $signature = 'fv:importcampaign {--size=1500} {--limit=300000}';
 
     /**
      * The console command description.

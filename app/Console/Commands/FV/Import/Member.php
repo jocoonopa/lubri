@@ -22,7 +22,7 @@ class Member extends Command
      * 
      * @var string
      */
-    protected $signature = 'importmember:fv {--size=1500} {--serno=1} {--upserno=999999999999} {--limit=300000}';
+    protected $signature = 'fv:importmember {--size=1500} {--serno=1} {--upserno=999999999999} {--limit=300000}';
 
     /**
      * The console command description.

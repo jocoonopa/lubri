@@ -12,14 +12,14 @@ class Calllog extends Command
      *
      * @var string
      */
-    protected $signature = 'synccalllog:fv {--size=1500 : means the chunk size} {--limit=300000}';
+    protected $signature = 'fv:synccalllog {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sync CTI Calllogs with Viga';
+    protected $description = 'Sync Ensound Calllogs with Viga';
 
     /**
      * Create a new command instance.

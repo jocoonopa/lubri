@@ -12,14 +12,14 @@ class Campaign extends Command
      *
      * @var string
      */
-    protected $signature = 'synccampaign:fv {--size=1500 : means the chunk size} {--limit=300000}';
+    protected $signature = 'fv:synccampaign {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sync CTI Campaigns with Viga';
+    protected $description = 'Sync Ensound Campaigns with Viga';
 
     /**
      * Create a new command instance.

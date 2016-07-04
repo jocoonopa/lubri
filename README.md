@@ -13,7 +13,6 @@ http://carbon.nesbot.com/docs/
 
 ==========================================================
 
-
 -- yyyy/mm/dd H:i:s
 -- [撥打結果][狀態][備註]@date##########[撥打結果][狀態][備註]@date#####... 
 
@@ -32,4 +31,24 @@ http://carbon.nesbot.com/docs/
 -- GROUP BY p1.SourceCD
 
 calllog 1000人:4分鐘, 174016 => 50000人: 200分鐘, 約850萬
-list: 1000人:4分鐘, 32099  => 50000人: 200分鐘, 約150萬
+list: 1000人:4分鐘, 32099 => 50000人: 200分鐘, 約150萬
+
+Next:
+
+1. app_env switch, hide the error information
+
+edit the debug value to false v
+
+2. Add exception happen notify, just like symfony
+
+App\Exceptions\Handler  
+
+Better, used slack to inform! v
+
+3. Add schedule control env param
+
+Need to discuss with other guys
+
+4. Group those fv commands v
+
+5. Update the .env.example

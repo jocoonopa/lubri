@@ -19,7 +19,7 @@ class Order extends Command
      * 
      * @var string
      */
-    protected $signature = 'importorder:fv {--size=1500} {--serno=1} {--upserno=9999999} {--limit=300000}';
+    protected $signature = 'fv:importorder {--size=1500} {--serno=1} {--upserno=9999999} {--limit=300000}';
 
     /**
      * The console command description.

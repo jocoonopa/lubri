@@ -22,14 +22,14 @@ class Member extends Command
      *
      * @var string
      */
-    protected $signature = 'syncmember:fv {--size=1500 : means the chunk size} {--limit=300000}';
+    protected $signature = 'fv:syncmember {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Export Flap Data and trans to Viga';
+    protected $description = 'Sync Flap Members with Viga';
 
     /**
      * Create a new command instance.

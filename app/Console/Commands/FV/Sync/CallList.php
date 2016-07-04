@@ -12,14 +12,14 @@ class CallList extends Command
      *
      * @var string
      */
-    protected $signature = 'synclist:fv {--size=1500 : means the chunk size} {--limit=300000}';
+    protected $signature = 'fv:synclist {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sync CTI CampaignCallList with Viga';
+    protected $description = 'Sync Ensound CampaignCallList with Viga';
 
     /**
      * Create a new command instance.

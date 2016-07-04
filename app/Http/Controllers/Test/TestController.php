@@ -31,16 +31,16 @@ class TestController extends Controller
         // will be sent from 'Cyril' and to the #accounting channel
         // by default. Any names like @regan or #channel will also be linked.
         $settings = [
-            'username'   => 'webhookbot',
-            'channel'    => '#japan',
+            'username'   => env('SLACK_USERNAME'),
+            'channel'    => env('SLACK_CHANNEL'),
             'link_names' => true
         ];
 
         $client = new \Maknz\Slack\Client(env('SLACK_WEBHOOKS'), $settings);
 
-        $client->send('Hello world!');
-        $client->to('#japan')->send('Are we rich yet?');
-        $client->from('jocoonopa')->to('#japan')->send('Adventure time!');
+        $client->send('Test Message!');
+        $client->to(array_get($settings, 'channel'))->send('Are we rich yet?');
+        $client->from('lubri')->to(array_get($settings, 'channel'))->send('Adventure time!');
 
         return '';
     }

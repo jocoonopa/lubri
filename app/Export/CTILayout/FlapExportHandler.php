@@ -43,7 +43,7 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             'assignDate' => trim(Input::get('assign_date'))
         ]);
 
-        return $export->setFile($this->appendToFile($this->getMembers($callLists, ['sourceCD' => Input::get('source_cd')])));
+        return $export->setFile($this->appendToFile($this->getMembers($callLists, ['sourceCD' => explode(',', trim(Input::get('source_cd')))])));
     }
 
     /**
@@ -134,7 +134,7 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     public function getCTILayoutData($memberCode)
     {
         $data = [];
-
+        
         $memberCodeChunks = array_chunk($memberCode, self::CHUNK_SIZE);
 
         foreach ($memberCodeChunks as $chunk) {

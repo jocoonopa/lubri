@@ -12,14 +12,14 @@ class Product extends Command
      *
      * @var string
      */
-    protected $signature = 'syncproduct:fv  {--size=1500 : means the chunk size} {--limit=300000}';
+    protected $signature = 'fv:syncproduct  {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Export Flap Data and trans to Viga';
+    protected $description = 'Sync Flap Products with Viga';
 
     /**
      * Create a new command instance.

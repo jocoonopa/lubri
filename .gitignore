@@ -13,3 +13,4 @@ public/Microsoft
 .phpintel/
 composer.lock
 /bin
+/config/slack.php

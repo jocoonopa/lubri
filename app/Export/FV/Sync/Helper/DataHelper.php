@@ -26,8 +26,6 @@ class DataHelper extends DH
             Processor::getStorageSql("FV/Sync/{$this->type}.sql")
         );
 
-        Log::info($sql);
-
         return Processor::getArrayResult($sql, $flag);
     }
 

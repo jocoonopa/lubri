@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Maknz\Slack\Client;
 
 class Handler extends ExceptionHandler
 {
@@ -27,6 +28,16 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $e)
     {
+        $settings = [
+            'username'   => env('SLACK_USERNAME'),
+            'channel'    => env('SLACK_CHANNEL'),
+            'link_names' => true
+        ];
+
+        $client = new Client(env('SLACK_WEBHOOKS'), $settings);
+
+        $client->send(env('APP_ENV') . ":{$e->getMessage()}");
+
         return parent::report($e);
     }
 

@@ -15,7 +15,7 @@ class Product extends Command
      * 
      * @var string
      */
-    protected $signature = 'importproduct:fv {--size=1500} {--limit=300000}';
+    protected $signature = 'fv:importproduct {--size=1500} {--limit=300000}';
 
     /**
      * The console command description.

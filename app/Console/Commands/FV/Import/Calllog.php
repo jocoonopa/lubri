@@ -27,7 +27,7 @@ class Calllog extends Command
      * 
      * @var string
      */
-    protected $signature = 'importcalllog:fv {--serno=1} {--inchunk=50} {--size=1500} {--limit=300000} {--startat=2016-07-01}';
+    protected $signature = 'fv:importcalllog {--serno=1} {--inchunk=50} {--size=1500} {--limit=300000} {--startat=2016-07-01}';
 
     /**
      * The console command description.

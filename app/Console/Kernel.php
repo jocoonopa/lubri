@@ -2,9 +2,11 @@
 
 namespace App\Console;
 
-use Log;
+use Artisan;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -37,8 +39,36 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {
-            Log::info('Command Test'. time());
-        })->everyMinute();
+        if (true === env('SCHEDULE_TEST')) {
+            $schedule->call(function () {
+                Log::info('Schedule Test: '. time());
+            })->everyMinute();
+        }
+
+        if (true === env('SCHEDULE_FV')) {
+            $schedule->command('fv:syncmember')
+                ->everyTenMinutes()
+                ->when(function () {
+                    $dt = Carbon::now();
+
+                    return (8 <= $dt->hour && 19 >= $dt->hour);
+                });
+
+            $schedule->command('fv:synproduct')
+                ->twiceDaily(0, 12)
+                ->before(function () use ($schedule) {
+                    Artisan::call('fv:syncmember');
+                })
+                ->after(function () use ($schedule) {
+                    Artisan::call('fv:syncorder');
+                });
+
+            $schedule->call(function () {
+                Artisan::call('fv:synccampaign');
+                Artisan::call('fv:synclist');
+                Artisan::call('fv:synccalllog');
+            })
+            ->daily();
+        }
     }
 }

@@ -28,7 +28,7 @@ class CallList extends Command
      * 
      * @var string
      */
-    protected $signature = 'importlist:fv {--serno=1} {--inchunk=50} {--size=1500} {--limit=300000} {--startat=2016-07-01}';
+    protected $signature = 'fv:importlist {--serno=1} {--inchunk=50} {--size=1500} {--limit=300000} {--startat=2016-07-01}';
 
     /**
      * The console command description.

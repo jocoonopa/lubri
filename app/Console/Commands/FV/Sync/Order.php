@@ -22,14 +22,14 @@ class Order extends Command
      *
      * @var string
      */
-    protected $signature = 'syncorder:fv {--size=1500 : means the chunk size} {--limit=300000}';
+    protected $signature = 'fv:syncorder {--size=1500 : means the chunk size} {--limit=300000}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Export Flap Data and trans to Viga';
+    protected $description = 'Sync Flap Orders with Viga';
 
     /**
      * Create a new command instance.
