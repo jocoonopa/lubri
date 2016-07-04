@@ -2,4 +2,10 @@
 
 namespace App\Export\FV\Sync;
 
-class CampaignExportHandler extends FVSyncExportHandler{}
+class CampaignExportHandler extends FVSyncExportHandler
+{
+    /**
+     * @override
+     */
+    protected function importFile($export){}
+}

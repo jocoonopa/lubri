@@ -28,22 +28,24 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $e)
     {
-        $settings = [
-            'username'   => env('SLACK_USERNAME'),
-            'channel'    => env('SLACK_CHANNEL'),
-            'link_names' => true
-        ];
+        if (true === env('SLACK_NOTIFY')) {
+            $settings = [
+                'username'   => env('SLACK_USERNAME'),
+                'channel'    => env('SLACK_CHANNEL'),
+                'link_names' => true
+            ];
 
-        $client = new Client(env('SLACK_WEBHOOKS'), $settings);
+            $client = new Client(env('SLACK_WEBHOOKS'), $settings);
 
-        $msgArr = [
-            'From'    => env('APP_ENV') ,
-            'Message' => $e->getMessage(),
-            'File'    => $e->getFile(),
-            'Line'    => $e->getLine()
-        ];
+            $msgArr = [
+                'From'    => env('APP_ENV') ,
+                'Message' => $e->getMessage(),
+                'File'    => $e->getFile(),
+                'Line'    => $e->getLine()
+            ];
 
-        $client->send(urldecode(json_encode($msgArr, JSON_PRETTY_PRINT)));
+            $client->send(urldecode(json_encode($msgArr, JSON_PRETTY_PRINT)));
+        }
 
         return parent::report($e);
     }

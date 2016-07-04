@@ -4,4 +4,10 @@ namespace App\Export\FV\Sync;
 
 use App\Export\FV\Import\Helper\DataHelper;
 
-class ListExportHandler extends FVSyncExportHandler{}
+class ListExportHandler extends FVSyncExportHandler
+{
+    /**
+     * @override
+     */
+    protected function importFile($export){}
+}

@@ -2,4 +2,10 @@
 
 namespace App\Export\FV\Sync;
 
-class ProductExportHandler extends FVSyncExportHandler{}
+class ProductExportHandler extends FVSyncExportHandler
+{
+    /**
+     * @override
+     */
+    protected function importFile($export){}
+}
