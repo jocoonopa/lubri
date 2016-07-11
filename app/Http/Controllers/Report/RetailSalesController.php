@@ -15,12 +15,16 @@ class RetailSalesController extends Controller
     }
 
     public function process(Export $export)
-    {       	
+    {       
+        set_time_limit(0);
+
         return Event::fire(new ReportEvent($export->handleExport()));
     }
 
     public function download(Export $export)
     {
+        set_time_limit(0);
+        
         return $export->handleExport()->export();
     }
 }

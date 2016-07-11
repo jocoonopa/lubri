@@ -4,6 +4,8 @@ namespace App\Export\Mould;
 
 abstract class FVMould
 {
+    const DATE_RESULT_FORMAT = 'Y/m/d H:i:s';
+
     protected $ingoreHeads = ['lineNum'];
     protected $dateFileds = [];
     
@@ -40,14 +42,14 @@ abstract class FVMould
     protected function convertDateVal(&$data)
     {
         foreach ($this->dateFileds as $dateField) {
-            $data[$dateField] = with(new \DateTime($data[$dateField]))->format('Y/m/d H:i:s');
+            $data[$dateField] = with(new \DateTime($date))->format(self::DATE_RESULT_FORMAT); // 2016/07/11 20:00:00
         }
 
         return $this;
     }
 
-    protected function convertDate($date)
-    {
-        return with(new \DateTime($date))->format('Y/m/d H:i:s'); // 2016/07/11 20:00:00
+    protected function convertDate($date, $format = 'Y-m-d H:i:s')
+    {        
+        return (validateDate($date, $format)) ? with(new \DateTime($date))->format(self::DATE_RESULT_FORMAT) : ''; // 2016/07/11 20:00:00
     }
 }

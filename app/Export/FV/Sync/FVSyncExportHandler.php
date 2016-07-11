@@ -16,7 +16,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
      * The main function
      */
     public function handle($export)
-    {       
+    {
         // 注入 Mould 物件以方便處理會員資料
         $this
             ->setMould($export->getMould())
@@ -91,7 +91,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
         } catch (\Exception $e) {
             $this->queHelper->toErrorStatus();
 
-            Log::error($export->getInfo()['file'] . '匯入失敗!');
+            Log::error($export->getInfo()['file'] . '匯入失敗!' . $e->getMessage());
             $this->mail($export, $e);
             
             $export->getCommend()->comment('Exception happend when doing the import task!');
