@@ -16,7 +16,7 @@ class FVMemberMould extends FVMould
             $this->transfer(array_get($member, '會員代號')),
             $this->transfer(array_get($member, '會員姓名')),
             $this->transfer(array_get($member, '性別')),
-            $this->transfer(array_get($member, '生日')),
+            $this->convertDate($this->transfer(array_get($member, '生日'))),
             $this->transfer(array_get($member, '身份證號')), 
             $this->transfer(array_get($member, '連絡電話')), 
             $this->transfer(array_get($member, '公司電話')), 
@@ -33,13 +33,13 @@ class FVMemberMould extends FVMould
             $this->transfer(array_get($member, '區別代號')),
             $this->transfer(array_get($member, '區別名稱')), 
             $this->transfer(array_get($member, '首次購物金額')),
-            $this->transfer(array_get($member, '首次購物日')), 
+            $this->convertDate($this->transfer(array_get($member, '首次購物日'))), 
             $this->transfer(array_get($member, '最後購物金額')),
-            $this->transfer(array_get($member, '最後購物日')), 
+            $this->convertDate($this->transfer(array_get($member, '最後購物日'))), 
             $this->transfer(array_get($member, '累積購物金額')),
             $this->transfer(array_get($member, '累積紅利點數')), 
             $this->transfer(array_get($member, '輔翼會員參數')),
-            $this->transfer(array_get($hd, 'period')),
+            $this->convertDate($this->transfer(array_get($hd, 'period'))),
             $this->transfer(array_get($hd, 'hospital'))
         ];
 

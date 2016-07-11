@@ -45,4 +45,9 @@ abstract class FVMould
 
         return $this;
     }
+
+    protected function convertDate($date)
+    {
+        return with(new \DateTime($date))->format('Y/m/d H:i:s'); // 2016/07/11 20:00:00
+    }
 }
