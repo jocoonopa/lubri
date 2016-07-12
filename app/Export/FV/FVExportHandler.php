@@ -17,8 +17,6 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
      */
     abstract protected function proc($export);
 
-    abstract protected function genExportFilePath($export);
-
     protected function initBar($export)
     {
         $count = min($export->getLimit(), $this->dataHelper->getCount());

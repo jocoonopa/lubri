@@ -8,4 +8,6 @@ class CampaignExportHandler extends FVSyncExportHandler
      * @override
      */
     protected function importFile($export){}
+
+    protected function genExportFilePath($export){}
 }

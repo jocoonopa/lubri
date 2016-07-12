@@ -42,14 +42,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
         return $this->proc($export);
     }
 
-    protected function genExportFilePath($export)
-    {
-        if (!file_exists(env('FVSYNC_STORAGE_PATH'))) {
-            mkdir(env('FVSYNC_STORAGE_PATH'), 0777, true);
-        }
-        
-        return env('FVSYNC_STORAGE_PATH') . $export->getType() . 'sync_export_' . time() . '.csv';
-    }
+    abstract protected function genExportFilePath($export);
 
     /**
      * The process 

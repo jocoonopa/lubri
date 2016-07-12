@@ -42,7 +42,7 @@ abstract class FVMould
     protected function convertDateVal(&$data)
     {
         foreach ($this->dateFileds as $dateField) {
-            $data[$dateField] = with(new \DateTime($date))->format(self::DATE_RESULT_FORMAT); // 2016/07/11 20:00:00
+            $data[$dateField] = with(new \DateTime($data[$dateField]))->format(self::DATE_RESULT_FORMAT); // 2016/07/11 20:00:00
         }
 
         return $this;

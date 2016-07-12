@@ -2,10 +2,14 @@
 
 namespace App\Export\CTILayout;
 
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\ORM\CTI\CampaignCallList;
 use App\Utility\Chinghwa\ORM\ERP\HRS_Employee;
 use Input;
 
+/**
+ * @deprecated [<20160712>] [<No more need to use this class>]
+ */
 class CtiExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
     /**

@@ -56,7 +56,6 @@
             <div class="form-group">
                 <input type="hidden" name="redirect" value="">
                 <button data-id="flap" type="button" class="submit btn btn-default btn-sm btn-raised"><i class="glyphicon glyphicon-download-alt"></i> 輔翼會員</button>
-                <button data-id="cti" type="button" class="submit btn btn-default btn-sm"><i class="glyphicon glyphicon-download-alt"></i>活動名單</button>
             </div>
         </form>
     </div>
