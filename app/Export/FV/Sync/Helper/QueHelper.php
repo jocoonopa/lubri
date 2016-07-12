@@ -57,12 +57,12 @@ class QueHelper
 
     public function toWritingStatus()
     {
-        return $this->setQueStatus(FVSyncQue::STATUS_WRITING);
+        return $this->setQueStatus(FVSyncQue::STATUS_WRITING)->configQue();
     }
 
     public function toImportingStatus()
     {
-        return $this->setQueStatus(FVSyncQue::STATUS_IMPORTING);
+        return $this->setQueStatus(FVSyncQue::STATUS_IMPORTING)->configQue();
     }
 
     public function toCompleteStatus()
@@ -77,7 +77,7 @@ class QueHelper
 
     public function toErrorStatus()
     {
-        return $this->setQueStatus(FVSyncQue::STATUS_EXCEPTION);
+        return $this->setQueStatus(FVSyncQue::STATUS_EXCEPTION)->configQue();
     }
 
     public function setQueStatus($statusCode)

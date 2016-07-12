@@ -11,4 +11,5 @@ Route::group(['namespace' => 'Test', 'prefix' => 'test'], function() {
     Route::get('/iron', ['uses' => 'TestController@iron']);
     Route::get('/slack', ['uses' => 'TestController@slack']);
     Route::get('/redis', ['uses' => 'TestController@redis']);
+    Route::get('/mail', ['uses' => 'TestController@mail']);
 });

@@ -13,9 +13,17 @@ use Input;
 use IronMQ\IronMQ;
 use Storage;
 use Redis;
+use Mail;
 
 class TestController extends Controller
 {
+    public function mail()
+    {
+        return Mail::raw(__CLASS__ . '###', function ($m) {
+            $m->to('jocoonopa@chinghwa.com.tw')->subject('the test');
+        });
+    }
+
     public function redis()
     {
         Redis::set('user:name', 'Taylor');
