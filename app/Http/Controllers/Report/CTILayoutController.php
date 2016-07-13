@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Report;
 use App\Export\CTILayout\CtiExport;
 use App\Export\CTILayout\FlapExport;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
+use Artisan;
 use Input;
-use Log;
 
 class CTILayoutController extends Controller
 {
@@ -44,8 +43,6 @@ class CTILayoutController extends Controller
             throw new \Exception('power shell dismiss : ' . $shellFile);
         }       
 
-        Log::info(shell_exec("powershell -ExecutionPolicy Bypass -File {$shellFile} {$file} {$dest} {$username} {$password}"));
-
         if (!file_exists($file)) {
             throw new \Exception('Export CSV File dismiss!');
         }        
@@ -71,5 +68,21 @@ class CTILayoutController extends Controller
         set_time_limit(0);
         
         $export->handleExport();
+    }
+
+    public function campaign()
+    {
+        Artisan::call('fv:importcampaign');
+        
+        $result = Artisan::output();
+
+        $ifr = '##########!!!!!!!!!!';
+        $start = strpos($result, $ifr) + strlen($ifr);
+        $end = strpos($result, '!!!!!!!!!!##########');
+        $length = $end - $start;
+
+        $file = substr($result, $start, $length);
+
+        return response()->download($file);
     }
 }

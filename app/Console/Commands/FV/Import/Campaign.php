@@ -58,5 +58,7 @@ class Campaign extends Command
             ->setCondition([])
             ->handleExport()
         ;
+        
+        return $export->getInfo()['file'];
     }
 }

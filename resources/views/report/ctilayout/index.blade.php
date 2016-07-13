@@ -56,6 +56,8 @@
             <div class="form-group">
                 <input type="hidden" name="redirect" value="">
                 <button data-id="flap" type="button" class="submit btn btn-default btn-sm btn-raised"><i class="glyphicon glyphicon-download-alt"></i> 輔翼會員</button>
+
+                <a class="btn btn-primary btn-sm btn-raised" href="{{ url('report/ctilayout/campaign') }}"><i class="glyphicon glyphicon-download-alt"></i>瑛聲活動</a>
             </div>
         </form>
     </div>

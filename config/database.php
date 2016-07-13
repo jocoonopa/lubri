@@ -64,6 +64,18 @@ return [
             'strict'    => false,
         ],
 
+        'mysql2' => [
+            'driver'    => 'mysql',
+            'host'      => env('VIGA_DB_HOST', 'localhost'),
+            'database'  => env('VIGA_DB_DATABASE', 'forge'),
+            'username'  => env('VIGA_DB_USERNAME', 'forge'),
+            'password'  => env('VIGA_DB_PASSWORD', ''),
+            'charset'   => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix'    => '',
+            'strict'    => false,
+        ],
+
         'pgsql' => [
             'driver'   => 'pgsql',
             'host'     => env('DB_HOST', 'localhost'),

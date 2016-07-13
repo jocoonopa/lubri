@@ -54,6 +54,7 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
         Route::get('/', ['uses' => 'CTILayoutController@index']);
         Route::get('/flap', ['uses' => 'CTILayoutController@flap']);
         Route::get('/cti', ['uses' => 'CTILayoutController@cti']);
+        Route::get('/campaign', ['uses' => 'CTILayoutController@campaign']);
     });
 
     // 每日業績

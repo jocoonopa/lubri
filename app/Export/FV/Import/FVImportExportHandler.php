@@ -21,7 +21,9 @@ abstract class FVImportExportHandler extends FVExportHandler
         $export->getCommend()->comment("\r\n|||||||||||| " . $export->getType() . "_import is ready for processing ||||||||||||\r\n");
         $export->getCommend()->comment("Has {$this->dataHelper->getCount()} rows\r\n======================================================");
         
-        return $this->proc($export);
+        $this->proc($export);
+
+        return $export;
     }
 
     protected function genExportFilePath($export)
@@ -50,7 +52,7 @@ abstract class FVImportExportHandler extends FVExportHandler
             //--- 開始執行Query撈取資料寫入匯出檔案 //            
             $this->writeExportFile($export, $bar);
             $bar->finish();
-            $export->getCommend()->comment("\r\n{$export->getInfo()['file']} has been wroted completly.");
+            $export->getCommend()->comment("\r\n##########!!!!!!!!!!{$export->getInfo()['file']}!!!!!!!!!!########## has been wroted completly.");
             //---//
         } catch (\Exception $e) {
             throw $e;
