@@ -33,15 +33,7 @@ class CTILayoutController extends Controller
     {
         set_time_limit(0);
 
-        $file      = $export->handleExport()->getFile();
-        $shellFile = storage_path('ps1/copy.ps1');
-        $username  = env('AD_USERNAME');
-        $password  = env('AD_PASSWORD');
-        $dest      = ' ' . env('AD_DEST');
-
-        if (!file_exists($shellFile)) {
-            throw new \Exception('power shell dismiss : ' . $shellFile);
-        }       
+        $file = $export->handleExport()->getFile();
 
         if (!file_exists($file)) {
             throw new \Exception('Export CSV File dismiss!');

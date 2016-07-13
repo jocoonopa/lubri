@@ -174,10 +174,11 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         $fname = storage_path('excel/exports/ctilayout/') . str_replace(',', '-', Input::get('campaign_cd')) . '_' . time() . '.csv';
 
         $file = fopen($fname, 'w');
+        
+        fwrite($file, bomstr());
 
         foreach ($members as $member) {
             $appendStr = implode(',', $this->getMould()->getRow($member));
-            $appendStr = cb5($appendStr);
 
             fwrite($file, $appendStr . "\r\n");
         }   
