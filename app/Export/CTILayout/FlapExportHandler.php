@@ -36,12 +36,20 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     {
         $this->setMould(new FVMemberMould);
 
-        $callLists = CampaignCallList::fetchCtiRes([
+        $options = [
             'agentCD'    => $this->getAgentCD(),
             'sourceCD'   => !empty(Input::get('source_cd')) ? explode(',', trim(Input::get('source_cd'))) : [],
             'campaignCD' => !empty(Input::get('campaign_cd')) ? explode(',', trim(Input::get('campaign_cd'))) : [],
             'assignDate' => trim(Input::get('assign_date'))
-        ]);
+        ];
+
+        $count = CampaignCallList::fetchCtiResCount($options);
+
+        if (5000 < $count) {
+            throw new \Exception('資料數目過大，請重新設定查詢條件!');
+        }
+
+        $callLists = CampaignCallList::fetchCtiRes($options);
 
         return $export->setFile($this->appendToFile($this->getMembers($callLists, ['sourceCD' => explode(',', trim(Input::get('source_cd')))])));
     }
@@ -65,8 +73,8 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             $codeFromCorp = array_pluck(Processor::getArrayResult("SELECT HRS_Employee.Code FROM HRS_Employee LEFT JOIN FAS_CORP ON HRS_Employee.CorpSerNo = FAS_CORP.SerNo WHERE FAS_CORP.Code IN ({$corpCodeStr})"), 'Code');
         }
 
-        if (empty($code)) {
-            $agentCD = $codeFromCorp;
+        if (!empty($code) && empty($codeFromCorp)) {
+            $agentCD = $code;
         } else if (!empty($codeFromCorp)) {
             foreach ($agentCD as $key => $val) {
                 if (!in_array($val, $codeFromCorp)) {

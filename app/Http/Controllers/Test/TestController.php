@@ -7,21 +7,23 @@ use App\Http\Requests;
 use App\Jobs\SendReminderEmail;
 use App\Model\User;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use App\Utility\Chinghwa\ORM\ERP\POS_Member;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Input;
 use IronMQ\IronMQ;
-use Storage;
-use Redis;
 use Mail;
+use Redis;
+use Storage;
 
 class TestController extends Controller
 {
     public function mail()
     {
-        return Mail::raw(__CLASS__ . '###', function ($m) {
-            $m->to('jocoonopa@chinghwa.com.tw')->subject('the test');
-        });
+        return POS_Member::testSQL();
+        // return Mail::raw(__CLASS__ . '###', function ($m) {
+        //     $m->to('jocoonopa@chinghwa.com.tw')->subject('the test');
+        // });
     }
 
     public function redis()

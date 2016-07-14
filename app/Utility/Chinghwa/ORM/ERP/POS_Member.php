@@ -33,15 +33,56 @@ class POS_Member implements iORM
         ;
     }
 
+    public static function testSQL()
+    {
+        $options = [];
+
+        $q = Processor::table('Customer_lubri')            
+            ->where('member_id', 'NOT LIKE', 'CT%')
+            ->where(self::getOr($options))
+            ->orderBy('member_id', 'DESC')
+        ;
+
+        pr(get_class($q));
+
+        dd(Processor::toSql($q));
+    }
+
+    /**
+     * CREATE FUNCTION dbo.RemoveChars(@Input varchar(1000))
+     *   RETURNS VARCHAR(1000)
+     *   BEGIN
+     *     DECLARE @pos INT
+     *     SET @Pos = PATINDEX('%[^0-9]%',@Input)
+     *     WHILE @Pos > 0
+     *      BEGIN
+     *       SET @Input = STUFF(@Input,@pos,1,'')
+     *       SET @Pos = PATINDEX('%[^0-9]%',@Input)
+     *      END
+     *     RETURN @Input
+     *   END
+     * 
+     * @param  array  $options
+     * @return Illuminate\Database\Query\Builder $q
+     */
     protected static function getOr(array $options)
     {
         return function ($q) use ($options) {
             $q->orWhere(function($q) use ($options) {
-                $q->where('LEN(cust_mobilphone)', '>', Import::MINLENGTH_CELLPHONE)->where('cust_mobilphone', '=', array_get($options, 'cellphone', '########'));
+                $q
+                    ->where("LEN(dbo.RemoveChars(cust_mobilphone))", '>', Import::MINLENGTH_CELLPHONE)
+                    ->where("dbo.RemoveChars(cust_mobilphone)", '=', array_get($options, 'cellphone', '########'))
+                ;
             })->orWhere(function($q) use ($options) {
-                $q->where('LEN(cust_tel1)', '>', Import::MINLENGTH_TEL)->where('cust_tel1', '=', array_get($options, 'hometel', '########'));
+                $q
+                    ->where("LEN(dbo.RemoveChars(cust_tel1))", '>', Import::MINLENGTH_TEL)
+                    ->where("dbo.RemoveChars(cust_tel1)", '=', array_get($options, 'hometel', '########'))
+                ;
             })->orWhere(function($q) use ($options) {
-                $q->where('LEN(cust_addconn)', '>', Import::MINLENGTH_ADDRESS)->where('cust_addconn', '=', array_get($options, 'address', '########'));
+                $q
+                    ->where('LEN(cust_addconn)', '>', Import::MINLENGTH_ADDRESS)
+                    ->where('cust_addconn', '=', array_get($options, 'address', '########'))
+                ;
             });
         };
     }

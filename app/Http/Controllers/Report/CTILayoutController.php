@@ -39,20 +39,7 @@ class CTILayoutController extends Controller
             throw new \Exception('Export CSV File dismiss!');
         }        
 
-        return $this->response($file);
-    }
-
-    public function response($file)
-    {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="'. basename($file) .'"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($file));
-        
-        return readfile($file);
+        return response()->download($file);
     }
 
     public function cti(CtiExport $export)
