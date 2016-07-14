@@ -55,8 +55,8 @@ class CampaignCallList implements iORM
 
     protected static function condition($q, array $options)
     {
-        $agentCD = array_get($options, 'agentCD');
-        $sourceCD = array_get($options, 'sourceCD');
+        $agentCD    = array_get($options, 'agentCD');
+        $sourceCD   = array_get($options, 'sourceCD');
         $campaignCD = array_get($options, 'campaignCD');
 
         if (!empty($agentCD)) {

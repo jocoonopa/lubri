@@ -13,49 +13,76 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h1>偉特匯入資料下載</h1>
+        <h1>偉特匯入資料下載</h1><hr>
       
         <form action="" method="GET">
-            <div class="form-group">
-                <label class="control-label" for="source_cd">客戶代號</label>
-                <input class="form-control" name="source_cd" id="source_cd" type="text" value="{{Input::get('source_cd', '')}}">
-
-                <p class="help-block hint">{{'N032310, T88420'}}</p>
-            </div>
+            <h4 class="text-primary">瑛聲相關條件(押住 ctrl 可多選)</h4>
 
             <div class="form-group">
-                <label class="control-label" for="code">專員代號</label>
-                <input class="form-control" name="code" id="code" type="text" value="{{Input::get('code', '')}}">
-
-                <p class="help-block hint">{{'20160202,20160203'}}</p>
-            </div>
-
-            <div class="form-group">
-                <label class="control-label" for="corp">部門</label>
-                <select class="form-control" name="corps[]" multiple="multiple">
-                    <option value="CH53000">客戶經營一部</option>
-                    <option value="CH54000">客戶經營二部</option>
-                    <option value="CH54100">客戶經營三部</option>
+                <label class="control-label" for="eng_emp_codes">瑛聲負責人代號</label>
+                
+                <select class="form-control js-multi" name="eng_emp_codes[]" multiple="multiple">
+                    @foreach ($empCorpGroups as $groupKey => $empCorpGroup)
+                        <optgroup label="{{$groupKey}}">
+                        @foreach ($empCorpGroup as $emp) 
+                            <option value="{{$emp['Code']}}">{{$emp['Code'] . $emp['Name']}}</option>
+                        @endforeach     
+                        </optgroup>                   
+                    @endforeach
                 </select>
             </div>
 
             <div class="form-group">
-                <label class="control-label" for="assign_date">指派日期(>=)</label>
-                <input class="form-control" name="assign_date" id="assign_date" type="text" value="{{Input::get('assign_date', '')}}">
+                <label class="control-label" for="eng_campaign_cds">瑛聲活動代號</label>
+                
+                <select class="form-control js-multi" name="eng_campaign_cds[]" multiple="multiple">
+                    @foreach ($campaigns as $campaign)
+                        <option value="{{$campaign['CampaignCD']}}">{{$campaign['CampaignCD'] . $campaign['CampaignName']}}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="eng_assign_date">瑛聲指派日期(>=)</label>
+                <input class="form-control" name="eng_assign_date" id="assign_date" type="text">
 
                 <p class="help-block hint">{{'>= 選擇的指派日期'}}</p>
             </div>
 
             <div class="form-group">
-                <label class="control-label" for="campaign_cd">活動代號</label>
-                <input class="form-control" name="campaign_cd" id="campaign_cd" type="text" value="{{Input::get('campaign_cd', '')}}">
+                <label class="control-label" for="eng_source_cds">瑛聲客戶代號(SourceCD)</label>
+                <select class="js-example-tags form-control" name="eng_source_cds[]" id="eng_source_cds" multiple="multiple">
+                    <option value="">請輸入客戶代號</option>
+                </select>
+            </div>
+            
+            <h4 class="text-primary">輔翼相關條件(押住 ctrl 可多選)</h4>
 
-                <p class="help-block hint">{{'OB_6713,OB_6714'}}</p>
+            <div class="form-group">
+                <label class="control-label" for="flap_emp_codes">輔翼開發人代號</label>
+
+                <select class="form-control js-multi" id="flap_emp_codes" name="flap_emp_codes[]" multiple="multiple">
+                    @foreach ($empCorpGroups as $groupKey => $empCorpGroup)
+                        <optgroup label="{{$groupKey}}">
+                        @foreach ($empCorpGroup as $emp) 
+                            <option value="{{$emp['Code']}}">{{$emp['Code'] . $emp['Name']}}</option>
+                        @endforeach     
+                        </optgroup>                   
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="flap_source_cds">輔翼客戶代號</label>
+
+                <select class="js-example-tags form-control" name="flap_source_cds[]" id="flap_source_cds" multiple="multiple">
+                    <option value="">請輸入客戶代號</option>
+                </select>
             </div>
 
             <div class="form-group">
                 <input type="hidden" name="redirect" value="">
-                <button data-id="flap" type="button" class="submit btn btn-default btn-sm btn-raised"><i class="glyphicon glyphicon-download-alt"></i> 輔翼會員</button>
+                <button data-id="flap" type="button" class="submit btn btn-default btn-sm btn-raised"><i class="glyphicon glyphicon-download-alt"></i> 名單匯出</button>
 
                 <a class="btn btn-primary btn-sm btn-raised" href="{{ url('report/ctilayout/campaign') }}"><i class="glyphicon glyphicon-download-alt"></i>瑛聲活動</a>
             </div>
@@ -91,7 +118,11 @@ $('.submit').click(function () {
     return false;
 });
 
-$('select').select2();
+$('.js-multi').select2();
+
+$(".js-example-tags").select2({
+  tags: true
+});
 
 </script>
 @stop

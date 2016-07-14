@@ -21,6 +21,7 @@ use Input;
 class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
     const CHUNK_SIZE = 50;
+    const LIST_COUNT_LIMIT = 5000;
 
     protected $mould;
 
@@ -36,169 +37,95 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     {
         $this->setMould(new FVMemberMould);
 
-        $options = [
-            'agentCD'    => $this->getAgentCD(),
-            'sourceCD'   => !empty(Input::get('source_cd')) ? explode(',', trim(Input::get('source_cd'))) : [],
-            'campaignCD' => !empty(Input::get('campaign_cd')) ? explode(',', trim(Input::get('campaign_cd'))) : [],
+        $callLists = [];
+
+        $engOptions = [
+            'agentCD'    => Input::get('eng_emp_codes', []),
+            'sourceCD'   => Input::get('eng_source_cd', []),
+            'campaignCD' => Input::get('eng_campaign_cds', []),
             'assignDate' => trim(Input::get('assign_date'))
         ];
 
-        $count = CampaignCallList::fetchCtiResCount($options);
+        if (!$this->isIgnoreEngCondition($engOptions)) {
+            $count = CampaignCallList::fetchCtiResCount($engOptions);
+        
+            if (self::LIST_COUNT_LIMIT < $count) {
+                throw new \Exception('瑛聲名單數目過多(超過' . self::LIST_COUNT_LIMIT . '筆)，請重新設定查詢條件!');
+            }
 
-        if (5000 < $count) {
-            throw new \Exception('資料數目過大，請重新設定查詢條件!');
+            $callLists = CampaignCallList::fetchCtiRes($engOptions);
         }
+        
+        $flapOptions = [
+            'empCodes'    => Input::get('flap_emp_codes', []),
+            'memberCodes' => Input::get('flap_source_cds', [])
+        ];
 
-        $callLists = CampaignCallList::fetchCtiRes($options);
-
-        return $export->setFile($this->appendToFile($this->getMembers($callLists, ['sourceCD' => explode(',', trim(Input::get('source_cd')))])));
+        return $export->setFile($this->proc($callLists, $flapOptions));
     }
 
-    /**
-     * 專員代號和部門條件有關連，這邊邏輯示若專員代號條件為空，則專員代號為部門條件的所以專員代號;
-     * 若專員代號條件不為空，則和部門條件的集合取交集;
-     * 若專員代號條件集合不為空，部門條件為空，則取專員代號條件集合
-     * 
-     * @return array
-     */
-    protected function getAgentCD()
+    protected function isIgnoreEngCondition(array $engOptions)
     {
-        $agentCD = [];
+        $bool = true;
 
-        $code = !empty(Input::get('code')) ? explode(',', trim(Input::get('code'))) : [];
-        $codeFromCorp = [];
-        $corpCodeStr = sqlInWrap(Input::get('corps', []));
+        foreach ($engOptions as $eachCondition) {
+            if (!empty($eachCondition)) {
+                $bool = false;
 
-        if (!empty($corpCodeStr)) {
-            $codeFromCorp = array_pluck(Processor::getArrayResult("SELECT HRS_Employee.Code FROM HRS_Employee LEFT JOIN FAS_CORP ON HRS_Employee.CorpSerNo = FAS_CORP.SerNo WHERE FAS_CORP.Code IN ({$corpCodeStr})"), 'Code');
-        }
-
-        if (!empty($code) && empty($codeFromCorp)) {
-            $agentCD = $code;
-        } else if (!empty($codeFromCorp)) {
-            foreach ($agentCD as $key => $val) {
-                if (!in_array($val, $codeFromCorp)) {
-                    unset($agentCD[$key]);
-                }
+                break;
             }
         }
 
-        return $agentCD;
+        return $bool;
     }
 
-    /**
-     * 如果 $callLists 為空，表示沒有從 CTI 那邊撈取到任何資料，因此走 getMemberDependOnFlap 的流程，
-     * 反之則要走 getMemberDependBothFlapAndCTI 的流程
-     * 
-     * @param  array  $callLists
-     * @param  array  $options  
-     * @return array
-     */
-    protected function getMembers(array $callLists, array $options)
+    protected function proc(array $callLists, array $flapOptions)
     {
-        return empty($callLists) ? $this->getMemberDependOnFlap($options) : $this->getMemberDependBothFlapAndCTI($callLists, $options);   
+        $members = array_pluck($callLists, 'SourceCD');
+        $members = array_merge(array_get($flapOptions, 'memberCodes'), $members);
+
+        return $this->getCTILayoutData($members, $flapOptions);   
     }
 
-    protected function getMemberDependOnFlap(array $options)
-    {  
-        return array_filter($this->getCTILayoutData(array_get($options, 'sourceCD')), [$this, 'filterMember']);
-    }
-
-    /**
-     * 原本是長這樣:
-     *  
-     *  foreach ($callLists as $calllist) {           
-     *   $member              = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);    
-     *   $member['AgentCD']   = array_get($calllist, 'AgentCD');
-     *   $member['AgentName'] = array_get($calllist, 'AgentName');
-     *
-     *   $members[] = $member;
-     *  }  
-     *
-     * 因為需要提升效能且不需要使用到 CTI 資料，因此改為以下版本
-     * 
-     * @param  array $callLists
-     * @param  array $options  
-     * @return array           
-     */
-    protected function getMemberDependBothFlapAndCTI($callLists, $options)
+    public function getCTILayoutData(array $memberCodes, array $flapOptions)
     {
-        $members = [];
+        $empCodes = array_get($flapOptions, 'empCodes', []);
 
-        $members = $this->getCTILayoutData(array_pluck($callLists, 'SourceCD'));
+        if (!empty($empCodes)) { 
+            $q = Processor::table('Customer_lubri')->where('cust_status', '=', 1)->whereIn('emp_id', $empCodes);
 
-        return array_filter($members, [$this, 'filterMember']);
+            $memberCodes = array_merge(array_pluck(Processor::getArrayResult($q), 'cust_id'), $memberCodes);
+        }   
+
+        return $this->appendToFile($memberCodes);
     }
 
-    /**
-     * 從瑛聲取得的會員代碼，傳入此函式取得其在輔翼的資料。
-     *
-     * 這邊由於瑛聲拋過來的資料可能會很大， TSQL 在 IN 條件很多的時候效能會非常差，
-     * 因此這邊理應改寫成分段執行以利效能提升
-     * 
-     * @param  array $memberCode
-     * @return array
-     */
-    public function getCTILayoutData($memberCode)
-    {
-        $data = [];
-        
-        $memberCodeChunks = array_chunk($memberCode, self::CHUNK_SIZE);
-
-        foreach ($memberCodeChunks as $chunk) {
-            $sql = str_replace('$memberCode', sqlInWrap($chunk), Processor::getStorageSql('CTILayout.sql'));
-            
-            $data = array_merge(Processor::getArrayResult($sql), $data);
-        }
-                        
-        return $data;      
-    }
-
-    /**
-     * @deprecated This method depracted at 2016-06-17
-     */
-    protected function inCorps(array $member)
-    {
-        $corps = Input::get('corps');
-
-        if (empty($corps)) {
-            return true;
-        }
-
-        return in_array(array_get($member, '部門'), $corps);
-    }
-
-    protected function filterMember($member)
-    {
-        return NULL !== $member;
-    }
-
-    protected function appendToFile(array $members)
+    protected function appendToFile(array $memberCodes)
     {
         if (!file_exists(storage_path('excel/exports/ctilayout/'))) {
             mkdir(storage_path('excel/exports/ctilayout/'), 0777);
         }
 
-        $fname = storage_path('excel/exports/ctilayout/') . str_replace(',', '-', Input::get('campaign_cd')) . '_' . time() . '.csv';
+        $fname = storage_path('excel/exports/ctilayout/') . 'cti_' . time() . '.csv';
 
         $file = fopen($fname, 'w');
-        
         fwrite($file, bomstr());
 
-        foreach ($members as $member) {
-            $appendStr = implode(',', $this->getMould()->getRow($member));
+        $memberCodeChunks = array_chunk($memberCodes, self::CHUNK_SIZE);
+        
+        foreach ($memberCodeChunks as $chunk) {
+            $sql = str_replace('$memberCode', sqlInWrap($chunk), Processor::getStorageSql('CTILayout.sql'));
+            
+            foreach (Processor::getArrayResult($sql) as $member) {
+                $appendStr = implode(',', $this->getMould()->getRow($member));
 
-            fwrite($file, $appendStr . "\r\n");
-        }   
+                fwrite($file, $appendStr . "\r\n");
+            }   
+        }
 
         fclose($file);
 
         return $fname;
-    }
-
-    public function getCampaigns()
-    {
-        return Campaign::findValid();
     }
 
     /**

@@ -322,3 +322,22 @@ function getLastLineOfFile($file)
 
     return $line;
 }
+
+function array_group($array, $groupKey)
+{
+    $result = [];
+
+    foreach ($array as $data) {
+        if (!array_key_exists($groupKey, $data)) {
+            continue;
+        }
+
+        if (isset($result[$data[$groupKey]])) {
+            $result[$data[$groupKey]][] = $data;
+        } else {
+            $result[$data[$groupKey]] = [$data];
+        }
+    }
+
+    return $result;
+}

@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Report;
 use App\Export\CTILayout\CtiExport;
 use App\Export\CTILayout\FlapExport;
 use App\Http\Controllers\Controller;
+use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use App\Utility\Chinghwa\ORM\CTI\Campaign;
+use App\Utility\Chinghwa\ORM\ERP\HRS_Employee;
 use Artisan;
 use Input;
 
@@ -12,20 +15,18 @@ class CTILayoutController extends Controller
 {
 	public function index()
     {
-        $code       = Input::get('code', '20160202');
-        $assignDate = Input::get('assign_date', '20160415');
-        $campaignCD = Input::get('campaign_cd', 'OB_6713');
-        
-        $qStr       = "code={$code}&assign_date={$assignDate}&campaign_cd={$campaignCD}";
-        $flapUrl    = "/report/ctilayout/flap?{$qStr}";
-        $ctiUrl     = "/report/ctilayout/cti?{$qStr}";
+        $corpCodes = explode(',', env('CORPS'));
+
+        $emps = HRS_Employee::findByCorps($corpCodes);
+
+        $corps = Processor::getArrayResult(Processor::table('FAS_Corp')->select('Name, Code')->whereIn('Code', $corpCodes));
+
+        $campaigns = Campaign::findValid();
 
         return view('report.ctilayout.index', [
-            'flapUrl'    => $flapUrl, 
-            'ctiUrl'     => $ctiUrl,
-            'code'       => $code,
-            'assignDate' => $assignDate,
-            'campaignCD' => $campaignCD
+            'corps' => $corps,
+            'empCorpGroups' => array_group($emps, 'FName'),
+            'campaigns' => $campaigns
         ]);
     }
 
