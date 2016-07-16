@@ -1,0 +1,11 @@
+-- SELECT 
+-- p1.SourceCD,
+-- (
+--     SELECT Note + '##########'
+--      FROM CallLog p2 WITH(NOLOCK)
+--     WHERE p2.CustID = p1.SourceCD
+--     ORDER BY p2.CustID
+--     FOR XML PATH('')
+-- ) AS CallLog 
+-- FROM CampaignCallList p1 WITH(NOLOCK) WHERE p1.SourceCD='553576'
+-- GROUP BY p1.SourceCD

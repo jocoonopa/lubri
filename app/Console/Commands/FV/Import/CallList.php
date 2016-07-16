@@ -14,6 +14,8 @@ use Illuminate\Console\Command;
 
 /**
  * This class is used for the Campaign dump purpose
+ *
+ * list: 1000人:4分鐘, 32099 => 50000人: 200分鐘, 約150萬
  */
 class CallList extends Command
 {

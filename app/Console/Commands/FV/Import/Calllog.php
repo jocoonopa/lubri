@@ -14,6 +14,8 @@ use Illuminate\Console\Command;
 
 /**
  * This class is used for the Campaign dump purpose
+ *
+ * calllog 1000人:4分鐘, 174016 => 50000人: 200分鐘, 約850萬
  */
 class Calllog extends Command
 {

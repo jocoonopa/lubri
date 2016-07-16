@@ -1,0 +1,21 @@
+SELECT * FROM (
+    SELECT 
+        MAX(cust_id) AS ci,
+        MAX(cust_serno) AS cs,
+        MAX(cust_ctime) AS EndTime,
+        MIN(cust_ctime) AS StartTime,
+        MAX(sys_firstbuy) AS sf,
+        MAX(emp_id) AS ae,
+        MAX(emp_name) AS men,
+        MIN(emp_id) AS ie,
+        MIN(emp_name) AS ien,
+        cust_cname,
+        dbo.RemoveChars(cust_mobilphone) AS mobil,
+        COUNT(*) AS count
+        --dbo.RemoveChars(cust_tel1) AS tel
+    FROM Customer_lubri WITH(NOLOCK)
+    WHERE LEN(dbo.RemoveChars(cust_mobilphone)) > 9 --AND dbo.RemoveChars(cust_mobilphone) = '0977302327'
+    GROUP BY cust_cname, dbo.RemoveChars(cust_mobilphone)
+    HAVING COUNT(*) > 1 
+) AS RES 
+WHERE RES.EndTime >= '2013-01-01 00:00:00' ORDER BY sf, mobil ASC
