@@ -41,14 +41,14 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
         fwrite($file, bomstr());
         
-        $this->iterateEntitys($export, $bar, $file);
+        $this->iterateEntitys($bar, $file);
 
         fclose($file);
 
         return $this;
     }
 
-    protected function iterateEntitys($export, $bar, $file)
+    protected function iterateEntitys($bar, $file)
     {
         $bar->start();
 
@@ -57,7 +57,7 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         $count = $bar->getMaxSteps();
 
         while ($i < $count) {
-            $entitys = $this->dataHelper->fetchEntitys($export, $i);
+            $entitys = $this->dataHelper->fetchEntitys($i);
 
             if (empty($entitys)) {
                 break;
@@ -65,9 +65,9 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             
             $this->writeRow($file, $entitys);
 
-            $i += $export->getChunkSize();
+            $i += $this->dataHelper->getChunkSize();
 
-            $bar->advance($count < $i ? $count - ($i - $export->getChunkSize()) : $export->getChunkSize());
+            $bar->advance($count < $i ? $count - ($i - $this->dataHelper->getChunkSize()) : $this->dataHelper->getChunkSize());
         }
     }
 

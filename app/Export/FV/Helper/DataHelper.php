@@ -36,7 +36,7 @@ abstract class DataHelper
 
     protected function initCount()
     {
-        $this->setCount($this->fetchCount());
+        return $this->setCount($this->fetchCount());
     }
 
     public function fetchCount()
@@ -44,7 +44,7 @@ abstract class DataHelper
         return call_user_func(array($this, 'fetch' .  array_get($this->map, $this->type) . 'Count'));
     }
 
-    public function fetchEntitys($export, $i)
+    public function fetchEntitys($i)
     {
         return call_user_func([$this, 'fetch' .  array_get($this->map, $this->type)], $i);
     }

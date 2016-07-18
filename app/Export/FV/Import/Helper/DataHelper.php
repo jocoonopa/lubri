@@ -15,9 +15,14 @@ class DataHelper extends DH
 {
     protected $condition;
 
-    public function __construct($type, array $condition, $chunkSize)
+    public function __construct($export)
     {
-        $this->setType($type)->setCondition($condition)->setChunkSize($chunkSize)->initCount();
+        $type      = $export->getType();
+        $condition = $export->getCondition();
+        $limit     = $export->getLimit();
+        $chunkSize = $export->getChunkSize();
+
+        $this->setType($type)->setCondition($condition)->initCount()->setChunkSize($chunkSize > $limit ? $limit : $chunkSize);
     }
 
     protected function fetchMembers($i)

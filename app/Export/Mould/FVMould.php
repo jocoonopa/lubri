@@ -7,7 +7,8 @@ abstract class FVMould
     const DATE_RESULT_FORMAT = 'Y/m/d H:i:s';
 
     protected $ingoreHeads = ['lineNum'];
-    protected $dateFileds = [];
+    protected $dateFields = [];
+    protected $intFields = [];
     
     abstract public function getRow(array $arr);
 
@@ -41,7 +42,7 @@ abstract class FVMould
      */
     protected function convertDateVal(&$data)
     {
-        foreach ($this->dateFileds as $dateField) {
+        foreach ($this->dateFields as $dateField) {
             $data[$dateField] = with(new \DateTime($data[$dateField]))->format(self::DATE_RESULT_FORMAT); // 2016/07/11 20:00:00
         }
 
@@ -51,5 +52,14 @@ abstract class FVMould
     protected function convertDate($date, $format = 'Y-m-d H:i:s')
     {        
         return (validateDate($date, $format)) ? with(new \DateTime($date))->format(self::DATE_RESULT_FORMAT) : ''; // 2016/07/11 20:00:00
+    }
+
+    protected function convertIntFields(&$data)
+    {
+        foreach ($this->intFields as $intField) {
+            $data[$intField] = (int) $data[$intField];
+        }
+
+        return $this;
     }
 }

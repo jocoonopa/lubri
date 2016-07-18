@@ -16,6 +16,8 @@ use App\Utility\Console\MyProgressBar;
  */
 class ListExportHandler extends FVImportExportHandler
 {
+    protected $inchunk = NULL;
+
     /**
      * The main function
      */
@@ -24,7 +26,7 @@ class ListExportHandler extends FVImportExportHandler
         // 注入 Mould 物件以方便處理會員資料
         $this
             ->setMould($export->getMould())
-            ->setDataHelper(new DataHelper($export->getType(), $export->getCondition(), $export->getChunkSize()))
+            ->setDataHelper(new DataHelper($export))
         ;
 
         $export->getCommend()->comment("\r\n|||||||||||| " . $export->getType() . "_import is ready for processing ||||||||||||\r\n");
@@ -44,10 +46,12 @@ class ListExportHandler extends FVImportExportHandler
         $bar->setMessage('s:0/0 c:0');
         $bar->setBarWidth(25);
 
+        $this->setInchunk($export->getCondition()['inchunk']);
+
         return $bar;
     }
 
-    protected function iterateEntitys($export, $bar, $file)
+    protected function iterateEntitys($bar, $file)
     {
         $bar->start();
         $validMemberCount = $bar->getMaxSteps();
@@ -55,17 +59,17 @@ class ListExportHandler extends FVImportExportHandler
         $i                = 0;
 
         while ($i < $validMemberCount) {
-            $chunkSize = min(($validMemberCount - $i), $export->getCondition()['inchunk']);
+            $chunkSize = min(($validMemberCount - $i), $this->getInchunk());
             $this->dataHelper->updateTarget($i, $chunkSize);
-            $this->_iterateEntitys($export, $bar, $file, $chunkSize, $rowCount);
+            $this->_iterateEntitys($bar, $file, $chunkSize, $rowCount);
 
-            $i += $export->getCondition()['inchunk'];
+            $i += $this->getInchunk();
 
             $bar->setCurrent(min($validMemberCount, $i));
         }
     }
 
-    private function _iterateEntitys($export, &$bar, $file, $chunkCount, &$rowCount)
+    private function _iterateEntitys(&$bar, $file, $chunkCount, &$rowCount)
     {
         $j         = 0;
         $listCount = $this->dataHelper->fetchCount();
@@ -75,7 +79,7 @@ class ListExportHandler extends FVImportExportHandler
         $bar->setMessage("s:{$j}/{$listCount} c:{$rowCount}");
 
         while ($j < $listCount) {
-            $entitys = $this->dataHelper->fetchEntitys($export, $j);
+            $entitys = $this->dataHelper->fetchEntitys($j);
 
             if (empty($entitys)) {
                 break;
@@ -95,5 +99,29 @@ class ListExportHandler extends FVImportExportHandler
                 $threshold -= floor($threshold);
             }
         }        
+    }
+
+    /**
+     * Gets the value of inchunk.
+     *
+     * @return mixed
+     */
+    public function getInchunk()
+    {
+        return $this->inchunk;
+    }
+
+    /**
+     * Sets the value of inchunk.
+     *
+     * @param mixed $inchunk the inchunk
+     *
+     * @return self
+     */
+    protected function setInchunk($inchunk)
+    {
+        $this->inchunk = $inchunk;
+
+        return $this;
     }
 }

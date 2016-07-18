@@ -4,7 +4,7 @@ namespace App\Export\Mould;
 
 class FVCalllogMould extends FVMould
 {
-    protected $dateFileds = ['通話開始時間', '通話結束時間'];
+    protected $dateFields = ['通話開始時間', '通話結束時間'];
 
     public function getRow(array $list)
     {

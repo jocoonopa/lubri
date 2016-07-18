@@ -15,7 +15,7 @@ abstract class FVImportExportHandler extends FVExportHandler
         // 注入 Mould 物件以方便處理會員資料
         $this
             ->setMould($export->getMould())
-            ->setDataHelper(new DataHelper($export->getType(), $export->getCondition(), $export->getChunkSize()))
+            ->setDataHelper(new DataHelper($export))
         ;
 
         $export->getCommend()->comment("\r\n|||||||||||| " . $export->getType() . "_import is ready for processing ||||||||||||\r\n");

@@ -5,7 +5,7 @@ namespace App\Export\Mould;
 class FVCampaignMould extends FVMould
 {
     protected $ingoreHeads = ['modified_at', 'created_at', 'lineNum'];
-    protected $dateFileds = ['StartDate', 'EndDate'];
+    protected $dateFields = ['StartDate', 'EndDate'];
 
     /**
      * 對每個活動物件處理:
@@ -33,7 +33,7 @@ class FVCampaignMould extends FVMould
      */
     protected function convertDateVal(&$campaign)
     {
-        foreach ($this->dateFileds as $dateField) {
+        foreach ($this->dateFields as $dateField) {
             $campaign[$dateField] = with(new \DateTime($campaign[$dateField]))->format('Y/m/d');
         }
 
