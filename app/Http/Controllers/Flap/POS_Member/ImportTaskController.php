@@ -121,7 +121,7 @@ class ImportTaskController extends Controller
                 copy($path, storage_path("exports/posmember/{$task->id}.xls"));
             }
 
-            $job = with(new ImportPosMemberTask($task))->onQueue(env('IRON_QUEUE'))->delay(10);
+            $job = with(new ImportPosMemberTask($task))->onQueue(env('IRON_QUEUE'))->delay(30);
             $this->dispatch($job);
 
             $task->status_code = PosMemberImportTask::STATUS_IMPORTING;
@@ -146,8 +146,8 @@ class ImportTaskController extends Controller
         $task->status_code  = PosMemberImportTask::STATUS_INIT;
         $task->distinction  = Input::get(_Import::OPTIONS_DISTINCTION);
         $task->category     = Input::get(_Import::OPTIONS_CATEGORY);
-        $task->update_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_INSERTFLAG));
-        $task->insert_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_UPDATEFLAG));
+        $task->update_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_UPDATEFLAG));
+        $task->insert_flags = Flater::getInflateFlag(Input::get(_Import::OPTIONS_INSERTFLAG));
         $task->kind_id      = Input::get('kind_id');
         $task->memo         = Input::get(_Import::OPTIONS_OBMEMO);
         $task->save();

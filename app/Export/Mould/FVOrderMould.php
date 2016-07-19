@@ -4,7 +4,7 @@ namespace App\Export\Mould;
 
 class FVOrderMould extends FVMould
 {
-    protected $dateFields = ['OrderDate'];
+    protected $dateFields = ['OrderDate', 'KeyInDate'];
     protected $intFields = ['Qty'];
 
     public function getRow(array $order)
