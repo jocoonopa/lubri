@@ -34,9 +34,7 @@ Route::group(['namespace' => 'Intro', 'prefix' => 'intro'], function() {
 });
 
 Route::post('queue/receive', function() {
-    $logFile = 'laravel.log';
-
-    Log::useDailyFiles(storage_path().'/logs/'.$logFile);
+    Log::info('#######@_queue_@#######');
     
     return Queue::marshal();
 });

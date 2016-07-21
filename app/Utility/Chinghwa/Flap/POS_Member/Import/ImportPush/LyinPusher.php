@@ -39,6 +39,8 @@ class LyinPusher extends Pusher
 
     protected function getUpdateProcQuery(PosMemberImportContent $content)
     {
-        return "UPDATE CCS_CRMFields SET CRMNote1='{$content->memo}' WHERE MemberSerNoStr = '{$content->serno}'";
+        $memo = $this->getWrapVal($content->memo);
+        
+        return "UPDATE CCS_CRMFields SET CRMNote1={$memo} WHERE MemberSerNoStr = '{$content->serno}'";
     }
 }

@@ -28,7 +28,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\FV\Import\Product::class,
         \App\Console\Commands\FV\Import\Member::class,
         \App\Console\Commands\FV\Import\CallList::class,
-        \App\Console\Commands\FV\Import\Calllog::class
+        \App\Console\Commands\FV\Import\Calllog::class,
+        \App\Console\Commands\FV\Import\OrderPipe::class
     ];
 
     /**

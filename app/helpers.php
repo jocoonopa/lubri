@@ -284,6 +284,7 @@ function sqlInWrap(array $strs)
     $tmp = '';
 
     foreach ($strs as $str) {
+        $str = str_replace("'", '', $str);
         $tmp .= "'{$str}',";
     }
 

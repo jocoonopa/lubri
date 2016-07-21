@@ -69,7 +69,13 @@ abstract class Pusher implements IPusher
 
     public function proc(PosMemberImportContent $content)
     {
-        $content->setIsExist(ModelFactory::getExistOrNotByContent($content));
+        $member = ModelFactory::getExistOrNotByContent($content);
+
+        if (!empty($member) && $member['cust_ctime'] >= \Carbon\Carbon::now()->modify('-3 days')->format('Y-m-d H:i:s')) {
+            return $this->contentUpdateProc($content);
+        }
+
+        $content->setIsExist($member);
 
         return true === $content->is_exist ? $this->updateProc($content) : $this->insertProc($content);            
     }

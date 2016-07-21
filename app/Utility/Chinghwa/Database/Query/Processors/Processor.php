@@ -142,6 +142,8 @@ class Processor
 
     public static function getWrapVal($val)
     {
+        $val = str_replace("'", '', $val);
+        
         return empty($val) ? 'NULL' : "'{$val}'";
     }
 }
