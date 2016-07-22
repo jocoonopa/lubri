@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h1>偉特瑛聲資料同步紀錄</h1><hr>
+        <h1>偉特瑛聲資料同步紀錄<small>{{'每頁' . $limit . '筆'}}</small></h1><hr>
 
         <table class="table table-striped">
             <thead>
