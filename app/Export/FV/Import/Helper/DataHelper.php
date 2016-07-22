@@ -79,7 +79,7 @@ class DataHelper extends DH
     {
         $sql = str_replace(
             ['$yesterday', '$tomorrow', '$begin', '$end'], 
-            [Carbon::yesterday()->format('Y-m-d H:i:s'), Carbon::tomorrow()->format('Y-m-d H:i:s'), $i, $i + $this->getChunkSize()], 
+            [Carbon::now()->format('Y-m-d H:i:s'), Carbon::now()->format('Y-m-d H:i:s'), $i, $i + $this->getChunkSize()], 
             Processor::getStorageSql('FV/Import/campaign.sql')
         );
 
@@ -100,7 +100,7 @@ class DataHelper extends DH
     {
         $sql = str_replace(
             ['$yesterday', '$tomorrow'], 
-            [Carbon::yesterday()->format('Y-m-d H:i:s'), Carbon::tomorrow()->format('Y-m-d H:i:s')], 
+            [Carbon::now()->format('Y-m-d H:i:s'), Carbon::now()->format('Y-m-d H:i:s')], 
             Processor::getStorageSql('FV/Import/campaign_count.sql')
         );
 
