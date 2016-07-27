@@ -10,7 +10,8 @@ SELECT * FROM (
         Status.StatusName AS 狀態內文,
         CallLog.ResultCD AS 通話結果代號,
         StatusResult.ResultName AS 通話結果內文,
-        CallLog.Note AS 備註
+        CallLog.Note AS 備註,
+        CallLog.DialNo AS 撥打號碼
     FROM 
         CallLog WITH(NOLOCK) 
         LEFT JOIN Campaign WITH(NOLOCK) ON Campaign.CampaignCD = CallLog.CampaignCD

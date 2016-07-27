@@ -73,6 +73,11 @@ class ListExportHandler extends FVImportExportHandler
     {
         $j         = 0;
         $listCount = $this->dataHelper->fetchCount();
+
+        if (0 === $listCount) {
+            return;
+        }
+        
         $perUnit   = floor(($chunkCount/$listCount)*10000)/10000;
         $threshold = 0;
         
