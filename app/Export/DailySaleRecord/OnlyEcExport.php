@@ -10,9 +10,10 @@ class OnlyEcExport extends Export
     protected $fileNameTail = 'EC';
 
     protected $to = [
-        'darren@chinghwa.com.tw'   => '6804張碩',
-        'Merc0918@chinghwa.com.tw' => '羅偉銘',
-        'Tina.lin@chinghwa.com.tw' => '林玉樺'
+        'darren@chinghwa.com.tw'       => '6804張碩',
+        'Merc0918@chinghwa.com.tw'     => '羅偉銘',
+        'Tina.lin@chinghwa.com.tw'     => '林玉樺',
+        'angela.chang@chinghwa.com.tw' => '張永萱'
     ];
 
     protected $cc = [

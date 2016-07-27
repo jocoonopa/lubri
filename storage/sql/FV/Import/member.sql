@@ -26,7 +26,7 @@ SELECT
     CCS_ShoppingBehaviorBrief.LastConsume 最後購物金額,
     CCS_ShoppingBehaviorBrief.LastConsumeDate 最後購物日,
     CCS_ShoppingBehaviorBrief.TotalConsume 累積購物金額,
-    POS_Member.TotalBonus 累積紅利點數,
+    (SELECT TOP 1 BonusAfter FROM DCS_BonusLog WHERE MemberSerNoStr = POS_Member.SerNo ORDER BY BonusLogSerNo DESC) 累積紅利點數,
     POS_Member.MemberSerNoI 輔翼會員參數,
     CCS_CRMFields.newCustomerMemo 備註,    
     CCS_CRMFields.CRMNote1 備註1,
