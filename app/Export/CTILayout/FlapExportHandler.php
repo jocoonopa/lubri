@@ -92,7 +92,7 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
         $empCodes = array_get($flapOptions, 'empCodes', []);
 
         if (!empty($empCodes)) { 
-            $q = Processor::table('Customer_lubri')->where('cust_status', '=', 1)->whereIn('emp_id', $empCodes);
+            $q = Processor::table('Customer_lubri')->whereIn('emp_id', $empCodes);
 
             $memberCodes = array_merge(array_pluck(Processor::getArrayResult($q), 'cust_id'), $memberCodes);
         }   
