@@ -24,6 +24,6 @@ class ListExport extends FVSyncExport
 
     public function getStartDate()
     {
-        return '2016-07-01 00:00:00';
+        return '2016-07-25 00:00:00';
     }
 }
