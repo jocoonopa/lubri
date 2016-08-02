@@ -158,7 +158,9 @@ return [
         /**
          * Slack
          */
-        Maknz\Slack\SlackServiceProvider::class
+        Maknz\Slack\SlackServiceProvider::class,
+
+        Prettus\Repository\Providers\RepositoryServiceProvider::class
     ],
 
     /*

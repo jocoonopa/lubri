@@ -13,8 +13,8 @@ class Chinghwa
     const TOWN = '新店區';
     const CITY = '新北市';
     
-    public function get($data = [])
+    public function foo()
     {
-        echo "foo";
+        return 'foo';
     }
 }

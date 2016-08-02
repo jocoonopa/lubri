@@ -13,7 +13,10 @@ class ChinghwaServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(){}
+    public function boot()
+    {
+        $this->composeHeader();
+    }
 
     /**
      * Register the application services.
@@ -25,5 +28,10 @@ class ChinghwaServiceProvider extends ServiceProvider
         App::bind('chinghwa', function() {
             return new Chinghwa;
         });
+    }
+
+    protected function composeHeader()
+    {
+        return view()->composer('common.header', 'App\Http\Composer\ViewChinghwaComposer');
     }
 }

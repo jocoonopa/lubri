@@ -9,10 +9,9 @@ class OrderPipe extends Command
     /**
      * The name and signature of the console command.
      *
-     * --size: means the chunk size
      * --serno: means the lower(start) serno
      * --upserno: means the end serno
-     * --limit: limit of the fetch count of result
+     * --range: limit of the fetch count of result
      * 
      * @var string
      */

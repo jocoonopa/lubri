@@ -78,7 +78,7 @@
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="https://github.com/jocoonopa/lubri" target="_blank">GitHub</a></li>
+        <li><a href="https://github.com/jocoonopa/lubri" target="_blank">{{ $github }}</a></li>
         <li><a href="http://tonyvonhsu.tw/phpbb/index.php" target="_blank">BY 景華資訊處</a></li>
         @if (Auth::check())
             <li><a href="{{ url('auth/logout') }}"><i class="glyphicon glyphicon-log-out"></i> 登出</a></li>
