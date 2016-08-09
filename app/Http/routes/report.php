@@ -50,7 +50,7 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
 
     // 偉特 CTI Import Layout
     // CTILayoutController
-    Route::group(['prefix' => 'ctilayout','middleware' => ['auth', 'auth.corp'], 'corp' => '資訊部'], function () {
+    Route::group(['prefix' => 'ctilayout','middleware' => ['auth', 'auth.corp'], 'corp' => ['資訊部', '行銷處級辦公室']], function () {
         Route::get('/', ['uses' => 'CTILayoutController@index']);
         Route::get('/flap', ['uses' => 'CTILayoutController@flap']);
         Route::get('/cti', ['uses' => 'CTILayoutController@cti']);
