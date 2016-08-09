@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\Article;
-use Request;
+use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Http\Requests\ArticleRequest;
-use App\Http\Controllers\Controller;
+use App\Model\Article;
+use App\Utility\Chinghwa\Helper\Temper;
 use Carbon\Carbon;
+use Request;
 
+/**
+ * Lastly, but most importantly, you may simply "type-hint" the dependency in the constructor of a class 
+ * that is resolved by the container, including controllers, event listeners, queue jobs, middleware, and more
+ */
 class ArticlesController extends Controller
 {
     /**

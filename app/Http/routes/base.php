@@ -38,3 +38,5 @@ Route::post('queue/receive', function() {
     
     return Queue::marshal();
 });
+
+ Route::resource('test_entities', TestEntitiesController::class);

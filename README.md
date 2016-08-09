@@ -12,3 +12,9 @@ http://www.daterangepicker.com/#examples
 http://carbon.nesbot.com/docs/
 
 ==========================================================
+
+
+       ~~~  Facade
+Provider    ===> Service  <---- Repository <--- [Model, Presneter<---Transformer, Validator, Criteria, Cache]
+SomeHelper <===  Service         
+                Contract
