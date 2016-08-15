@@ -126,4 +126,9 @@ abstract class FVSyncExportHandler extends FVExportHandler
 
         return $this;
     }
+
+    public function initQueHelper($queHelper)
+    {
+        return $this->setQueHelper($queHelper);
+    }
 }

@@ -39,8 +39,9 @@ class QueHelper
     protected function initLastMrtTime()
     {
         $lastQue = FVSyncQue::latest()
-            ->where('type_id', '=', FVSyncType::where('name', '=', $this->getType())->first()->id)
+            ->where('type_id', '=', FVSyncType::where('name', '=', $this->getType())->first()->depend_on_id)
             ->whereNotNull('last_modified_at')
+            ->where('status_code', '=', FVSyncQue::STATUS_COMPLETE)
             ->first();
         
         return $this->setLastMrtTime(!$lastQue ? Carbon::instance(with(new \DateTime($this->export->getStartDate()))) : $lastQue->last_modified_at);
