@@ -55,6 +55,8 @@ class Order extends Command
 
     protected function proc(OrderExport $export)
     {
+        $this->call('fv:syncproduct');
+
         $export
             ->setCommend($this)
             ->setOutput($this->output)

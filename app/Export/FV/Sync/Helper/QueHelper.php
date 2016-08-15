@@ -38,13 +38,23 @@ class QueHelper
 
     protected function initLastMrtTime()
     {
-        $lastQue = FVSyncQue::latest()
-            ->where('type_id', '=', FVSyncType::where('name', '=', $this->getType())->first()->depend_on_id)
+        $dependQue = FVSyncQue::latest()
+            ->where('type_id', '=', FVSyncType::where('id', '=', $this->que->type->depend_on_id)->first()->id)
             ->whereNotNull('last_modified_at')
             ->where('status_code', '=', FVSyncQue::STATUS_COMPLETE)
             ->first();
+
+        $selfLastQue = FVSyncQue::latest()
+            ->where('type_id', '=', FVSyncType::where('name', '=', $this->getType())->first()->id)
+            ->whereNotNull('last_modified_at')
+            ->where('status_code', '=', FVSyncQue::STATUS_COMPLETE)
+            ->first();
+
+        if ($dependQue->last_modified_at->lt($selfLastQue->last_modified_at)) {
+            $selfLastQue = $dependQue;
+        }
         
-        return $this->setLastMrtTime(!$lastQue ? Carbon::instance(with(new \DateTime($this->export->getStartDate()))) : $lastQue->last_modified_at);
+        return $this->setLastMrtTime(!$selfLastQue ? Carbon::instance(with(new \DateTime($this->export->getStartDate()))) : $selfLastQue->last_modified_at);
     }
 
     public function hasProcessingQue()
