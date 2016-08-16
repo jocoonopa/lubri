@@ -17,11 +17,14 @@ class QueHelper
     protected $lastMrtTime;
     protected $importCostTime;
     protected $selectCostTime;
+    protected $dependLimitTime;
 
     public function __construct($export)
     {
         $this->export = $export;
         $this->setType($export->getType())->createQue()->initLastMrtTime();
+
+        $this->setDependLimitTime($this->fetchDependLimitTimeByQue());
     }
 
     protected function createQue()
@@ -38,23 +41,36 @@ class QueHelper
 
     protected function initLastMrtTime()
     {
-        $dependQue = FVSyncQue::latest()
-            ->where('type_id', '=', FVSyncType::where('id', '=', $this->que->type->depend_on_id)->first()->id)
-            ->whereNotNull('last_modified_at')
-            ->where('status_code', '=', FVSyncQue::STATUS_COMPLETE)
-            ->first();
-
         $selfLastQue = FVSyncQue::latest()
             ->where('type_id', '=', FVSyncType::where('name', '=', $this->getType())->first()->id)
             ->whereNotNull('last_modified_at')
             ->where('status_code', '=', FVSyncQue::STATUS_COMPLETE)
             ->first();
-
-        if ($dependQue->last_modified_at->lt($selfLastQue->last_modified_at)) {
-            $selfLastQue = $dependQue;
-        }
         
         return $this->setLastMrtTime(!$selfLastQue ? Carbon::instance(with(new \DateTime($this->export->getStartDate()))) : $selfLastQue->last_modified_at);
+    }
+
+    public function getDependLimitTime()
+    {
+        return $this->dependLimitTime;
+    }
+
+    protected function fetchDependLimitTimeByQue()
+    {
+        $dependQue =  FVSyncQue::latest()
+            ->where('type_id', '=', FVSyncType::where('id', '=', $this->que->type->depend_on_id)->first()->id)
+            ->whereNotNull('last_modified_at')
+            ->where('status_code', '=', FVSyncQue::STATUS_COMPLETE)
+            ->first();
+
+         return $dependQue->last_modified_at; 
+    }
+
+    protected function setDependLimitTime($dependLimitTime)
+    {
+        $this->dependLimitTime = $dependLimitTime;
+
+        return $this;
     }
 
     public function hasProcessingQue()
@@ -104,7 +120,7 @@ class QueHelper
         $this->que->import_cost_time = $this->getImportCostTime();
         $this->que->select_cost_time = $this->getSelectCostTime();
         $this->que->dest_file        = $this->export->getInfo()['file'];
-        $this->que->last_modified_at = $this->que->created_at;
+        $this->que->last_modified_at = ($this->que->created_at->gt($this->getDependLimitTime())) ? $this->getDependLimitTime() : $this->que->created_at;
         $this->que->save();
 
         return $this;

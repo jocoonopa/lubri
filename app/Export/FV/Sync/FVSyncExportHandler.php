@@ -21,7 +21,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
         $this
             ->setMould($export->getMould())
             ->setQueHelper(new QueHelper($export))
-            ->setDataHelper(new DataHelper($export->getType(), $this->queHelper->getLastMrtTime(), $export->getChunkSize()))
+            ->setDataHelper(new DataHelper($export->getType(), $this->queHelper->getLastMrtTime(), $export->getChunkSize()), $this->queHelper->getDependLimitTime())
         ;
 
         $export->getCommend()->comment("\r\n|||||||||||| " . $export->getType() . "_sync is ready for processing ||||||||||||\r\n");

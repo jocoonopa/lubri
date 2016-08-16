@@ -4,6 +4,7 @@ namespace App\Export\FV\Sync\Helper;
 
 use App\Export\FV\Helper\DataHelper AS DH;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
+use Carbon\Carbon;
 use Log;
 
 /**
@@ -12,17 +13,22 @@ use Log;
 class DataHelper extends DH
 {
     protected $mdtTime;
+    protected $dependLimitTime;
 
-    public function __construct($type, $mdtTime, $chunkSize)
+    public function __construct($type, $mdtTime, $chunkSize, $dependLimitTime = null)
     {
-        $this->setType($type)->setMdtTime($mdtTime)->setChunkSize($chunkSize)->initCount();
+        if (null === $dependLimitTime) {
+            $dependLimitTime = Carbon::now();
+        }
+
+        $this->setType($type)->setMdtTime($mdtTime)->setDependLimitTime($dependLimitTime)->setChunkSize($chunkSize)->initCount();
     }
 
     protected function fetchEntitysImplement($i, $flag = 'Erp')
     {
         $sql = str_replace(
-            ['$mdtTime', '$begin', '$end'], 
-            [$this->mdtTime->format('Y-m-d H:i:s'), $i, $i + $this->getChunkSize()], 
+            ['$mdtTime', '$dependLimitTime', '$begin', '$end'], 
+            [$this->mdtTime->format('Y-m-d H:i:s'), $this->dependLimitTime->format('Y-m-d H:i:s'), $i, $i + $this->getChunkSize()], 
             Processor::getStorageSql("FV/Sync/{$this->type}.sql")
         );
 
@@ -32,8 +38,8 @@ class DataHelper extends DH
     protected function fetchEntitysCountImplement($flag = 'Erp')
     {
         $sql = str_replace(
-            ['$mdtTime'], 
-            [$this->mdtTime->format('Y-m-d H:i:s')], 
+            ['$mdtTime', '$dependLimitTime'], 
+            [$this->mdtTime->format('Y-m-d H:i:s'), $this->dependLimitTime->format('Y-m-d H:i:s')], 
             Processor::getStorageSql("FV/Sync/{$this->type}_count.sql")
         );
 
@@ -170,5 +176,17 @@ class DataHelper extends DH
         $this->mdtTime = $mdtTime;
 
         return $this;
+    }
+
+    protected function setDependLimitTime($dependLimitTime)
+    {
+        $this->dependLimitTime = $dependLimitTime;
+        
+        return $this;
+    }
+
+    public function getDependLimitTime()
+    {
+        return  $this->dependLimitTime;
     }
 }

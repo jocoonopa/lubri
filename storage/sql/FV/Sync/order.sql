@@ -27,5 +27,5 @@ SELECT * FROM (
         LEFT JOIN POS_Member WITH(NOLOCK) ON CCS_OrderIndex.MemberSerNo = POS_Member.SerNo
         LEFT JOIN PIS_Goods WITH(NOLOCK) ON PIS_Goods.SerNo = CCS_OrderDetails.GoodsSerNo
         LEFT JOIN PIS_Unit WITH(NOLOCK) ON PIS_Unit.SerNo = PIS_Goods.UnitSerNo
-    WHERE CCS_OrderDetails.MDT_TIME >= '$mdtTime'
+    WHERE CCS_OrderDetails.MDT_TIME >= '$mdtTime' AND CCS_OrderDetails.MDT_TIME <= '$dependLimitTime'
 ) AS OrderDetails WHERE OrderDetails.lineNum > $begin AND OrderDetails.lineNum <= $end 
