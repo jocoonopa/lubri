@@ -10,7 +10,7 @@ class FVListMould extends FVMould
 
     public function getRow(array $list)
     {
-    	$traceDate = array_get($dateFields,  self::TRACE_DATE_COLUMN);
+    	$traceDate = array_get($list,  self::TRACE_DATE_COLUMN);
         
         $this->removeIgnoreColumn($list)->convertDateVal($list);
 
