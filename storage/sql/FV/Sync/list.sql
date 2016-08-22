@@ -30,6 +30,6 @@ SELECT * FROM (
         LEFT JOIN Campaign WITH(NOLOCK) ON CampaignCallList.CampaignCD = Campaign.CampaignCD
         LEFT JOIN DataSchema WITH(NOLOCK) ON Campaign.DefSchemaCD = DataSchema.SchemaCD
     WHERE CampaignCallList.modified_at >= '$mdtTime' AND CampaignCallList.modified_at <= '$dependLimitTime' 
-    AND Campaign.EndDate <= '$dependLimitTime' AND Campaign.StartDate >= '$mdtTime'
+    AND Campaign.EndDate >= '$mdtTime' AND Campaign.StartDate <= '$dependLimitTime'
 ) AS Lists WHERE Lists.lineNum > $begin AND Lists.lineNum <= $end 
 ORDER BY Lists.活動名單代號 ASC
