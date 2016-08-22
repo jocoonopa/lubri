@@ -17,7 +17,7 @@ class DataHelper extends DH
 
     public function __construct($type, $mdtTime, $chunkSize, $dependLimitTime = null)
     {
-        if (null === $dependLimitTime) {
+        if (null === $dependLimitTime) {die('ddd');
             $dependLimitTime = Carbon::now();
         }
 

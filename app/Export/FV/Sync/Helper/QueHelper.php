@@ -57,13 +57,17 @@ class QueHelper
 
     protected function fetchDependLimitTimeByQue()
     {
-        $dependQue =  FVSyncQue::latest()
+        if ($this->que->type->id === $this->que->type->depend_on_id) {
+            return Carbon::now();
+        }
+        
+        $dependQue = FVSyncQue::latest()
             ->where('type_id', '=', FVSyncType::where('id', '=', $this->que->type->depend_on_id)->first()->id)
             ->whereNotNull('last_modified_at')
             ->where('status_code', '=', FVSyncQue::STATUS_COMPLETE)
             ->first();
 
-         return $dependQue->last_modified_at; 
+        return NULL === $dependQue ? Carbon::now() : $dependQue->last_modified_at; 
     }
 
     protected function setDependLimitTime($dependLimitTime)
@@ -120,7 +124,7 @@ class QueHelper
         $this->que->import_cost_time = $this->getImportCostTime();
         $this->que->select_cost_time = $this->getSelectCostTime();
         $this->que->dest_file        = $this->export->getInfo()['file'];
-        $this->que->last_modified_at = ($this->que->created_at->gt($this->getDependLimitTime())) ? $this->getDependLimitTime() : $this->que->created_at;
+        $this->que->last_modified_at = $this->que->created_at->gt($this->getDependLimitTime()) ? $this->getDependLimitTime() : $this->que->created_at;
         $this->que->save();
 
         return $this;
