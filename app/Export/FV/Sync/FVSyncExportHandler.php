@@ -27,6 +27,8 @@ abstract class FVSyncExportHandler extends FVExportHandler
         $export->getCommend()->comment("\r\n|||||||||||| " . $export->getType() . "_sync is ready for processing ||||||||||||\r\n");
 
         if ($this->queHelper->hasProcessingQue()) {
+            $this->queHelper->toSkipStatus();
+            
             return $export->getCommend()->comment("\r\nThere's another que is executing now, so scheduler will skip this execution!");
         }
 
