@@ -2,9 +2,9 @@
 
 namespace App\Export\CTILayout;
 
+use App;
+use App\Export\CTILayout\CtiExportCriteria;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
-use App\Utility\Chinghwa\ORM\CTI\CampaignCallList;
-use App\Utility\Chinghwa\ORM\ERP\HRS_Employee;
 use Input;
 
 /**
@@ -12,70 +12,119 @@ use Input;
  */
 class CtiExportHandler implements \Maatwebsite\Excel\Files\ExportHandler 
 {
-    /**
-     * ExcelHelper::rmi('Z') === 25
-     * 
-     * @param  App\Export\CTILayout\Export $export
-     * @return App\Export\CTILayout\Export $export
-     */
+    protected $engOptions;
+    protected $criteria;
+    protected $writer;
+
     public function handle($export)
     {
-        return $this->single($export)->export();
+        $this->initEndOptions()->initCriteria()->initWriter();
+        $this->getWriter()->write($this->fetch());
+
+        return $export->setFile($this->getWriter()->getFname());
     }
 
-    protected function single($export)
+    protected function fetch()
     {
-        $callLists = CampaignCallList::fetchCtiRes([
-            'agentCD'    => !empty(Input::get('code')) ? explode(',', trim(Input::get('code'))) : [], 
-            'sourceCD'   => !empty(Input::get('source_cd')) ? explode(',', trim(Input::get('source_cd'))) : [], 
-            'campaignCD' => !empty(Input::get('campaign_cd')) ? explode(',', trim(Input::get('campaign_cd'))) : [],
-            'assignDate' => trim(Input::get('assign_date'))
+        $whereStr = $this->getCriteria()->apply($this->getEngOptions())->getWhereStr();
+
+        return Processor::getArrayResult($this->genAndGetSql($whereStr), Processor::DB_CTI);
+    }
+
+    protected function genAndGetSql($whereStr)
+    {
+        return str_replace('$whereStr', $whereStr, Processor::getStorageSql('CTILayout_ENG.sql'));
+    }
+
+    protected function initWriter()
+    {
+        return $this->setWriter(App::make('App\Export\CTILayout\CtiExportFileWriter'));
+    }
+
+    protected function initEndOptions()
+    {
+        return $this->setEngOptions([
+            'agentCD'    => Input::get('eng_emp_codes', []),
+            'sourceCD'   => Input::get('eng_source_cd', []),
+            'campaignCD' => Input::get('eng_campaign_cds', []),
+            'assignDate' => trim(Input::get('eng_assign_date'))
         ]);
-
-        $sheetName = 'export';
-
-        $export->sheet($sheetName, $this->getSheetCallback($callLists));           
-
-        return $export;
     }
 
-    protected function inCorps(array $calllist)
-    {        
-        $corps = Input::get('corps');
-
-        if (empty($corps)) {
-            return true;
-        }
-
-        $member = array_get($this->getCTILayoutData(array_get($calllist, 'SourceCD')), 0);
-
-        return in_array(array_get($member, '部門'), $corps);
-    }
-
-    public function getCTILayoutData($memberCode)
+    protected function initCriteria()
     {
-        return Processor::getArrayResult(str_replace('$memberCode', $memberCode, Processor::getStorageSql('CTILayout.sql')));
+        return $this->setCriteria(new CtiExportCriteria);
     }
 
-    protected function getSheetCallback($callLists)
+    /**
+     * Gets the value of engOptions.
+     *
+     * @return mixed
+     */
+    public function getEngOptions()
     {
-        return function ($sheet) use ($callLists) {
-            $sheet->setColumnFormat(['S' => '@']);
-
-            $sheet->appendRow($this->getTitle());
-
-            foreach ($callLists as $calllist) {  
-                if (!$this->inCorps($calllist)) {
-                    continue;
-                }   
-
-                $sheet->appendRow($calllist);
-            }     
-        };
+        return $this->engOptions;
     }
 
-    protected function getTitle() 
+    /**
+     * Sets the value of engOptions.
+     *
+     * @param mixed $engOptions the eng options
+     *
+     * @return self
+     */
+    protected function setEngOptions($engOptions)
     {
-        return ['PLACEHOLDER'];
+        $this->engOptions = $engOptions;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of criteria.
+     *
+     * @return mixed
+     */
+    public function getCriteria()
+    {
+        return $this->criteria;
+    }
+
+    /**
+     * Sets the value of criteria.
+     *
+     * @param mixed $criteria the criteria
+     *
+     * @return self
+     */
+    protected function setCriteria($criteria)
+    {
+        $this->criteria = $criteria;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of writer.
+     *
+     * @return mixed
+     */
+    public function getWriter()
+    {
+        return $this->writer;
+    }
+
+    /**
+     * Sets the value of writer.
+     *
+     * @param mixed $writer the writer
+     *
+     * @return self
+     */
+    protected function setWriter($writer)
+    {
+        $this->writer = $writer;
+
+        return $this;
     }
 }

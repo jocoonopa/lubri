@@ -43,7 +43,7 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             'agentCD'    => Input::get('eng_emp_codes', []),
             'sourceCD'   => Input::get('eng_source_cd', []),
             'campaignCD' => Input::get('eng_campaign_cds', []),
-            'assignDate' => trim(Input::get('assign_date'))
+            'assignDate' => trim(Input::get('eng_assign_date'))
         ];
 
         if (!$this->isIgnoreEngCondition($engOptions)) {

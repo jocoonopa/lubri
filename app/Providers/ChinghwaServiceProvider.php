@@ -28,6 +28,10 @@ class ChinghwaServiceProvider extends ServiceProvider
         App::bind('chinghwa', function() {
             return new Chinghwa;
         });
+
+        App::when('App\Export\CTILayout\CtiExportFileWriter')
+          ->needs('App\Export\Mould\FVMould')
+          ->give('App\Export\Mould\FVListMould');
     }
 
     protected function composeHeader()

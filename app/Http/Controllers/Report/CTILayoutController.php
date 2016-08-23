@@ -32,8 +32,18 @@ class CTILayoutController extends Controller
 
     public function flap(FlapExport $export)
     {
-        set_time_limit(0);
+        return $this->download($export);
+    }
 
+    public function cti(CtiExport $export)
+    {
+        return $this->download($export);
+    }
+
+    protected function download($export)
+    {
+        set_time_limit(0);
+        
         $file = $export->handleExport()->getFile();
 
         if (!file_exists($file)) {
@@ -41,13 +51,6 @@ class CTILayoutController extends Controller
         }        
 
         return response()->download($file);
-    }
-
-    public function cti(CtiExport $export)
-    {
-        set_time_limit(0);
-        
-        $export->handleExport();
     }
 
     public function campaign()

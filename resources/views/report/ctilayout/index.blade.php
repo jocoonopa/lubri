@@ -44,7 +44,7 @@
 
             <div class="form-group">
                 <label class="control-label" for="eng_assign_date">瑛聲指派日期(>=)</label>
-                <input class="form-control" name="eng_assign_date" id="assign_date" type="text">
+                <input class="form-control" name="eng_assign_date" id="eng_assign_date" type="text">
 
                 <p class="help-block hint">{{'>= 選擇的指派日期'}}</p>
             </div>
@@ -82,9 +82,11 @@
 
             <div class="form-group">
                 <input type="hidden" name="redirect" value="">
-                <button data-id="flap" type="button" class="submit btn btn-default btn-sm btn-raised"><i class="glyphicon glyphicon-download-alt"></i> 名單匯出</button>
+                <button data-id="flap" type="button" class="submit btn btn-default btn-sm btn-raised"><i class="glyphicon glyphicon-download-alt"></i> 輔翼匯出</button>
 
-                <a class="btn btn-primary btn-sm btn-raised" href="{{ url('report/ctilayout/campaign') }}"><i class="glyphicon glyphicon-download-alt"></i>瑛聲活動</a>
+                <button data-id="cti" type="button" class="submit btn btn-info btn-sm btn-raised"><i class="glyphicon glyphicon-download-alt"></i> 瑛聲匯出</button>
+
+                <a class="btn btn-primary btn-sm btn-raised pull-right" href="{{ url('report/ctilayout/campaign') }}"><i class="glyphicon glyphicon-download-alt"></i>活動</a>
             </div>
         </form>
     </div>
