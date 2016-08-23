@@ -8,7 +8,7 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.1.*",
         "maatwebsite/excel": "~2.0.6",
-        "guzzlehttp/guzzle": "4.0",
+        "guzzlehttp/guzzle": "*",
         "illuminate/html": "5.*",
         "prettus/l5-repository": "*"
     },
