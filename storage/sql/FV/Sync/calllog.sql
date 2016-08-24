@@ -17,5 +17,6 @@ FROM
     LEFT JOIN Status WITH(NOLOCK) ON Status.StatusCD = CallLog.StatusCD
     LEFT JOIN StatusResult WITH(NOLOCK) ON Status.StatusCD = StatusResult.StatusCD AND StatusResult.ResultCD = CallLog.ResultCD
 WHERE CallLog.StartTime >= '$mdtTime' AND CallLog.StartTime <= '$dependLimitTime'
+AND Campaign.EndDate >= '$mdtTime' AND Campaign.StartDate <= '$dependLimitTime'
 ) AS CallLogs WHERE CallLogs.lineNum > $begin AND CallLogs.lineNum <= $end 
 ORDER BY CallLogs.活動代號 ASC 
