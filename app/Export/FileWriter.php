@@ -39,7 +39,7 @@ abstract class FileWriter
     protected function mkdir()
     {
         if (!file_exists(storage_path(self::DIR_PATH))) {
-            mkdir(storage_path(self::DIR_PATH), 0777);
+            mkdir(storage_path(self::DIR_PATH), 0777, true);
         }
 
         return $this;
