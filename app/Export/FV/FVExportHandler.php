@@ -37,7 +37,7 @@ abstract class FVExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
      */
     protected function writeExportFile($export, $bar)
     {
-        $file  = fopen($export->getInfo()['file'], 'w');
+        $file = fopen($export->getInfo()['file'], 'w');
 
         fwrite($file, bomstr());
         

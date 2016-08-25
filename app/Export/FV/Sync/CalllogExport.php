@@ -22,8 +22,8 @@ class CalllogExport extends FVSyncExport
         return 'calllog';
     }
 
-    public function getStartDate()
+    public function getPathEnv()
     {
-        return '2016-07-01 00:00:00';
+        return 'FVSYNC_CALLLOG_STORAGE_PATH';
     }
 }

@@ -22,8 +22,8 @@ class ProductExport extends FVSyncExport
         return 'product';
     }
 
-    public function getStartDate()
+    public function getPathEnv()
     {
-        return '2016-06-14 00:00:00';
+        return 'FVSYNC_PRODUCT_STORAGE_PATH';
     }
 }

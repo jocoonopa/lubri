@@ -2,9 +2,11 @@
 
 namespace App\Export\FV\Sync;
 
+use App\Model\Log\FVSyncQue;
 use App\Export\FV\FVExportHandler;
 use App\Export\FV\Sync\Helper\DataHelper;
 use App\Export\FV\Sync\Helper\QueHelper;
+use App\Export\FV\Sync\Helper\ExecuteAgent;
 use Log;
 use Mail;
 
@@ -54,7 +56,16 @@ abstract class FVSyncExportHandler extends FVExportHandler
         );
     }
 
-    abstract protected function genExportFilePath($export);
+    protected function genExportFilePath($export)
+    {
+        $pahtEnv = $export->getPathEnv();
+
+        if (!file_exists(env($pahtEnv))) {
+            mkdir(env($pahtEnv), 0777, true);
+        }
+        
+        return env($pahtEnv) . $export->getType() . 'sync_export_' . time() . '.csv';
+    }
 
     /**
      * The process 
@@ -64,7 +75,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
      */
     protected function proc($export)
     {
-        $export->setInfo(['file' => $this->genExportFilePath($export)]);
+        $export->setInfo(['file' => $this->genExportFilePath($export)])->setQueId($this->queHelper->getQue()->id);
 
         $bar = $this->initBar($export);
         $export->getCommend()->comment("Start Writing file {$export->getInfo()['file']}");
@@ -88,7 +99,7 @@ abstract class FVSyncExportHandler extends FVExportHandler
             $export->getCommend()->comment("\r\n\r\n-----------------------------------------------------------\r\nBegin Import File...");
             
             $importStartAt = microtime(true);
-            $this->importFile($export);
+            $this->importFile($this->queHelper->getQue());
             $this->queHelper->setImportCostTime(microtime(true) - $importStartAt);    
 
             $export->getCommend()->comment("Import completed!\r\n-----------------------------------------------------------\r\n");
@@ -118,12 +129,12 @@ abstract class FVSyncExportHandler extends FVExportHandler
     }
 
     /**
-     * Import file to viga db with powerShell and viga .exe
-     * 
-     * @param  object $export
-     * @return boolean      
+     * Import file to viga db  
      */
-    abstract protected function importFile($export);
+    protected function importFile(FVSyncQue $que)
+    {
+        return ExecuteAgent::exec($que);
+    }
 
     /**
      * Sets the value of queHelper.

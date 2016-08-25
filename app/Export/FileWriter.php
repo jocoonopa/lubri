@@ -6,9 +6,10 @@ use App\Export\Mould\FVMould;
 
 abstract class FileWriter
 {
-    const DIR_PATH = 'excel/exports/ctilayout/';
     protected $mould;
+    protected $dir = 'excel/exports/ctilayout/';
     protected $fname;
+    protected $file;
 
     /**
      * Class Constructor
@@ -21,25 +22,39 @@ abstract class FileWriter
 
     public function write(array $data)
     {
-        $file = fopen($this->getFname(), 'w');
-        fwrite($file, bomstr());
-        
+        $this->open()->put(bomstr());
+
         foreach ($data as $row) {
-            fwrite($file, "{$this->getEachRowStr($row)}\r\n");
+            $this->put("{$this->getEachRowStr($row)}\r\n");
         }
 
-        fclose($file);
+        $this->close();
     }
 
-    protected function getEachRowStr(array $row)
+    public function open()
+    {
+        return $this->setFile(fopen($this->getFname(), 'w'));
+    }
+
+    public function put($str)
+    {
+        fwrite($this->getFile(), $str);
+    }
+
+    public function close()
+    {
+        return fclose($this->getFile());
+    }
+
+    public function getEachRowStr(array $row)
     {
         return implode(',', $this->getMould()->getRow($row));
     }
 
-    protected function mkdir()
+    public function mkdir()
     {
-        if (!file_exists(storage_path(self::DIR_PATH))) {
-            mkdir(storage_path(self::DIR_PATH), 0777, true);
+        if (!file_exists(storage_path($this->getDir()))) {
+            mkdir(storage_path($this->getDir()), 0777, true);
         }
 
         return $this;
@@ -47,7 +62,7 @@ abstract class FileWriter
 
     protected function genFileName()
     {
-        return storage_path(self::DIR_PATH) . with(new \ReflectionClass($this))->getShortName() . '_' .  time() . '.csv';
+        return storage_path($this->getDir()) . with(new \ReflectionClass($this))->getShortName() . '_' .  time() . '.csv';
     }
 
     /**
@@ -94,6 +109,40 @@ abstract class FileWriter
     protected function setFname($fname)
     {
         $this->fname = $fname;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of dir.
+     *
+     * @return mixed
+     */
+    public function getDir()
+    {
+        return $this->dir;
+    }
+
+    /**
+     * Gets the value of file.
+     *
+     * @return mixed
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * Sets the value of file.
+     *
+     * @param mixed $file the file
+     *
+     * @return self
+     */
+    protected function setFile($file)
+    {
+        $this->file = $file;
 
         return $this;
     }

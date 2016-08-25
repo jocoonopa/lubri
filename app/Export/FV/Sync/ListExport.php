@@ -22,8 +22,8 @@ class ListExport extends FVSyncExport
         return 'list';
     }
 
-    public function getStartDate()
+    public function getPathEnv()
     {
-        return '2016-07-25 00:00:00';
+        return 'FVSYNC_CALLLIST_STORAGE_PATH';
     }
 }

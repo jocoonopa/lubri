@@ -20,17 +20,7 @@ class CallList extends Command
      * @var string
      */
     protected $description = 'Sync Ensound CampaignCallList with Viga';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
+    
     /**
      * Execute the console command.
      *
@@ -53,6 +43,12 @@ class CallList extends Command
             ->handleExport()
         ;
 
+        if (NULL !== $export->getQueId()) {
+            $this->call('fv:listrep', [
+                '--id' => $export->getQueId()
+            ]);
+        }
+        
         return $this;
     }
 }

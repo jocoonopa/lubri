@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
+use App\Model\Log\FVSyncType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,46 +28,52 @@ class FVQueTypeTableSeeder extends Seeder
     {
         $data = [
             [
-                'id'           => 1,
+                'id'           => FVSyncType::ID_PRODUCT,
                 'name'         => 'product',
                 'hname'        => '商品',
-                'depend_on_id' => 1
+                'depend_on_id' => FVSyncType::ID_PRODUCT,
+                'viga_type'    => FVSyncType::VIGATYPE_PRODUCT
             ],
             [
-                'id'           => 2,
+                'id'           => FVSyncType::ID_MEMBER,
                 'name'         => 'member',
                 'hname'        => '會員',
-                'depend_on_id' => 2
+                'depend_on_id' => FVSyncType::ID_MEMBER,
+                'viga_type'    => FVSyncType::VIGATYPE_MEMBER
             ],
             [
-                'id'           => 3,
+                'id'           => FVSyncType::ID_ORDER,
                 'name'         => 'order',
                 'hname'        => '訂單',
-                'depend_on_id' => 2
+                'depend_on_id' => FVSyncType::ID_MEMBER,
+                'viga_type'    => FVSyncType::VIGATYPE_ORDER
             ],
             [
-                'id'           => 4,
+                'id'           => FVSyncType::ID_CAMPAIGN,
                 'name'         => 'campaign',
                 'hname'        => '活動',
-                'depend_on_id' => 4
+                'depend_on_id' => FVSyncType::ID_CAMPAIGN,
+                'viga_type'    => 'CHCampaignSync'
             ],
             [
-                'id'           => 5,
+                'id'           => FVSyncType::ID_LIST,
                 'name'         => 'list',
                 'hname'        => '瑛聲名單',
-                'depend_on_id' => 2
+                'depend_on_id' => FVSyncType::ID_MEMBER,
+                'viga_type'    => FVSyncType::VIGATYPE_LIST
             ],
             [
-                'id'           => 6,
+                'id'           => FVSyncType::ID_CALLLOG,
                 'name'         => 'calllog',
                 'hname'        => '通話紀錄',
-                'depend_on_id' => 5
+                'depend_on_id' => FVSyncType::ID_LIST,
+                'viga_type'    => FVSyncType::VIGATYPE_CALLLOG
             ],
         ];
 
         foreach ($data as $config) {
             $id = array_get($config, 'id');
-            $type = App\Model\Log\FVSyncType::find($id);
+            $type = FVSyncType::find($id);
             
             if (null !== $type) {    
                 unset($config['id']);           

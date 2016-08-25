@@ -22,8 +22,8 @@ class MemberExport extends FVSyncExport
         return 'member';
     }
 
-    public function getStartDate()
+    public function getPathEnv()
     {
-        return '2016-06-14 00:00:00';
+        return 'FVSYNC_MEMBER_STORAGE_PATH';
     }
 }

@@ -22,16 +22,6 @@ class Campaign extends Command
     protected $description = 'Sync Ensound Campaigns with Viga';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

@@ -22,8 +22,8 @@ class OrderExport extends FVSyncExport
         return 'order';
     }
 
-    public function getStartDate()
+    public function getPathEnv()
     {
-        return '2016-07-01 00:00:00';
+        return 'FVSYNC_ORDER_STORAGE_PATH';
     }
 }

@@ -32,6 +32,10 @@ class ChinghwaServiceProvider extends ServiceProvider
         App::when('App\Export\CTILayout\CtiExportFileWriter')
           ->needs('App\Export\Mould\FVMould')
           ->give('App\Export\Mould\FVListMould');
+
+        App::when('App\Export\FV\Sync\MemberFileWriter')
+          ->needs('App\Export\Mould\FVMould')
+          ->give('App\Export\Mould\FVMemberMould');
     }
 
     protected function composeHeader()

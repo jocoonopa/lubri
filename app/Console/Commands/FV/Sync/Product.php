@@ -22,16 +22,6 @@ class Product extends Command
     protected $description = 'Sync Flap Products with Viga';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
