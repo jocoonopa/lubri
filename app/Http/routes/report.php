@@ -54,6 +54,8 @@ Route::group(['namespace' => 'Report', 'prefix' => 'report'], function() {
         Route::get('/', ['uses' => 'CTILayoutController@index']);
         Route::get('/flap', ['uses' => 'CTILayoutController@flap']);
         Route::get('/cti', ['uses' => 'CTILayoutController@cti']);
+        Route::get('/sync_list', ['uses' => 'CTILayoutController@syncList']);
+        Route::get('/sync_member', ['uses' => 'CTILayoutController@syncMember']);
         Route::get('/campaign', ['uses' => 'CTILayoutController@campaign']);
     });
 

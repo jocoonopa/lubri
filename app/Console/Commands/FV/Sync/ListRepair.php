@@ -145,7 +145,7 @@ class ListRepair extends Command
         $basename = basename($this->getMemberWriter()->getFname(), self::FILE_EXTENSION) . self::FILE_EXTENSION;
         $dest     = env('FVSYNC_MEMBER_STORAGE_PATH') . $basename;
         
-        return copy($this->getMemberWriter()->getFname(), $dest) ? $dest : null;
+        return rename($this->getMemberWriter()->getFname(), $dest) ? $dest : null;
     }
 
     /**

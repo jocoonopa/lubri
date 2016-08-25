@@ -14,6 +14,8 @@
 <div class="row">
     <div class="col-md-12">
         <h1>偉特匯入資料下載</h1><hr>
+
+        @include('common.successmsg')
       
         <form action="" method="GET">
             <h4 class="text-primary">瑛聲相關條件(押住 ctrl 可多選)</h4>
@@ -86,7 +88,11 @@
 
                 <button data-id="cti" type="button" class="submit btn btn-info btn-sm btn-raised"><i class="glyphicon glyphicon-download-alt"></i> 瑛聲匯出</button>
 
-                <a class="btn btn-primary btn-sm btn-raised pull-right" href="{{ url('report/ctilayout/campaign') }}"><i class="glyphicon glyphicon-download-alt"></i>活動</a>
+                <a class="btn btn-primary btn-sm btn-raised pull-left" href="{{ url('report/ctilayout/campaign') }}"><i class="glyphicon glyphicon-download-alt"></i>瑛聲活動</a>
+
+                <button data-id="sync_member" type="button" class="submit btn btn-danger btn-sm btn-raised pull-right"><i class="glyphicon glyphicon-play"></i> 輔翼同步</button>
+
+                <button data-id="sync_list" type="button" class="submit btn btn-warning btn-sm btn-raised pull-right"><i class="glyphicon glyphicon-play"></i> 瑛聲同步</button>                
             </div>
         </form>
     </div>
