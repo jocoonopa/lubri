@@ -20,6 +20,8 @@ class ListRepair extends Command
     const FILE_EXTENSION           = '.csv';
     const FILE_SUFFIX              = '-Reject';
     const MAX_LIMIT_ROWS           = 5000;
+    const FOLDER_INCOMING          = 'Incoming';
+    const FOLDER_REJECT            = 'Reject';
 
     /**
      * The name and signature of the console command.
@@ -47,27 +49,33 @@ class ListRepair extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function handle()
     {        
         set_time_limit(0);
 
         $this->comment("\r\n|||||||||||| CallList Fix Proc Begin ||||||||||||\r\n");
+        $this->proc();
+        $this->comment("\r\n|||||||||||| CallList Fix Proc Finish ||||||||||||\r\n");    
+    }
 
+    protected function proc()
+    {
         $ids = $this->parseLogAndGetCustIds($this->fetchQue());
+
+        if (empty($ids)) {
+            return $this->comment('No error need to be fixed!');
+        }
+
         $members = $this->fetchMembers($ids);
 
-        ExecuteAgent::command(FVSyncType::VIGATYPE_MEMBER, $this->genMemberFile($members));
+        ExecuteAgent::command(FVSyncType::VIGATYPE_MEMBER, $this->genMemberFileAndGetPath($members));
         ExecuteAgent::command(FVSyncType::VIGATYPE_LIST, $this->getCtiWriter()->getFname());   
-
-        $this->comment("\r\n|||||||||||| CallList Fix Proc Finish ||||||||||||\r\n");    
     }
 
     protected function fetchQue()
     {
-        $que = FVSyncQue::find($this->option('id'));//->where('type_id', FVSyncType::ID_LIST)
+        $que = FVSyncQue::find($this->option('id'));
 
         if (NULL === $que) {
             throw new \Exception("Not found with given id {$this->option('id')}");
@@ -80,17 +88,17 @@ class ListRepair extends Command
         return $que;
     }
 
-    /**
-     * Reject/xxxxx-Rejec.csv
-     * @return [type] [description]
-     */
     protected function parseLogAndGetCustIds(FVSyncQue $que)
     {
         $ids = [];
 
         $this->getCtiWriter()->open();
-
-        Excel::filter('chunk')->load($this->getErrorLogFilePath($que))->chunk($this->option('chunk'), $this->iterateProc($ids));
+        
+        try {
+            Excel::filter('chunk')->load($this->getErrorLogFilePath($que))->chunk($this->option('chunk'), $this->iterateProc($ids));
+        } catch (\Exception $e) {
+            $this->comment($e->getMessage());
+        }
 
         $this->getCtiWriter()->close();
 
@@ -110,12 +118,13 @@ class ListRepair extends Command
         };
     }
 
-    /**
-     * Not implement yet
-     */
     protected function getErrorLogFilePath(FVSyncQue $que)
     {
-        return 'C:\FlapSync\CTI\Reject\reject.csv';
+        return str_replace(
+            [env('VIGA_INCOMING_DIR_NAME', self::FOLDER_INCOMING), basename($que->dest_file, self::FILE_EXTENSION)], 
+            [env('VIGA_REJECT_DIR_NAME', self::FOLDER_REJECT), basename($que->dest_file, self::FILE_EXTENSION) . self::FILE_SUFFIX], 
+            $que->dest_file
+        );
     }
 
     protected function fetchMembers(array $ids)
@@ -129,11 +138,12 @@ class ListRepair extends Command
         ));
     }
 
-    protected function genMemberFile(array $members)
+    protected function genMemberFileAndGetPath(array $members)
     {
         $this->getMemberWriter()->write($members);
+
         $basename = basename($this->getMemberWriter()->getFname(), self::FILE_EXTENSION) . self::FILE_EXTENSION;
-        $dest = env('FVSYNC_MEMBER_STORAGE_PATH') . $basename;
+        $dest     = env('FVSYNC_MEMBER_STORAGE_PATH') . $basename;
         
         return copy($this->getMemberWriter()->getFname(), $dest) ? $dest : null;
     }
