@@ -30,7 +30,7 @@
                     <td>{!! $que->getStatusName() !!}</td>
                     <td>{{ $que->created_at->format('Y-m-d H:i:s')}}</td>
                     <td>{{ $que->getCompletedDateTime() }}</td>
-                    <td>{{ $que->dest_file }}</td>
+                    <td>{{ basename($que->dest_file) }}</td>
                     <td>{{ $que->creater->username }}</td>
                 </tr>                    
                 @endforeach

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Flap\POS_Member;
+namespace App\Http\Requests\FV;
 
 use App\Http\Requests\Request;
 
-class ImportContentRequest extends Request
+class FVSyncMemberRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,12 @@ class ImportContentRequest extends Request
     public function rules()
     {
         return [
-            'email'       => 'email',
-            'name'        => 'required|min:2|max:6',
-            'cellphone'   => 'required_without_all:hometel,homeaddress|cellphone',
-            'hometel'     => 'required_without_all:cellphone,homeaddress|tel',
-            'officetel'   => 'tel',
-            'homeaddress' => 'min:6|max:255|required_without_all:cellphone,hometel',
-            'period_at'   => 'size:8|date_format:Ymd',
-            'birthday'    => 'size:8|date_format:Ymd',
-            'hospital'    => 'min:2|max:20'
+            'eng_emp_codes'    => 'required_without_all:eng_campaign_cds,eng_assign_date,eng_source_cds,flap_source_cds,flap_emp_codes',
+            'eng_campaign_cds' => 'required_without_all:eng_emp_codes,eng_assign_date,eng_source_cds,flap_source_cds,flap_emp_codes',
+            'eng_assign_date'  => 'required_without_all:eng_campaign_cds,eng_emp_codes,eng_source_cds,flap_source_cds,flap_emp_codes',
+            'eng_source_cds'   => 'required_without_all:eng_campaign_cds,eng_assign_date,eng_emp_codes,flap_source_cds,flap_emp_codes',
+            'flap_source_cds'  => 'required_without_all:eng_campaign_cds,eng_assign_date,eng_source_cds,eng_emp_codes,flap_emp_codes',
+            'flap_emp_codes'   => 'required_without_all:eng_campaign_cds,eng_assign_date,eng_source_cds,flap_source_cds,eng_emp_codes'
         ];
     }
 

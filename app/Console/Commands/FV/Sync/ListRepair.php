@@ -5,7 +5,7 @@ namespace App\Console\Commands\FV\Sync;
 use App;
 use App\Export\FV\Sync\Helper\ExecuteAgent;
 use App\Export\FV\Sync\MemberFileWriter AS FileWriter;
-use App\Export\CTILayout\CtiExportFileWriter;
+use App\Export\FV\Sync\ListFileWriter;
 use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
@@ -40,7 +40,7 @@ class ListRepair extends Command
     protected $memberWriter;
     protected $ctiWriter;
 
-    public function __construct(FileWriter $memberWriter, CtiExportFileWriter $ctiWriter)
+    public function __construct(FileWriter $memberWriter, ListFileWriter $ctiWriter)
     {
         parent::__construct();
 

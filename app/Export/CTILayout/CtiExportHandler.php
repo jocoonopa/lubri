@@ -38,14 +38,14 @@ class CtiExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
 
     protected function initWriter()
     {
-        return $this->setWriter(App::make('App\Export\CTILayout\CtiExportFileWriter'));
+        return $this->setWriter(App::make('App\Export\FV\Sync\ListFileWriter'));
     }
 
     protected function initEndOptions()
     {
         return $this->setEngOptions([
             'agentCD'    => Input::get('eng_emp_codes', []),
-            'sourceCD'   => Input::get('eng_source_cd', []),
+            'sourceCD'   => Input::get('eng_source_cds', []),
             'campaignCD' => Input::get('eng_campaign_cds', []),
             'assignDate' => trim(Input::get('eng_assign_date'))
         ]);

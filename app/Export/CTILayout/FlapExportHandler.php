@@ -9,6 +9,7 @@
  */
 namespace App\Export\CTILayout;
 
+use App;
 use App\Model\State;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\Helper\Excel\ExcelHelper;
@@ -24,6 +25,7 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     const LIST_COUNT_LIMIT = 5000;
 
     protected $mould;
+    protected $writer;
 
     /**
      * ExcelHelper::rmi('Z') === 25
@@ -35,97 +37,97 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
      */
     public function handle($export)
     {
-        $this->setMould(new FVMemberMould);
+        $engOptions  = $this->composeEngConditions();
+        $flapOptions = $this->composeFlapOptions();
 
-        $callLists = [];
+        if ($this->setMould(new FVMemberMould)->initWriter()->isIgnoreEngCondition($engOptions)) {
+            return $export->setFile($this->fetchFlapDataIntoFileAndGetIt([], $flapOptions));
+        }
+        
+        if (self::LIST_COUNT_LIMIT > CampaignCallList::fetchCtiResCount($engOptions)) {
+            return $export->setFile($this->fetchFlapDataIntoFileAndGetIt(CampaignCallList::fetchCtiRes($engOptions), $flapOptions));
+        } else {
+            throw new \Exception('瑛聲名單數目過多(超過' . self::LIST_COUNT_LIMIT . '筆)，請重新設定查詢條件!');
+        }        
+    }
 
-        $engOptions = [
+    protected function composeEngConditions()
+    {
+        return [
             'agentCD'    => Input::get('eng_emp_codes', []),
             'sourceCD'   => Input::get('eng_source_cd', []),
             'campaignCD' => Input::get('eng_campaign_cds', []),
             'assignDate' => trim(Input::get('eng_assign_date'))
         ];
+    }
 
-        if (!$this->isIgnoreEngCondition($engOptions)) {
-            $count = CampaignCallList::fetchCtiResCount($engOptions);
-        
-            if (self::LIST_COUNT_LIMIT < $count) {
-                throw new \Exception('瑛聲名單數目過多(超過' . self::LIST_COUNT_LIMIT . '筆)，請重新設定查詢條件!');
-            }
-
-            $callLists = CampaignCallList::fetchCtiRes($engOptions);
-        }
-        
-        $flapOptions = [
+    protected function composeFlapOptions()
+    {
+        return [
             'empCodes'    => Input::get('flap_emp_codes', []),
             'memberCodes' => Input::get('flap_source_cds', [])
         ];
+    }
 
-        return $export->setFile($this->proc($callLists, $flapOptions));
+    protected function initWriter()
+    {
+        return $this->setWriter(App::make('App\Export\FV\Sync\MemberFileWriter'));
     }
 
     protected function isIgnoreEngCondition(array $engOptions)
     {
-        $bool = true;
-
         foreach ($engOptions as $eachCondition) {
-            if (!empty($eachCondition)) {
-                $bool = false;
-
-                break;
+            if (empty($eachCondition)) {
+                continue;
             }
+
+            return false;
         }
 
-        return $bool;
+        return true;
     }
 
-    protected function proc(array $callLists, array $flapOptions)
+    protected function fetchFlapDataIntoFileAndGetIt(array $callLists, array $flapOptions)
     {
-        $members = array_pluck($callLists, 'SourceCD');
-        $members = array_merge(array_get($flapOptions, 'memberCodes'), $members);
+        $memberCodes = array_pluck($callLists, 'SourceCD');
+        $memberCodes = array_merge(array_get($flapOptions, 'memberCodes'), $memberCodes);
 
-        return $this->getCTILayoutData($members, $flapOptions);   
+        return $this->appendToFile($this->fetchMemberCodes(array_get($flapOptions, 'empCodes', []), $memberCodes)); 
     }
 
-    public function getCTILayoutData(array $memberCodes, array $flapOptions)
+    protected function fetchMemberCodes($empCodes, $memberCodes)
     {
-        $empCodes = array_get($flapOptions, 'empCodes', []);
+        return empty($empCodes) ? $memberCodes : array_merge(array_pluck(Processor::getArrayResult($this->genFetchMemberCodesQ($empCodes)), 'cust_id'), $memberCodes);
+    }
 
-        if (!empty($empCodes)) { 
-            $q = Processor::table('Customer_lubri')->whereIn('emp_id', $empCodes);
-
-            $memberCodes = array_merge(array_pluck(Processor::getArrayResult($q), 'cust_id'), $memberCodes);
-        }   
-
-        return $this->appendToFile($memberCodes);
+    protected function genFetchMemberCodesQ($empCodes)
+    {
+        return Processor::table('Customer_lubri')->whereIn('emp_id', $empCodes);
     }
 
     protected function appendToFile(array $memberCodes)
     {
-        if (!file_exists(storage_path('excel/exports/ctilayout/'))) {
-            mkdir(storage_path('excel/exports/ctilayout/'), 0777);
-        }
+        $this->getWriter()->open()->put(bomstr());
 
-        $fname = storage_path('excel/exports/ctilayout/') . 'cti_' . time() . '.csv';
-
-        $file = fopen($fname, 'w');
-        fwrite($file, bomstr());
-
-        $memberCodeChunks = array_chunk($memberCodes, self::CHUNK_SIZE);
-        
-        foreach ($memberCodeChunks as $chunk) {
-            $sql = str_replace('$memberCode', sqlInWrap($chunk), Processor::getStorageSql('CTILayout.sql'));
-            
-            foreach (Processor::getArrayResult($sql) as $member) {
-                $appendStr = implode(',', $this->getMould()->getRow($member));
-
-                fwrite($file, $appendStr . "\r\n");
+        foreach (array_chunk($memberCodes, self::CHUNK_SIZE) as $chunk) {            
+            foreach ($this->fetchMembers($chunk) as $member) {
+                $this->getWriter()->put($this->toStringMember($member));
             }   
         }
 
-        fclose($file);
+        $this->getWriter()->close();
 
-        return $fname;
+        return $this->getWriter()->getFname();
+    }
+
+    protected function fetchMembers(array $chunk)
+    {
+        return Processor::getArrayResult(str_replace('$memberCode', sqlInWrap($chunk), Processor::getStorageSql('CTILayout.sql')));
+    }
+
+    protected function toStringMember(array $member)
+    {
+        return implode(',', $this->getMould()->getRow($member)) . "\r\n";
     }
 
     /**
@@ -148,6 +150,30 @@ class FlapExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
     protected function setMould($mould)
     {
         $this->mould = $mould;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of writer.
+     *
+     * @return mixed
+     */
+    public function getWriter()
+    {
+        return $this->writer;
+    }
+
+    /**
+     * Sets the value of writer.
+     *
+     * @param mixed $writer the writer
+     *
+     * @return self
+     */
+    protected function setWriter($writer)
+    {
+        $this->writer = $writer;
 
         return $this;
     }

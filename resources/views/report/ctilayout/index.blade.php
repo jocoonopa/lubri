@@ -16,6 +16,7 @@
         <h1>偉特匯入資料下載</h1><hr>
 
         @include('common.successmsg')
+        @include('common.errormsg')
       
         <form action="" method="GET">
             <h4 class="text-primary">瑛聲相關條件(押住 ctrl 可多選)</h4>
@@ -116,7 +117,7 @@ var bmdObg = {
     'format': 'YYYYMMDD'
 };
 
-$('#assign_date').bootstrapMaterialDatePicker(bmdObg);    
+$('#eng_assign_date').bootstrapMaterialDatePicker(bmdObg);    
 
 $('.submit').click(function () {
     $('[name="redirect"]').val($(this).data('id'));

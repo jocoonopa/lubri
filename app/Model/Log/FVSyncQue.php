@@ -63,14 +63,15 @@ class FVSyncQue extends Model
     public function getStatusName()
     {
         $map = [
-            self::STATUS_INIT           => '<span class="text-muted">建立中</span>',
-            self::STATUS_WRITING        => '<span class="text-info">輔翼匯出中</span>',
-            self::STATUS_IMPORTING      => '<span class="text-warning">匯入偉特中</span>',
-            self::STATUS_COMPLETE       => '<span class="text-success">完成</span>',
-            self::STATUS_DELAY          => '<span class="text-info">延時任務</span>',
-            self::STATUS_DELAY_COMPLETE => '<span class="text-success">完成</span>',
-            self::STATUS_EXCEPTION      => '<span class="text-danger">發生錯誤</span>',
-            self::STATUS_SKIP           => '<span class="text-muted">略過</span>'
+            self::STATUS_INIT            => '<span class="text-muted">建立中</span>',
+            self::STATUS_WRITING         => '<span class="text-info">輔翼匯出中</span>',
+            self::STATUS_IMPORTING       => '<span class="text-warning">匯入偉特中</span>',
+            self::STATUS_COMPLETE        => '<span class="text-success">完成</span>',
+            self::STATUS_DELAY           => '<span class="text-info">等待處理</span>',
+            self::STATUS_DELAY_EXECUTING => '<span class="text-warning">處理中(指定)</span>',
+            self::STATUS_DELAY_COMPLETE  => '<span class="text-success">完成(指定)</span>',
+            self::STATUS_EXCEPTION       => '<span class="text-danger">發生錯誤</span>',
+            self::STATUS_SKIP            => '<span class="text-muted">略過</span>'
         ];
 
         return array_get($map, $this->status_code);

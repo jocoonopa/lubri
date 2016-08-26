@@ -9,6 +9,8 @@ use Illuminate\Console\Command;
 
 class DoDelay extends Command
 {
+    const EXIST_SUCCESS = 1;
+
     /**
      * The name and signature of the console command.
      *
@@ -23,14 +25,21 @@ class DoDelay extends Command
      */
     protected $description = 'Handle those delay ques';
 
+    public function __construct()
+    {
+        set_time_limit(0);
+
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      *
      * @return mixed
      */
     public function handle()
-    {
-        return $this->hasNoExecuting() && $this->hasDelay() ? $this->proc() : $this->comment(':)');
+    {        
+        return $this->hasNoExecuting() ? $this->proc() : self::EXIST_SUCCESS;
     }
 
     protected function hasNoExecuting()
@@ -38,14 +47,14 @@ class DoDelay extends Command
         return 0 === FVSyncQue::delayExecuting()->count();
     }
 
+    protected function proc()
+    {
+        return $this->hasDelay() ? $this->execQue($this->fetchDelayQue())->proc() : self::EXIST_SUCCESS;
+    }
+
     protected function hasDelay()
     {
         return 0 < FVSyncQue::delay()->count();
-    }
-
-    protected function proc()
-    {
-        return $this->execQue($this->fetchDelayQue())->proc();
     }
 
     protected function fetchDelayQue()

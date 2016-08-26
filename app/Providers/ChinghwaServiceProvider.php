@@ -29,7 +29,7 @@ class ChinghwaServiceProvider extends ServiceProvider
             return new Chinghwa;
         });
 
-        App::when('App\Export\CTILayout\CtiExportFileWriter')
+        App::when('App\Export\FV\Sync\ListFileWriter')
           ->needs('App\Export\Mould\FVMould')
           ->give('App\Export\Mould\FVListMould');
 

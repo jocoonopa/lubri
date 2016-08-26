@@ -6,6 +6,8 @@ use App\Export\CTILayout\CtiExport;
 use App\Export\CTILayout\FlapExport;
 use App\Export\FV\Sync\Helper\ExecuteAgent;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FV\FVSyncListRequest;
+use App\Http\Requests\FV\FVSyncMemberRequest;
 use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
@@ -41,12 +43,12 @@ class CTILayoutController extends Controller
         return $this->download($export);
     }
 
-    public function syncMember(FlapExport $export)
+    public function syncMember(FVSyncMemberRequest $request, FlapExport $export)
     {
         return $this->createDelayQue(FVSyncType::ID_MEMBER, 'FVSYNC_MEMBER_STORAGE_PATH', $export);
     }
 
-    public function syncList(CtiExport $export)
+    public function syncList(FVSyncListRequest $request, CtiExport $export)
     {
         return $this->createDelayQue(FVSyncType::ID_LIST, 'FVSYNC_CALLLIST_STORAGE_PATH', $export);
     }
