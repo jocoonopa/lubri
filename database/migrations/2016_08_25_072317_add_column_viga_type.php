@@ -12,7 +12,7 @@ class AddColumnVigaType extends Migration
      */
     public function up()
     {
-         Schema::table('fvsynctype', function (Blueprint $table) {
+        Schema::table('fvsynctype', function (Blueprint $table) {
             $table->string('viga_type');
         });
     }

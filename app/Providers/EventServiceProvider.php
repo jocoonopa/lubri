@@ -55,6 +55,11 @@ class EventServiceProvider extends ServiceProvider
 
         'App\Events\Report\RetailSales\ReportEvent' => [
             'App\Handlers\Events\Report\RetailSales\MailEventHandler'
+        ],
+
+        'App\Events\FV\Delay\ExecEvent' => [
+            'App\Handlers\Events\FV\Delay\Handler',
+            'App\Handlers\Events\FV\Delay\Notify'
         ]
     ];
 

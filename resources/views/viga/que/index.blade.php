@@ -13,21 +13,25 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>id</th>
                     <th>同步排程</th>
                     <th>狀態</th>
                     <th>開始執行時間</th>
                     <th>完成時間</th>
                     <th>匯出檔案</th>
+                    <th>建立人</th>
                 </tr>                
             </thead>
             <tbody>
                 @foreach($ques as $que)
                 <tr>
+                    <td>{{ $que->id }}</td>
                     <td>{{ $que->type->hname }}</td>
                     <td>{!! $que->getStatusName() !!}</td>
                     <td>{{ $que->created_at->format('Y-m-d H:i:s')}}</td>
                     <td>{{ $que->getCompletedDateTime() }}</td>
                     <td>{{ $que->dest_file }}</td>
+                    <td>{{ $que->creater->username }}</td>
                 </tr>                    
                 @endforeach
             </tbody>

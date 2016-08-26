@@ -6,11 +6,13 @@ use App\Export\CTILayout\CtiExport;
 use App\Export\CTILayout\FlapExport;
 use App\Export\FV\Sync\Helper\ExecuteAgent;
 use App\Http\Controllers\Controller;
+use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
 use App\Utility\Chinghwa\ORM\CTI\Campaign;
 use App\Utility\Chinghwa\ORM\ERP\HRS_Employee;
 use Artisan;
+use Auth;
 use Session;
 
 class CTILayoutController extends Controller
@@ -41,12 +43,12 @@ class CTILayoutController extends Controller
 
     public function syncMember(FlapExport $export)
     {
-        return $this->command(FVSyncType::VIGATYPE_MEMBER, 'FVSYNC_MEMBER_STORAGE_PATH', $export);
+        return $this->createDelayQue(FVSyncType::ID_MEMBER, 'FVSYNC_MEMBER_STORAGE_PATH', $export);
     }
 
     public function syncList(CtiExport $export)
     {
-        return $this->command(FVSyncType::VIGATYPE_LIST, 'FVSYNC_CALLLIST_STORAGE_PATH', $export);
+        return $this->createDelayQue(FVSyncType::ID_LIST, 'FVSYNC_CALLLIST_STORAGE_PATH', $export);
     }
 
     protected function download($export)
@@ -62,20 +64,33 @@ class CTILayoutController extends Controller
         return response()->download($file);
     }
 
-    protected function command($vigaCmdType, $enVar, $export)
+    protected function createDelayQue($typeId, $enVar, $export)
     {
         set_time_limit(0);
 
         $fname    = $export->handleExport()->getFile();
-        $destName = join(DIRECTORY_SEPARATOR, [env($enVar), basename($fname)]);
+        $destName = join(DIRECTORY_SEPARATOR, [realpath(env($enVar)), basename($fname)]);
 
         rename($fname, $destName);
 
-        pclose(popen('start ' . ExecuteAgent::genCmd($vigaCmdType, $destName), 'r'));
+        $que = $this->_createQue($typeId, $destName);
 
-        Session::flash('success', "同步任務執行完畢[{$destName}]");
+        Session::flash('success', "延時同步排程建立完成:{$que->id}");
 
         return redirect()->action('Report\CTILayoutController@index');
+    }
+
+    protected function _createQue($typeId, $destName)
+    {
+        $que = new FVSyncQue;
+        $que->type_id          = $typeId;
+        $que->status_code      = FVSyncQue::STATUS_DELAY;
+        $que->creater_id       = Auth::user()->id;
+        $que->dest_file        = $destName;
+        $que->select_cost_time = 0;
+        $que->save();
+        
+        return $que;
     }
 
     public function campaign()
