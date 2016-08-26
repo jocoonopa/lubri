@@ -8,7 +8,7 @@ class ExecuteAgent
 {
     public static function exec(FVSyncQue $que)
     {
-        return self::command($que->viga_type, basename($que->dest_file));
+        return self::command($que->type->viga_type, basename($que->dest_file));
     }
 
     public static function command($vigaType, $destFile)
@@ -20,7 +20,7 @@ class ExecuteAgent
 
     public static function genCmd($vigaType, $destFile)
     {
-        $cmd = '"' . env('VIG_EXE') . '" /d ' . env('VIG_SYS') . ' /agent $type $file';
+        $cmd = '"' . env('VIG_EXE') . '" /d ' . env('VIG_SYS') . ' /agent "$type" "$file"';
 
         return str_replace(['$type', '$file'], [$vigaType, $destFile], $cmd);
     }

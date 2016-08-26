@@ -62,7 +62,7 @@ class CTILayoutController extends Controller
         return response()->download($file);
     }
 
-    protected function command($vigaCmd, $enVar, $export)
+    protected function command($vigaCmdType, $enVar, $export)
     {
         set_time_limit(0);
 
@@ -71,7 +71,7 @@ class CTILayoutController extends Controller
 
         rename($fname, $destName);
 
-        ExecuteAgent::command($vigaCmd, $destName);
+        pclose(popen('start ' . ExecuteAgent::genCmd($vigaCmdType, $destName), 'r'));
 
         Session::flash('success', "同步任務執行完畢[{$destName}]");
 

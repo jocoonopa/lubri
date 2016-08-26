@@ -76,6 +76,18 @@ return [
             'strict'    => false,
         ],
 
+        'mysql3' => [
+            'driver'    => 'mysql',
+            'host'      => env('USER_DB_HOST', 'localhost'),
+            'database'  => env('USER_DB_DATABASE', 'forge'),
+            'username'  => env('USER_DB_USERNAME', 'forge'),
+            'password'  => env('USER_DB_PASSWORD', ''),
+            'charset'   => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix'    => '',
+            'strict'    => false,
+        ],
+
         'pgsql' => [
             'driver'   => 'pgsql',
             'host'     => env('DB_HOST', 'localhost'),
