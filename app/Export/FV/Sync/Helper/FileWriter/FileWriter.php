@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-namespace App\Export;
+namespace App\Export\FV\Sync\Helper\FileWriter;
 
 use App\Export\Mould\FVMould;
 
@@ -20,6 +20,13 @@ abstract class FileWriter
         $this->setMould($mould)->mkdir()->setFname($this->genFileName());
     }
 
+    public function refresh()
+    {
+        sleep(1);
+        
+        return $this->setFname($this->genFileName());
+    }
+
     public function write(array $data)
     {
         $this->open()->put(bomstr());
@@ -29,6 +36,8 @@ abstract class FileWriter
         }
 
         $this->close();
+
+        return $this;
     }
 
     public function open()

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Export\CTILayout\CtiExport;
 use App\Export\CTILayout\FlapExport;
+use App\Export\FV\Sync\Helper\Composer\ConditionComposer;
 use App\Export\FV\Sync\Helper\ExecuteAgent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FV\FVSyncListRequest;
@@ -33,6 +34,20 @@ class CTILayoutController extends Controller
         ]);
     }
 
+    public function campaign()
+    {
+        Artisan::call('fv:importcampaign');
+        
+        $result = Artisan::output();
+        $ifr    = '##########!!!!!!!!!!';
+        $start  = strpos($result, $ifr) + strlen($ifr);
+        $end    = strpos($result, '!!!!!!!!!!##########');
+        $length = $end - $start;
+        $file   = substr($result, $start, $length);
+
+        return response()->download($file);
+    }
+    
     public function flap(FlapExport $export)
     {
         return $this->download($export);
@@ -43,14 +58,14 @@ class CTILayoutController extends Controller
         return $this->download($export);
     }
 
-    public function syncMember(FVSyncMemberRequest $request, FlapExport $export)
+    public function syncMember(FVSyncMemberRequest $request)
     {
-        return $this->createDelayQue(FVSyncType::ID_MEMBER, 'FVSYNC_MEMBER_STORAGE_PATH', $export);
+        return $this->createDelayQue(FVSyncType::ID_MEMBER, ConditionComposer::composeMixedConditions());
     }
 
-    public function syncList(FVSyncListRequest $request, CtiExport $export)
+    public function syncList(FVSyncListRequest $request)
     {
-        return $this->createDelayQue(FVSyncType::ID_LIST, 'FVSYNC_CALLLIST_STORAGE_PATH', $export);
+        return $this->createDelayQue(FVSyncType::ID_LIST, ConditionComposer::composeEngConditions());
     }
 
     protected function download($export)
@@ -66,46 +81,13 @@ class CTILayoutController extends Controller
         return response()->download($file);
     }
 
-    protected function createDelayQue($typeId, $enVar, $export)
+    protected function createDelayQue($typeId, $conditions)
     {
-        set_time_limit(0);
-
-        $fname    = $export->handleExport()->getFile();
-        $destName = join(DIRECTORY_SEPARATOR, [realpath(env($enVar)), basename($fname)]);
-
-        rename($fname, $destName);
-
-        $que = $this->_createQue($typeId, $destName);
+        $que = with(new FVSyncQue)->sculpDelay($typeId, $conditions, Auth::user()->id);
+        $que->save();
 
         Session::flash('success', "延時同步排程建立完成:{$que->id}");
 
         return redirect()->action('Report\CTILayoutController@index');
-    }
-
-    protected function _createQue($typeId, $destName)
-    {
-        $que = new FVSyncQue;
-        $que->type_id          = $typeId;
-        $que->status_code      = FVSyncQue::STATUS_DELAY;
-        $que->creater_id       = Auth::user()->id;
-        $que->dest_file        = $destName;
-        $que->select_cost_time = 0;
-        $que->save();
-        
-        return $que;
-    }
-
-    public function campaign()
-    {
-        Artisan::call('fv:importcampaign');
-        
-        $result = Artisan::output();
-        $ifr    = '##########!!!!!!!!!!';
-        $start  = strpos($result, $ifr) + strlen($ifr);
-        $end    = strpos($result, '!!!!!!!!!!##########');
-        $length = $end - $start;
-        $file   = substr($result, $start, $length);
-
-        return response()->download($file);
     }
 }

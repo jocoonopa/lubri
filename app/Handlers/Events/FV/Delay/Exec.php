@@ -8,7 +8,7 @@ use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use Artisan;
 
-class Handler
+class Exec
 {
     protected $que;
     protected $startAt;

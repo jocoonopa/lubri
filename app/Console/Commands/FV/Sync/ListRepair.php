@@ -4,8 +4,8 @@ namespace App\Console\Commands\FV\Sync;
 
 use App;
 use App\Export\FV\Sync\Helper\ExecuteAgent;
-use App\Export\FV\Sync\MemberFileWriter AS FileWriter;
-use App\Export\FV\Sync\ListFileWriter;
+use App\Export\FV\Sync\Helper\FileWriter\MemberFileWriter AS FileWriter;
+use App\Export\FV\Sync\Helper\FileWriter\ListFileWriter;
 use App\Model\Log\FVSyncQue;
 use App\Model\Log\FVSyncType;
 use App\Utility\Chinghwa\Database\Query\Processors\Processor;
@@ -90,19 +90,17 @@ class ListRepair extends Command
 
     protected function parseLogAndGetCustIds(FVSyncQue $que)
     {
-        $ids = [];
-
-        $this->getCtiWriter()->open();
-        
         try {
+            $ids = [];
+
+            $this->getCtiWriter()->refresh()->open();
             Excel::filter('chunk')->load($this->getErrorLogFilePath($que))->chunk($this->option('chunk'), $this->iterateProc($ids));
+            $this->getCtiWriter()->close();
+
+            return $ids;
         } catch (\Exception $e) {
             $this->comment($e->getMessage());
         }
-
-        $this->getCtiWriter()->close();
-
-        return $ids;
     }
 
     protected function iterateProc(&$ids)

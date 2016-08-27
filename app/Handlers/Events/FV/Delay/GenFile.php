@@ -1,0 +1,112 @@
+<?php
+
+namespace App\Handlers\Events\FV\Delay;
+
+use App;
+use App\Events\FV\Delay\ExecEvent;
+
+class GenFile
+{
+    protected $que;
+    protected $writer;
+    protected $fetcher;
+
+    public function handle(ExecEvent $event)
+    {
+        $this->setQue($event->getQue())->initWriter()->initFetcher();
+
+        $fName = $this->getWriter()->write($this->getFetcher()->get($this->getQue()->conditions))->getFname();
+
+        return $this->updateQueDestFile($fName);
+    }
+
+    protected function updateQueDestFile($fName)
+    {
+        $this->getQue()->dest_file = $fName;
+        $this->getQue()->save();
+
+        return $this;
+    }
+
+    protected function initWriter()
+    {
+        return $this->setWriter(App::make('App\Export\FV\Sync\Helper\FileWriter\\' . ucfirst($this->getQue()->type->name) . 'FileWriter'));
+    }
+
+    protected function initFetcher()
+    {
+        return $this->setFetcher(App::make('App\Export\FV\Sync\Helper\Fetcher\\' . ucfirst($this->getQue()->type->name) . 'Fetcher'));
+    }
+
+    /**
+     * Gets the value of fetcher.
+     *
+     * @return mixed
+     */
+    public function getFetcher()
+    {
+        return $this->fetcher;
+    }
+
+    /**
+     * Sets the value of fetcher.
+     *
+     * @param mixed $fetcher the fetcher
+     *
+     * @return self
+     */
+    protected function setFetcher($fetcher)
+    {
+        $this->fetcher = $fetcher;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of writer.
+     *
+     * @return mixed
+     */
+    public function getWriter()
+    {
+        return $this->writer;
+    }
+
+    /**
+     * Sets the value of writer.
+     *
+     * @param mixed $writer the writer
+     *
+     * @return self
+     */
+    protected function setWriter($writer)
+    {
+        $this->writer = $writer;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of que.
+     *
+     * @return mixed
+     */
+    public function getQue()
+    {
+        return $this->que;
+    }
+
+    /**
+     * Sets the value of que.
+     *
+     * @param mixed $que the que
+     *
+     * @return self
+     */
+    protected function setQue($que)
+    {
+        $this->que = $que;
+
+        return $this;
+    }
+}

@@ -29,11 +29,11 @@ class ChinghwaServiceProvider extends ServiceProvider
             return new Chinghwa;
         });
 
-        App::when('App\Export\FV\Sync\ListFileWriter')
+        App::when('App\Export\FV\Sync\Helper\FileWriter\ListFileWriter')
           ->needs('App\Export\Mould\FVMould')
           ->give('App\Export\Mould\FVListMould');
 
-        App::when('App\Export\FV\Sync\MemberFileWriter')
+        App::when('App\Export\FV\Sync\Helper\FileWriter\MemberFileWriter')
           ->needs('App\Export\Mould\FVMould')
           ->give('App\Export\Mould\FVMemberMould');
     }

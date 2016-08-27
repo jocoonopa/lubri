@@ -1,8 +1,8 @@
 <?php 
 
-namespace App\Export\CTILayout;
+namespace App\Export\FV\Sync\Helper\Criteria;
 
-class CtiExportCriteria
+class EngCriteria
 {
     protected $options;
     protected $conditions;
@@ -19,7 +19,7 @@ class CtiExportCriteria
 
     protected function convertConditionToSql()
     {
-        return implode(' AND ', $this->conditions);
+        return implode(' AND ', $this->getConditions());
     }
 
     protected function handle()

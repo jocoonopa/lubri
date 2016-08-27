@@ -27,7 +27,10 @@ class FVSyncQue extends Model
 
     public $timestamps = true;
 
-    protected $attributes = ['creater_id' => self::USER_DEV_ID];
+    protected $attributes = [
+        'creater_id' => self::USER_DEV_ID, 
+        'conditions' => []
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -35,10 +38,21 @@ class FVSyncQue extends Model
      * @var array
      */
     protected $fillable = [
-        'type_id', 'dest_file', 'status_code', 'last_modified_at', 'count', 'select_cost_time', 'import_cost_time', 'creater_id'
+        'type_id', 
+        'dest_file', 
+        'status_code', 
+        'last_modified_at', 
+        'count', 
+        'select_cost_time', 
+        'import_cost_time', 
+        'creater_id', 
+        'conditions'
     ];
 
-    protected $casts = ['last_modified_at' => 'datetime'];
+    protected $casts = [
+        'last_modified_at' => 'datetime',
+        'conditions'       => 'array'
+    ];
 
     /**
      * An article is owned by a user
@@ -91,5 +105,16 @@ class FVSyncQue extends Model
     public function scopeDelayExecuting($q)
     {
         $q->where('status_code', '=', self::STATUS_DELAY_EXECUTING);
+    }
+
+    public function sculpDelay($typeId, array $conditions, $createId)
+    {
+        $this->type_id          = $typeId;
+        $this->status_code      = self::STATUS_DELAY;
+        $this->creater_id       = $createId;
+        $this->conditions       = $conditions;
+        $this->select_cost_time = 0;
+        
+        return $this;
     }
 }

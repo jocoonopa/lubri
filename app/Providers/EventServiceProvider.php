@@ -58,7 +58,8 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         'App\Events\FV\Delay\ExecEvent' => [
-            'App\Handlers\Events\FV\Delay\Handler',
+            'App\Handlers\Events\FV\Delay\GenFile',
+            'App\Handlers\Events\FV\Delay\Exec',
             'App\Handlers\Events\FV\Delay\Notify'
         ]
     ];

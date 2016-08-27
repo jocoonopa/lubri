@@ -14,4 +14,10 @@ class QueController extends Controller
             'limit' => env('QUE_COUNT_PERPAGE', 100)
         ]);
     }
+
+    public function show(FVSyncQue $que)
+    {
+        pr($que->getAttributes());
+        pr($que->conditions);
+    }
 }
