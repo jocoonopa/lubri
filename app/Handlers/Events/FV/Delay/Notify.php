@@ -16,7 +16,7 @@ class Notify
     {
         return Mail::send('emails.fv.delaynotify', ['que' => $event->getQue()], function ($m) use ($event) {
             $m
-                ->subject("延時任務[{$que->id}]完成通知")
+                ->subject("延時任務[{$event->getQue()->id}]完成通知")
                 ->attach($event->getQue()->dest_file)
                 ->to([$event->getQue()->creater->email => $event->getQue()->creater->username])
             ;
@@ -27,7 +27,7 @@ class Notify
     {
         return Mail::send('emails.fv.delaywarning', ['que' => $event->getQue()], function ($m) use ($event) {
             $m
-                ->subject("延時任務[{$que->id}]錯誤通知")
+                ->subject("延時任務[{$event->getQue()->id}]錯誤通知")
                 ->to([$event->getQue()->creater->email => $event->getQue()->creater->username])
             ;
         });
