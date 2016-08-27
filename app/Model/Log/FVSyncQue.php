@@ -30,7 +30,7 @@ class FVSyncQue extends Model
 
     protected $attributes = [
         'creater_id' => self::USER_DEV_ID, 
-        'conditions' => []
+        'conditions' => '[]'
     ];
 
     /**
