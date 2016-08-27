@@ -20,9 +20,13 @@ class Exec
 
     public function handle(ExecEvent $event)
     {            
+        if ($event->hasError()) {        
+            return;
+        }
+
         $this->setQue($event->getQue());        
 
-        return $this->lock()->exec()->update()->isList() ? $this->repair() : NULL;
+        return $this->exec()->update()->isList() ? $this->repair() : NULL;
     }
 
     protected function exec()
@@ -40,14 +44,6 @@ class Exec
     protected function repair()
     {
         return Artisan::call('fv:listrep', ['--id' => $this->getQue()->id]);
-    }
-
-    protected function lock()
-    {
-        $this->getQue()->status_code = FVSyncQue::STATUS_DELAY_EXECUTING;
-        $this->getQue()->save();
-
-        return $this;
     }
 
     protected function update()

@@ -12,6 +12,7 @@ class ExecEvent extends Event
     use SerializesModels;
 
     protected $que;
+    public $error = NULL;
 
     /**
      * Create a new event instance.
@@ -43,6 +44,35 @@ class ExecEvent extends Event
     protected function setQue(FVSyncQue $que)
     {
         $this->que = $que;
+
+        return $this;
+    }
+
+    public function hasError()
+    {
+        return NULL !== $this->error;
+    }
+
+    /**
+     * Gets the value of error.
+     *
+     * @return mixed
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    /**
+     * Sets the value of error.
+     *
+     * @param mixed $error the error
+     *
+     * @return self
+     */
+    public function setError($error)
+    {
+        $this->error = $error;
 
         return $this;
     }

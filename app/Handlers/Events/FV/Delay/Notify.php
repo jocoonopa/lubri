@@ -8,11 +8,28 @@ use Mail;
 class Notify
 {
     public function handle(ExecEvent $event)
+    {  
+        return $event->hasError() ? $this->errorNoti($event) : $this->completeNoti($event);
+    }
+
+    protected function completeNoti(ExecEvent $event)
     {
-        $que = $event->getQue();
-        
-        return Mail::send('emails.fv.delaynotify', ['que' => $que], function ($m) use ($que) {
-            $m->subject('延時任務完成通知')->attach($que->dest_file)->to([$que->creater->email => $que->creater->username]);
+        return Mail::send('emails.fv.delaynotify', ['que' => $event->getQue()], function ($m) use ($event) {
+            $m
+                ->subject('延時任務完成通知')
+                ->attach($event->getQue()->dest_file)
+                ->to([$event->getQue()->creater->email => $event->getQue()->creater->username])
+            ;
+        });
+    }
+
+    protected function errorNoti(ExecEvent $event)
+    {
+        return Mail::send('emails.fv.delaywarning', ['que' => $event->getQue()], function ($m) use ($event) {
+            $m
+                ->subject('延時任務錯誤通知')
+                ->to([$event->getQue()->creater->email => $event->getQue()->creater->username])
+            ;
         });
     }
 }

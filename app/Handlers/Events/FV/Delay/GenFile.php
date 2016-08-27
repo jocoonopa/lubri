@@ -4,6 +4,7 @@ namespace App\Handlers\Events\FV\Delay;
 
 use App;
 use App\Events\FV\Delay\ExecEvent;
+use App\Model\Log\FVSyncQue;
 
 class GenFile
 {
@@ -12,12 +13,31 @@ class GenFile
     protected $fetcher;
 
     public function handle(ExecEvent $event)
+    {        
+        try {
+            $this->setQue($event->getQue())->lock()->initWriter()->initFetcher();
+            
+            $fName = $this->getWriter()->write($this->getFetcher()->get($this->getQue()->conditions))->getFname();
+
+            return $this->updateQueDestFile($fName);
+        } catch (\Exception $e) {
+            $this->errorHandle($event);
+        }        
+    }
+
+    protected function lock()
     {
-        $this->setQue($event->getQue())->initWriter()->initFetcher();
+        $this->getQue()->status_code = FVSyncQue::STATUS_DELAY_EXECUTING;
+        $this->getQue()->save();
 
-        $fName = $this->getWriter()->write($this->getFetcher()->get($this->getQue()->conditions))->getFname();
+        return $this;
+    }
 
-        return $this->updateQueDestFile($fName);
+    protected function errorHandle(ExecEvent $event)
+    {
+        $event->getQue()->status_code = FVSyncQue::STATUS_DELAY_ERROR;
+        $event->getQue()->save();
+        $event->setError(true);
     }
 
     protected function updateQueDestFile($fName)

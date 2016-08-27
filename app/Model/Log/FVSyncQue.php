@@ -12,8 +12,9 @@ class FVSyncQue extends Model
     const STATUS_COMPLETE        = 3;
     const STATUS_DELAY           = 4;
     const STATUS_DELAY_EXECUTING = 5;
-    const STATUS_DELAY_COMPLETE  = 6;
+    const STATUS_DELAY_COMPLETE  = 6;    
     const STATUS_EXCEPTION       = 100;
+    const STATUS_DELAY_ERROR     = 101;
     const STATUS_SKIP            = 10;
     const USER_DEV_ID            = 89;
 
@@ -83,6 +84,7 @@ class FVSyncQue extends Model
             self::STATUS_COMPLETE        => '<span class="text-success">完成</span>',
             self::STATUS_DELAY           => '<span class="text-info">等待處理</span>',
             self::STATUS_DELAY_EXECUTING => '<span class="text-warning">處理中(指定)</span>',
+            self::STATUS_DELAY_ERROR     => '<span class="text-danger">發生錯誤(指定)</span>',
             self::STATUS_DELAY_COMPLETE  => '<span class="text-success">完成(指定)</span>',
             self::STATUS_EXCEPTION       => '<span class="text-danger">發生錯誤</span>',
             self::STATUS_SKIP            => '<span class="text-muted">略過</span>'
