@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 class DoDelay extends Command
 {
-    const EXIST_SUCCESS = 1;
+    const EXIST_SUCCESS = 0;
 
     /**
      * The name and signature of the console command.
