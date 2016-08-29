@@ -20,10 +20,10 @@ class TestController extends Controller
 {
     public function mail()
     {
-        return POS_Member::testSQL();
-        // return Mail::raw(__CLASS__ . '###', function ($m) {
-        //     $m->to('jocoonopa@chinghwa.com.tw')->subject('the test');
-        // });
+        //return POS_Member::testSQL();
+        return Mail::raw(__CLASS__ . '###', function ($m) {
+            $m->to('jocoonopa@chinghwa.com.tw')->subject('the test');
+        });
     }
 
     public function redis()

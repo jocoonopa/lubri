@@ -61,16 +61,6 @@ function submitTaskCreateForm()
 
 $('.import-task-export').click(function () {
     var $this = $(this);
-
-    $blockUI('檔案下載中，請稍後...');
-
-    $.getJSON($this.data('href'), function (fileInfo) {        
-        $.unblockUI();
-        
-        window.location.href = '/flap/pos_member/import_task/' + $this.data('task-id') + '/export?f=' + fileInfo.full;
-     });      
-
-    return false; 
 });
 
 $('.import-content-delete').click(function () {

@@ -21,8 +21,8 @@
 
         <a class="label label-success" href="/flap/pos_member/import_task/{{$task->id}}">{{ '總計 ' . $task->content()->count() . ' 位'}}</a>
 
-        <button data-href="/flap/pos_member/import_task/{{$task->id}}/export" data-task-id="{{$task->id}}" class="pull-right btn btn-raised btn-sm btn-primary import-task-export">
+        <a href="/flap/pos_member/import_task/{{$task->id}}/export" data-task-id="{{$task->id}}" class="pull-right btn btn-raised btn-sm btn-primary import-task-export">
            <i class="glyphicon glyphicon-download-alt"></i> 匯出
-        </button>
+        </a>
     </div>
 </div>

@@ -16,7 +16,7 @@ class ImportTaskExportHandler implements \Maatwebsite\Excel\Files\ExportHandler
             $this->attachProcess($export->getTask(), false, $sheet);
         })->sheet('舊客', function ($sheet) use ($export) {
             $this->attachProcess($export->getTask(), true, $sheet);
-        })->store('xls', storage_path('excel/exports'), true);
+        });
     }
 
     protected function attachProcess(PosMemberImportTask $task, $isExist, $sheet)

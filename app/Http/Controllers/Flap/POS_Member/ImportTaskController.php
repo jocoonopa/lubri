@@ -188,10 +188,6 @@ class ImportTaskController extends Controller
     {
         set_time_limit(0);
 
-        if ($request->ajax()) {
-            return $export->setTask($task)->handleExport();
-        }
-        
-        return Response::download(Input::get('f'), "{$task->name}_{$task->updated_at->format('YmdH')}.xls", ['Content-Type: application/excel']);
+        return $export->setTask($task)->handleExport()->export();
     }
 }
