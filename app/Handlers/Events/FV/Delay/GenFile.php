@@ -17,7 +17,7 @@ class GenFile
         try {
             $this->setQue($event->getQue())->lock()->initWriter()->initFetcher();
             
-            $fName = $this->getWriter()->write($this->getFetcher()->get($this->getQue()->conditions))->getFname();
+            $fName = $this->getWriter()->setDir(env($this->getQue()->type->getEnvVar()))->write($this->getFetcher()->get($this->getQue()->conditions))->getFname();
 
             return $this->updateQueDestFile($fName);
         } catch (\Exception $e) {

@@ -7,7 +7,7 @@ use App\Export\Mould\FVMould;
 abstract class FileWriter
 {
     protected $mould;
-    protected $dir = 'excel/exports/ctilayout/';
+    protected $dir = __DIR__ . '/../../../../../excel/exports/ctilayout/';
     protected $fname;
     protected $file;
 
@@ -62,8 +62,8 @@ abstract class FileWriter
 
     public function mkdir()
     {
-        if (!file_exists(storage_path($this->getDir()))) {
-            mkdir(storage_path($this->getDir()), 0777, true);
+        if (!file_exists($this->getDir())) {
+            mkdir($this->getDir(), 0777, true);
         }
 
         return $this;
@@ -71,7 +71,7 @@ abstract class FileWriter
 
     protected function genFileName()
     {
-        return storage_path($this->getDir()) . with(new \ReflectionClass($this))->getShortName() . '_' .  time() . '.csv';
+        return $this->getDir() . with(new \ReflectionClass($this))->getShortName() . '_' .  time() . '.csv';
     }
 
     /**
@@ -130,6 +130,13 @@ abstract class FileWriter
     public function getDir()
     {
         return $this->dir;
+    }
+
+    public function setDir($dir)
+    {
+        $this->dir = $dir;
+
+        return $this->mkdir()->setFname($this->genFileName());
     }
 
     /**
