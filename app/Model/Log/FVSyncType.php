@@ -36,22 +36,4 @@ class FVSyncType extends Model
     {
         return $this->hasMany('App\Model\Log\FVSyncType', 'depend_on_id');
     }
-
-    public function getEnvVar()
-    {
-        switch ($this->id)
-        {
-            case self::ID_MEMBER:
-                return 'FVSYNC_MEMBER_STORAGE_PATH';
-                break;
-
-            case self::ID_LIST:
-                return 'FVSYNC_CALLLIST_STORAGE_PATH';
-                break;
-
-            default:
-                return '';
-                break;
-        }
-    }
 }

@@ -11,18 +11,38 @@ class GenFile
     protected $que;
     protected $writer;
     protected $fetcher;
+    protected $export;
 
     public function handle(ExecEvent $event)
     {        
         try {
-            $this->setQue($event->getQue())->lock()->initWriter()->initFetcher();
+            $this->init();
             
-            $fName = $this->getWriter()->setDir(env($this->getQue()->type->getEnvVar()))->write($this->getFetcher()->get($this->getQue()->conditions))->getFname();
+            $fName = $this->getWriter()
+                ->setDir($this->getStorageDir())
+                ->write($this->fetchData())
+                ->getFname()
+            ;
 
             return $this->updateQueDestFile($fName);
         } catch (\Exception $e) {
             $this->errorHandle($event);
         }        
+    }
+
+    protected function init()
+    {
+        $this->setQue($event->getQue())->lock()->initWriter()->initFetcher()->initExport();
+    }
+
+    protected function getStorageDir()
+    {
+        return env($this->getExport()->getPathEnv());
+    } 
+
+    protected function fetchData()
+    {
+        return $this->getFetcher()->get($this->getQue()->conditions);
     }
 
     protected function lock()
@@ -56,6 +76,11 @@ class GenFile
     protected function initFetcher()
     {
         return $this->setFetcher(App::make('App\Export\FV\Sync\Helper\Fetcher\\' . ucfirst($this->getQue()->type->name) . 'Fetcher'));
+    }
+
+    protected function initExport()
+    {
+        return $this->setExport(App::male('App\Export\FV\Sync\\' . ucfirst($this->getQue()->type->name) . 'Export'));
     }
 
     /**
@@ -126,6 +151,30 @@ class GenFile
     protected function setQue($que)
     {
         $this->que = $que;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of export.
+     *
+     * @return mixed
+     */
+    public function getExport()
+    {
+        return $this->export;
+    }
+
+    /**
+     * Sets the value of export.
+     *
+     * @param mixed $export the export
+     *
+     * @return self
+     */
+    protected function setExport($export)
+    {
+        $this->export = $export;
 
         return $this;
     }
