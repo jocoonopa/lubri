@@ -16,7 +16,7 @@ class GenFile
     public function handle(ExecEvent $event)
     {        
         try {
-            $this->init();
+            $this->init($event);
             
             $fName = $this->getWriter()
                 ->setDir($this->getStorageDir())
@@ -30,7 +30,7 @@ class GenFile
         }        
     }
 
-    protected function init()
+    protected function init(ExecEvent $event)
     {
         $this->setQue($event->getQue())->lock()->initWriter()->initFetcher()->initExport();
     }
@@ -80,7 +80,7 @@ class GenFile
 
     protected function initExport()
     {
-        return $this->setExport(App::male('App\Export\FV\Sync\\' . ucfirst($this->getQue()->type->name) . 'Export'));
+        return $this->setExport(App::make('App\Export\FV\Sync\\' . ucfirst($this->getQue()->type->name) . 'Export'));
     }
 
     /**
