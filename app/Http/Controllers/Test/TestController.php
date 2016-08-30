@@ -22,7 +22,7 @@ class TestController extends Controller
     {
         //return POS_Member::testSQL();
         return Mail::raw(__CLASS__ . '###', function ($m) {
-            $m->to('jocoonopa@chinghwa.com.tw')->subject('the test');
+            $m->to('email-bounces@chinghwa.mailclark.ai')->subject('the test');
         });
     }
 
