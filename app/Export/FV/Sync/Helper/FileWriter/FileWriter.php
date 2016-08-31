@@ -7,7 +7,7 @@ use App\Export\Mould\FVMould;
 abstract class FileWriter
 {
     protected $mould;
-    protected $dir = __DIR__ . '/../../../../../excel/exports/ctilayout/';
+    protected $dir = __DIR__ . '/../../../../../../storage/excel/exports/ctilayout/';
     protected $fname;
     protected $file;
 
