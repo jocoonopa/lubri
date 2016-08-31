@@ -95,7 +95,7 @@ class FVSyncQue extends Model
 
     public function getCompletedDateTime()
     {
-        return in_array($this->status_code, [self::STATUS_COMPLETE, self::STATUS_EXCEPTION, self::STATUS_SKIP])
+        return in_array($this->status_code, [self::STATUS_COMPLETE, self::STATUS_EXCEPTION, self::STATUS_SKIP, self::STATUS_DELAY_ERROR, self::STATUS_DELAY_COMPLETE])
         ? $this->updated_at->format('Y-m-d H:i:s') : '';
     }
 
