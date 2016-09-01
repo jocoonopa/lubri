@@ -10,7 +10,7 @@ SELECT * FROM (
         POS_Member.CellPhone 手機號碼,
         POS_Member.HomeAddress_State 縣市,
         POS_Member.HomeAddress_City 區,
-        POS_Member.HomeAddress_ZipCode 郵遞區號,
+        POS_Member.HomeZipCode 郵遞區號,
         POS_Member.HomeAddress_Address 地址,
         POS_Member.E_Mail 'e-mail',
         POS_Member.LastModifiedDate PMDT_TIME,
