@@ -58,17 +58,15 @@ class DirectSaleCorp3TraceController extends Controller
             'fengcheng@chinghwa.com.tw' => '6600馮誠',
             'sl@chinghwa.com.tw'        => '6700莊淑玲',
             'swhsu@chinghwa.com.tw'     => '6800徐士偉',
-            'gavin@chinghwa.com.tw'     => '6300何育佳',
             'sharon@chinghwa.com.tw'    => '6110張佳園',
-            'lynns1189@chinghwa.com.tw' => '6151許逸玲'
+            'lynn-s1189@chinghwa.com.tw' => '6151許逸玲'
         ];
     }
 
     protected function getCCList()
     {
         return [
-            'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
-            'jocoonopa@chinghwa.com.tw'  => '6231洪小閎'
+            'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘'
         ];
     }
 

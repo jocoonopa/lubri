@@ -22,13 +22,11 @@ class Export extends \Maatwebsite\Excel\Files\NewExcelFile
         'linchengpu@chinghwa.com.tw'    => '5000林振部',
         'fengcheng@chinghwa.com.tw'     => '6600馮誠',
         'swhsu@chinghwa.com.tw'         => '6800徐士偉',
-        'sl@chinghwa.com.tw'            => '6700莊淑玲',
-        'irenelee.0801@chinghwa.com.tw' => '6100李如玲'
+        'sl@chinghwa.com.tw'            => '6700莊淑玲'
     ];
 
     protected $cc = [
-        'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
-        'jocoonopa@chinghwa.com.tw'  => '6231小閎'
+        'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘'
     ];
     
     protected $date;

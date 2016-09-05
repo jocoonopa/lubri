@@ -9,12 +9,9 @@ class OnlyCtiExport extends Export
 {
     protected $fileNameTail = 'CTI';
 
-    protected $to = [       
-        'gavin@chinghwa.com.tw' => '6300何育佳'
-    ];
+    protected $to = [];
 
     protected $cc = [
-        'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
-        'jocoonopa@chinghwa.com.tw' => '6231小閎'
+        'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘'
     ];
 }
