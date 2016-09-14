@@ -80,17 +80,13 @@ class PromoGradeController extends Controller
     protected function getToList()
     {
         return [
-            'sharon@chinghwa.com.tw'   => '6110張佳園',
-            'lyanchen@chinghwa.com.tw' => '6216陳宥臻',
-            'life@chinghwa.com.tw'     => '6212林春秀'
+            'mis@chinghwa.com.tw' => 'mis'
         ];
     }
 
     protected function getCCList()
     {
-        return [
-            'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘'
-        ];
+        return [];
     }
 
     protected function getFileName()

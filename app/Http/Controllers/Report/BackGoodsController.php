@@ -55,17 +55,13 @@ class BackGoodsController extends Controller
     protected function getToList()
     {
         return [
-            'oliver@chinghwa.com.tw' => '誌遠',
-            'vivian@chinghwa.com.tw' => '玉英',
+            'mis@chinghwa.com.tw' => 'mis'
         ];
     }
 
     protected function getCCList()
     {
-        return [
-            'melodyhong@chinghwa.com.tw' => '鑾英',
-            'jocoonopa@chinghwa.com.tw' => '小閎'    
-        ];
+        return [];
     }
 
     protected function getQuery()

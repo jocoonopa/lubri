@@ -8,26 +8,10 @@ use Mail;
 class MailEventHandler
 {
     protected $to = [
-        'lingying3025@chinghwa.com.tw' => '6521吳俐穎'
+        'mis@chinghwa.com.tw' => 'mis'
     ];
 
-    protected $cc = [
-        'fengcheng@chinghwa.com.tw'  => '6600馮誠',
-        'meganlee@chinghwa.com.tw'   => '6500李惠淑',
-        'sl@chinghwa.com.tw'         => '6700莊淑玲',
-        'swhsu@chinghwa.com.tw'      => '6800徐士偉',
-        'sharon@chinghwa.com.tw'     => '6110張佳園',
-        'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
-        's008@chinghwa.com.tw'       => 'S008高雄SOGO門市',
-        's009@chinghwa.com.tw'       => 'S009美麗華門市',
-        's013@chinghwa.com.tw'       => 'S013新光站前',
-        's014@chinghwa.com.tw'       => 'S014新光台中',
-        's017@chinghwa.com.tw'       => 'S017大統百貨',
-        's028@chinghwa.com.tw'       => 'S028台南西門新光百貨',
-        's049@chinghwa.com.tw'       => 'S049新光A8',
-        's051@chinghwa.com.tw'       => 'S051漢神小巨蛋',
-        'jocoonopa@chinghwa.com.tw'  => '6231小閎'
-    ];
+    protected $cc = [];
 
     protected $event;
 

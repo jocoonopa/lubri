@@ -81,19 +81,13 @@ class ConceController extends Controller
     protected function getToList()
     {
         return [
-            'life@chinghwa.com.tw'   => '6212林春秀'
+            'mis@chinghwa.com.tw' => 'mis'
         ];
     }
 
     protected function getCCList()
     {
-        return [
-            'fengcheng@chinghwa.com.tw'  => '6600馮誠',
-            'sl@chinghwa.com.tw'         => '6700莊淑玲',
-            'swhsu@chinghwa.com.tw'      => '6800徐士偉',
-            'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘',
-            'jocoonopa@chinghwa.com.tw'  => '6231洪小閎'
-        ];
+        return [];
     }
 
     protected function getFileName()

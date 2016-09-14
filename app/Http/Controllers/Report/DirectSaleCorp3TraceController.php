@@ -55,19 +55,13 @@ class DirectSaleCorp3TraceController extends Controller
     protected function getToList()
     {
         return [
-            'fengcheng@chinghwa.com.tw' => '6600馮誠',
-            'sl@chinghwa.com.tw'        => '6700莊淑玲',
-            'swhsu@chinghwa.com.tw'     => '6800徐士偉',
-            'sharon@chinghwa.com.tw'    => '6110張佳園',
-            'lynn-s1189@chinghwa.com.tw' => '6151許逸玲'
+            'mis@chinghwa.com.tw' => 'mis'
         ];
     }
 
     protected function getCCList()
     {
-        return [
-            'tonyvanhsu@chinghwa.com.tw' => '6820徐士弘'
-        ];
+        return [];
     }
 
     protected function getQuery()
