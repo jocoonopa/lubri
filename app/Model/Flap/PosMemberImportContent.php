@@ -29,10 +29,10 @@ class PosMemberImportContent extends Model
      * @var array
      */
     protected $fillable = [
-        'serno', 
-        'name', 
-        'code', 
-        'sernoi', 
+        'serno',
+        'name',
+        'code',
+        'sernoi',
         'email',
         'pos_member_import_task_id',
         'cellphone',
@@ -66,7 +66,7 @@ class PosMemberImportContent extends Model
 
     /**
      * Scope queries to articles that have been published
-     * 
+     *
      * @param  $query
      */
     public function scopeIsExist($query, $taskId)
@@ -76,7 +76,7 @@ class PosMemberImportContent extends Model
 
     /**
      * Scope queries to articles that have been published
-     * 
+     *
      * @param  $query
      */
     public function scopeIsNotExist($query, $taskId)
@@ -110,7 +110,7 @@ class PosMemberImportContent extends Model
 
     public function scopeIsDuplicate($query, $colName = 'id')
     {
-        $query               
+        $query
             ->whereNotNull($colName)
             ->where($colName, '<>', '')
             ->groupBy(['name', $colName])
@@ -134,13 +134,13 @@ class PosMemberImportContent extends Model
         $query->where(function ($q) use ($columns) {
             foreach ($columns as $key => $column) {
                 $q->orWhereNull($key);
-            }  
-        });            
+            }
+        });
     }
 
     /**
      * An article is owned by a user
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function pos_member_import_task()
@@ -150,7 +150,7 @@ class PosMemberImportContent extends Model
 
     /**
      * An article is owned by a user
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function task()
@@ -160,7 +160,7 @@ class PosMemberImportContent extends Model
 
     /**
      * An article is owned by a user
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function state()
@@ -186,7 +186,7 @@ class PosMemberImportContent extends Model
 
         $this->flags = array_diff($this->flags, $diffFlags);
         $this->flags = array_merge($this->flags, $desFlags);
-        
+
         return $this;
     }
 
@@ -200,7 +200,7 @@ class PosMemberImportContent extends Model
             }
 
             $targetFlag = array_get($flags, Flater::genKey($target), Import::DEFAULT_FLAG_VALUE);
-                
+
             if (false !== array_search($targetFlag, [Import::DEFAULT_FLAG_VALUE])) {
                 continue;
             }
@@ -218,11 +218,11 @@ class PosMemberImportContent extends Model
 
     public function genMemo()
     {
-        return array_get(self::getMemberListFlagMap(), $this->getFlagVal(), '--') . ';' 
-            . $this->name . ';' 
-            . $this->cellphone . ';' 
-            . $this->getCityName() . $this->getStateName() . $this->homeaddress . ';' 
-            . "預產期:{$this->getPeriodAt()->format('Ym')}" . ';' 
+        return array_get(self::getMemberListFlagMap(), $this->getFlagVal(), '--') . ';'
+            . $this->name . ';'
+            . $this->cellphone . ';'
+            . $this->getCityName() . $this->getStateName() . $this->homeaddress . ';'
+            . "預產期:{$this->getPeriodAt()->format('Ym')}" . ';'
             . "生產醫院:{$this->hospital}";
     }
 
@@ -245,8 +245,8 @@ class PosMemberImportContent extends Model
     {
         $periodAt = $this->getPeriodAt();
         $flags = $this->flags;
-        $flags[Flater::genKey(23)] = ($this->period_at) 
-            ? array_get(self::getPeriodFlagMap(), $periodAt->format('Ym'), 'B') 
+        $flags[Flater::genKey(23)] = ($this->period_at)
+            ? array_get(self::getPeriodFlagMap(), $periodAt->format('Ym'), 'B')
             : 'A'
         ;
 
@@ -281,8 +281,8 @@ class PosMemberImportContent extends Model
         $flags = $this->getOrgFlags();
 
         $periodAtKey = substr(str_replace('-', '', $this->period_at), 0, 6);
-        
-        $flags[Flater::genKey(8)] = 'Y';
+
+        $flags[Flater::genKey(8)] = 'N';
         $flags[Flater::genKey(23)] = (NULL !== $this->period_at) ? array_get(self::getPeriodFlagMap(), $periodAtKey, 'B') : 'A';
 
         return $flags;
@@ -291,7 +291,7 @@ class PosMemberImportContent extends Model
     public function getActFlags()
     {
         $flags = $this->getOrgFlags();
-        $flags[Flater::genKey(8)] = 'Y';
+        $flags[Flater::genKey(8)] = 'N';
 
         return $flags;
     }
@@ -300,8 +300,8 @@ class PosMemberImportContent extends Model
     {
         $flags = $this->getFlagPrototype();
 
-        return empty($this->serno) 
-            ? array_merge($flags, $this->pos_member_import_task->insert_flags) 
+        return empty($this->serno)
+            ? array_merge($flags, $this->pos_member_import_task->insert_flags)
             : $this->pos_member_import_task->update_flags
         ;
     }
@@ -319,7 +319,7 @@ class PosMemberImportContent extends Model
 
     /**
      * FLAG 23
-     * 
+     *
      * @return array
      */
     public static function getPeriodFlagMap()

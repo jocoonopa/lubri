@@ -15,7 +15,7 @@ class CreditCardController extends Controller
     public function index()
     {
         return view('basic.simple', [
-            'title' => '訂單刷卡名單', 
+            'title' => '訂單刷卡名單',
             'des' => '<h4>每日寄送</h4><pre>' . $this->getCreditCardDealQuery() . '</pre>',
             'res' => NULL
         ]);
@@ -23,8 +23,8 @@ class CreditCardController extends Controller
 
     /**
      * mailDailyCreditCard 每日訂單成交刷卡名單
-     * 
-     * @param  Request $request 
+     *
+     * @param  Request $request
      * @return string
      */
     public function mail(Request $request)
@@ -34,12 +34,12 @@ class CreditCardController extends Controller
         $filePath = __DIR__ . '/../../../../storage/excel/exports/' . $filename .  '.xlsx';
 
         $excel = $this->genCreditCardDealReport($filename)->store('xlsx', storage_path('excel/exports'));
-            
+
         Mail::send('emails.creditCard', ['title' => $subject], function ($m) use ($subject, $filePath) {
             $m
-                ->to('mis@chinghwa.com.tw' => 'mis')
+                ->to(['mis@chinghwa.com.tw' => 'mis'])
                 ->subject($subject)
-                ->attach($filePath);
+                ->attach($filePath)
             ;
         });
 
@@ -58,10 +58,10 @@ class CreditCardController extends Controller
     protected function genCreditCardDealHead()
     {
         return [
-            '訂單單號', '單據代號', '單據名稱', '訂單日期', 
+            '訂單單號', '單據代號', '單據名稱', '訂單日期',
             '出貨日期', '應付金額', '訂單金額',
             '會員代號', '會員姓名', '連絡電話', '公司電話', '手機號碼',
-            '業務代號', '業務姓名', '部門代號', '部門名稱', '信用卡卡號', 
+            '業務代號', '業務姓名', '部門代號', '部門名稱', '信用卡卡號',
             '付款代號', '付款方式', '期數', '授權號碼', '刷卡金額'
         ];
     }
@@ -92,11 +92,11 @@ class CreditCardController extends Controller
             ];
 
             ExcelHelper::genBasicSheet(
-                $excel, 
-                '表格', 
-                $formatArr, 
-                'V', 
-                $self->getCreditCardDealQuery(), 
+                $excel,
+                '表格',
+                $formatArr,
+                'V',
+                $self->getCreditCardDealQuery(),
                 $self->genCreditCardDealHead()
             );
         });
