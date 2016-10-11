@@ -12,10 +12,11 @@ class AddImporttaskSrcpath extends Migration
      */
     public function up()
     {
+        Schema::drop('FVSyncQue');
         Schema::create('FVSyncQue', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('type_id')->unsigned()->index();            
+            $table->integer('type_id')->unsigned()->index();
             $table
                 ->foreign('type_id')
                 ->references('id')
@@ -29,7 +30,7 @@ class AddImporttaskSrcpath extends Migration
             $table->integer('import_cost_time')->nullable();
             $table->string('last_modified_at')->nullable();
             $table->timestamps();
-        }); 
+        });
     }
 
     /**

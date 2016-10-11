@@ -12,12 +12,12 @@ class ImportDistinctionAndCategoryMovePlacement extends Migration
      */
     public function up()
     {
-        Schema::table('posmember_import_task', function (Blueprint $table) {
+        Schema::table('pos_member_import_task', function (Blueprint $table) {
             $table->string('distinction');
             $table->string('category');
         });
 
-        Schema::table('posmember_import_task_content', function (Blueprint $table) {
+        Schema::table('pos_member_import_content', function (Blueprint $table) {
             //$table->dropColumn('distinction');
             //$table->dropColumn('category');
         });
@@ -30,12 +30,12 @@ class ImportDistinctionAndCategoryMovePlacement extends Migration
      */
     public function down()
     {
-        Schema::table('posmember_import_task', function (Blueprint $table) {
+        Schema::table('pos_member_import_task', function (Blueprint $table) {
             $table->dropColumn('distinction');
             $table->dropColumn('category');
         });
 
-        Schema::table('posmember_import_task_content', function (Blueprint $table) {
+        Schema::table('pos_member_import_content', function (Blueprint $table) {
             //$table->string('distinction');
             //$table->string('category');
         });

@@ -12,7 +12,7 @@ class UpdateImportConentState extends Migration
      */
     public function up()
     {
-        Schema::table('posmember_import_task_content', function (Blueprint $table) {
+        Schema::table('pos_member_import_content', function (Blueprint $table) {
             $table->integer('state_id')->unsigned()->index()->nullable();
             $table
                 ->foreign('state_id')
@@ -34,7 +34,7 @@ class UpdateImportConentState extends Migration
      */
     public function down()
     {
-        Schema::table('posmember_import_task_content', function (Blueprint $table) {
+        Schema::table('pos_member_import_content', function (Blueprint $table) {
             $table->dropColumn('state_id');
             $table->string('zipcode')->default('000');
             $table->string('city')->default('台灣省');

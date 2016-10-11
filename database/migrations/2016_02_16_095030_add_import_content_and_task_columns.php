@@ -12,13 +12,13 @@ class AddImportContentAndTaskColumns extends Migration
      */
     public function up()
     {
-        Schema::table('posmember_import_task', function (Blueprint $table) {
+        Schema::table('pos_member_import_task', function (Blueprint $table) {
             $table->json('update_flags')->nullable();
             $table->json('insert_flags')->nullable();
             $table->string('memo')->nullable();
         });
 
-        Schema::table('posmember_import_task_content', function (Blueprint $table) {
+        Schema::table('pos_member_import_content', function (Blueprint $table) {
             $table->timestamps();
             $table->dateTime('pushed_at')->nullable();
         });
@@ -31,7 +31,7 @@ class AddImportContentAndTaskColumns extends Migration
      */
     public function down()
     {
-        Schema::table('posmember_import_task_content', function (Blueprint $table) {
+        Schema::table('pos_member_import_content', function (Blueprint $table) {
             $table->dropColumn('update_flags');
             $table->dropColumn('insert_flags');
             $table->dropColumn('created_at');

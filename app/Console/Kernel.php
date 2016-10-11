@@ -16,15 +16,15 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\Inspire::class,        
+        \App\Console\Commands\Inspire::class,
         \App\Console\Commands\FV\Sync\Campaign::class,
         \App\Console\Commands\FV\Sync\Order::class,
         \App\Console\Commands\FV\Sync\Product::class,
         \App\Console\Commands\FV\Sync\Member::class,
         \App\Console\Commands\FV\Sync\CallList::class,
         \App\Console\Commands\FV\Sync\Calllog::class,
-        \App\Console\Commands\FV\Sync\ListRepair::class,  
-        \App\Console\Commands\FV\Sync\DoDelay::class,        
+        \App\Console\Commands\FV\Sync\ListRepair::class,
+        \App\Console\Commands\FV\Sync\DoDelay::class,
         \App\Console\Commands\FV\Import\Campaign::class,
         \App\Console\Commands\FV\Import\Order::class,
         \App\Console\Commands\FV\Import\Product::class,

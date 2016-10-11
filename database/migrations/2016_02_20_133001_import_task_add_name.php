@@ -12,7 +12,7 @@ class ImportTaskAddName extends Migration
      */
     public function up()
     {
-        Schema::table('posmember_import_task', function (Blueprint $table) {
+        Schema::table('pos_member_import_task', function (Blueprint $table) {
             $table->string('name');
         });
     }
@@ -24,7 +24,7 @@ class ImportTaskAddName extends Migration
      */
     public function down()
     {
-        Schema::table('posmember_import_task', function (Blueprint $table) {
+        Schema::table('pos_member_import_task', function (Blueprint $table) {
             $table->dropColumn('name');
         });
     }
